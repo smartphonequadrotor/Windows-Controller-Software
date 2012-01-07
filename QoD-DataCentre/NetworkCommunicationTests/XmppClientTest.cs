@@ -53,7 +53,7 @@ namespace NetworkCommunicationTests
         public void MyTestInitialize()
         {
             xmppClient = new XmppClient();
-            xmppClient.ConnectServer = "localhost";
+            xmppClient.ConnectServer = "127.0.0.1";
             xmppClient.Username = "ControllerTest";
             xmppClient.Password = "MegatronDump";
             xmppClient.Resource = "XmppClientTest";

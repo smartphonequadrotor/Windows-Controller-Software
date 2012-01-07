@@ -110,7 +110,7 @@ namespace QoD_DataCentre.Src.Communication
             try
             {
                 xmppCon.OnMessage += new agsXMPP.protocol.client.MessageHandler(xmppCon_OnMessage);
-
+                xmppCon.OnXmppConnectionStateChanged += new XmppConnectionStateHandler(xmppCon_OnXmppConnectionStateChanged);
                 xmppCon.Open();
             }
             catch (Exception e)
@@ -167,6 +167,16 @@ namespace QoD_DataCentre.Src.Communication
             {
                 onMessageReceived(this, new QPhoneMessageEventArgs(msg.Body));
             }
+        }
+
+        /// <summary>
+        /// Temporary method for debugging.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="state"></param>
+        void xmppCon_OnXmppConnectionStateChanged(object sender, XmppConnectionState state)
+        {
+            Console.WriteLine("Connection state changed to: " + state.ToString());
         }
 
         #endregion
