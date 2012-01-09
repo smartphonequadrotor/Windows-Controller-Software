@@ -5,10 +5,12 @@ using System.Text;
 using agsXMPP;
 using agsXMPP.protocol;
 using agsXMPP.protocol.client;
+using System.Windows.Forms;
+using QoD_DataCentre.Src.UI;
 
 namespace QoD_DataCentre.Src.Communication
 {
-    class XmppClient : INetworkConnection
+    class XmppClient// : INetworkConnection
     {
         /// <summary>
         /// Constructor
@@ -92,15 +94,27 @@ namespace QoD_DataCentre.Src.Communication
         }
         #endregion
 
+        #region UI related variables
+
+        /// <summary>
+        /// This reference to the connectionSettings form is required to update its status strip label.
+        /// </summary>
+        private ConnectionSettings connectionSettingsForm;
+        
+        #endregion
+
         #region INetworkConnection Members
 
         /// <summary>
         /// This method initiates a connection with the Jabber server. It also subscribes to the 
         /// OnMessage event of xmppCon.
         /// </summary>
+        /// <param name="senderForm">The connection settings form whose status strip label needs to be updated</param>
         /// <returns>True if the connection was successful and false otherwise.</returns>
-        public bool connect()
+        public bool connect(ConnectionSettings connectionSettingsForm)
         {
+            this.connectionSettingsForm = connectionSettingsForm;
+
             xmppCon.AutoResolveConnectServer = false;
             xmppCon.AutoAgents = false;
             xmppCon.AutoPresence = true;
@@ -111,9 +125,10 @@ namespace QoD_DataCentre.Src.Communication
             {
                 xmppCon.OnMessage += new agsXMPP.protocol.client.MessageHandler(xmppCon_OnMessage);
                 xmppCon.OnXmppConnectionStateChanged += new XmppConnectionStateHandler(xmppCon_OnXmppConnectionStateChanged);
+                xmppCon.OnError += new ErrorHandler(xmppCon_OnError);
                 xmppCon.Open();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -146,7 +161,7 @@ namespace QoD_DataCentre.Src.Communication
         {
             try
             {
-                xmppCon.Send(new Message(new Jid(QPhoneUsername, Server, QPhoneResource), message));
+                xmppCon.Send(new agsXMPP.protocol.client.Message(new Jid(QPhoneUsername, Server, QPhoneResource), message));
             }
             catch (Exception)
             {
@@ -177,6 +192,27 @@ namespace QoD_DataCentre.Src.Communication
         void xmppCon_OnXmppConnectionStateChanged(object sender, XmppConnectionState state)
         {
             Console.WriteLine("Connection state changed to: " + state.ToString());
+            if (connectionSettingsForm != null)
+            {
+                connectionSettingsForm.BeginInvoke(connectionSettingsForm.updateStatusStripLabelDelegate, new Object[] { state.ToString() });
+            }
+        }
+
+        /// <summary>
+        /// This reports errors to the user through a message box.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ex"></param>
+        void xmppCon_OnError(object sender, Exception ex)
+        {
+            System.Windows.Forms.MessageBox.Show
+            (
+                ex.Message,
+                "XMPP Communication error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error,
+                MessageBoxDefaultButton.Button1
+            );
         }
 
         #endregion

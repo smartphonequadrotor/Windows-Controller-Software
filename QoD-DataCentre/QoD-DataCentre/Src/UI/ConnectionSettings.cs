@@ -9,11 +9,16 @@ using System.Windows.Forms;
 
 namespace QoD_DataCentre.Src.UI
 {
+    public delegate void UpdateStatusStripLabelDelegate(String msg);
+
     public partial class ConnectionSettings : Form
     {
+        public UpdateStatusStripLabelDelegate updateStatusStripLabelDelegate;
+
         public ConnectionSettings()
         {
             InitializeComponent();
+            updateStatusStripLabelDelegate = new UpdateStatusStripLabelDelegate(updateStatusStrip);
         }
 
         private void ConnectBtn_Click(object sender, EventArgs e)
@@ -50,7 +55,7 @@ namespace QoD_DataCentre.Src.UI
         /// </summary>
         private void xmppClientConnectLiason()
         {
-            if (!QoDMain.networkCommunicationManager.xmppClient.connect())
+            if (!QoDMain.networkCommunicationManager.xmppClient.connect(this))
             {
                 MessageBox.Show
                 (
@@ -61,6 +66,11 @@ namespace QoD_DataCentre.Src.UI
                     MessageBoxDefaultButton.Button1
                 );
             }
+        }
+
+        private void updateStatusStrip(String msg)
+        {
+            statusStripLabel.Text = msg;
         }
     }
 }

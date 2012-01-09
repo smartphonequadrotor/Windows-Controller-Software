@@ -80,7 +80,7 @@ namespace NetworkCommunicationTests
         {
             bool expected = true;
             bool actual;
-            actual = xmppClient.connect();
+            actual = xmppClient.connect(null);
             Assert.AreEqual(expected, actual);
         }
 
@@ -90,7 +90,7 @@ namespace NetworkCommunicationTests
         [TestMethod()]
         public void writeMessageTest()
         {
-            Assert.IsTrue(xmppClient.connect());
+            Assert.IsTrue(xmppClient.connect(null));
             string message = "hello there!";
             bool expected = true;
             bool actual = xmppClient.writeMessage(message);
