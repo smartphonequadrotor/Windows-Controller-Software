@@ -44,9 +44,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking">
-      <HintPath>..\..\..\..\..\..\..\..\Desktop\DockPanel_2.5_RC1_Bin\DockPanel_2.5_RC1_Bin\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\Coordinates.cs">
@@ -144,25 +141,107 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\100percent.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\0percent.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\20percent.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\30percent.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\50percent.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\70percent.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\80percent.png" />
+    <Content Include="Resources\0.png" />
+    <Content Include="Resources\1.png" />
+    <Content Include="Resources\10.png" />
+    <Content Include="Resources\100.png" />
+    <Content Include="Resources\11.png" />
+    <Content Include="Resources\12.png" />
+    <Content Include="Resources\13.png" />
+    <Content Include="Resources\14.png" />
+    <Content Include="Resources\15.png" />
+    <Content Include="Resources\16.png" />
+    <Content Include="Resources\17.png" />
+    <Content Include="Resources\18.png" />
+    <Content Include="Resources\19.png" />
+    <Content Include="Resources\2.png" />
+    <Content Include="Resources\20.png" />
+    <Content Include="Resources\21.png" />
+    <Content Include="Resources\22.png" />
+    <Content Include="Resources\23.png" />
+    <Content Include="Resources\24.png" />
+    <Content Include="Resources\25.png" />
+    <Content Include="Resources\26.png" />
+    <Content Include="Resources\27.png" />
+    <Content Include="Resources\28.png" />
+    <Content Include="Resources\29.png" />
+    <Content Include="Resources\3.png" />
+    <Content Include="Resources\30.png" />
+    <Content Include="Resources\31.png" />
+    <Content Include="Resources\32.png" />
+    <Content Include="Resources\33.png" />
+    <Content Include="Resources\34.png" />
+    <Content Include="Resources\35.png" />
+    <Content Include="Resources\36.png" />
+    <Content Include="Resources\37.png" />
+    <Content Include="Resources\38.png" />
+    <Content Include="Resources\39.png" />
+    <Content Include="Resources\4.png" />
+    <Content Include="Resources\40.png" />
+    <Content Include="Resources\41.png" />
+    <Content Include="Resources\42.png" />
+    <Content Include="Resources\43.png" />
+    <Content Include="Resources\44.png" />
+    <Content Include="Resources\45.png" />
+    <Content Include="Resources\46.png" />
+    <Content Include="Resources\47.png" />
+    <Content Include="Resources\48.png" />
+    <Content Include="Resources\49.png" />
+    <Content Include="Resources\5.png" />
+    <Content Include="Resources\50.png" />
+    <Content Include="Resources\51.png" />
+    <Content Include="Resources\52.png" />
+    <Content Include="Resources\53.png" />
+    <Content Include="Resources\54.png" />
+    <Content Include="Resources\55.png" />
+    <Content Include="Resources\56.png" />
+    <Content Include="Resources\57.png" />
+    <Content Include="Resources\58.png" />
+    <Content Include="Resources\59.png" />
+    <Content Include="Resources\6.png" />
+    <Content Include="Resources\60.png" />
+    <Content Include="Resources\61.png" />
+    <Content Include="Resources\62.png" />
+    <Content Include="Resources\63.png" />
+    <Content Include="Resources\64.png" />
+    <Content Include="Resources\65.png" />
+    <Content Include="Resources\66.png" />
+    <Content Include="Resources\67.png" />
+    <Content Include="Resources\68.png" />
+    <Content Include="Resources\69.png" />
+    <Content Include="Resources\7.png" />
+    <Content Include="Resources\70.png" />
+    <Content Include="Resources\71.png" />
+    <Content Include="Resources\72.png" />
+    <Content Include="Resources\73.png" />
+    <Content Include="Resources\74.png" />
+    <Content Include="Resources\75.png" />
+    <Content Include="Resources\76.png" />
+    <Content Include="Resources\77.png" />
+    <Content Include="Resources\78.png" />
+    <Content Include="Resources\79.png" />
+    <Content Include="Resources\8.png" />
+    <Content Include="Resources\80.png" />
+    <Content Include="Resources\81.png" />
+    <Content Include="Resources\82.png" />
+    <Content Include="Resources\83.png" />
+    <Content Include="Resources\84.png" />
+    <Content Include="Resources\85.png" />
+    <Content Include="Resources\86.png" />
+    <Content Include="Resources\87.png" />
+    <Content Include="Resources\88.png" />
+    <Content Include="Resources\89.png" />
+    <Content Include="Resources\9.png" />
+    <Content Include="Resources\90.png" />
+    <Content Include="Resources\91.png" />
+    <Content Include="Resources\92.png" />
+    <Content Include="Resources\93.png" />
+    <Content Include="Resources\94.png" />
+    <Content Include="Resources\95.png" />
+    <Content Include="Resources\96.png" />
+    <Content Include="Resources\97.png" />
+    <Content Include="Resources\98.png" />
+    <Content Include="Resources\99.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
