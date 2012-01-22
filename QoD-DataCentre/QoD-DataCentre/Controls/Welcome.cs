@@ -60,12 +60,9 @@ namespace QoD_DataCentre.Modules
                         richTextBox1.Text += f.Title;
                     }
                     richTextBox1.Text += Environment.NewLine;
-                    //textBox1.Text += f.Link;
-                    //textBox1.Text += Environment.NewLine;
                     richTextBox1.Text += f.Description;
                     richTextBox1.Text += Environment.NewLine;
                     richTextBox1.Text += Environment.NewLine;
-                    //textBox1.Text = rssFeed.ToString();
                     string stripped = Regex.Replace(richTextBox1.Text, @"<(.|\n)*?>", string.Empty);
 
                     richTextBox1.Text = stripped;
