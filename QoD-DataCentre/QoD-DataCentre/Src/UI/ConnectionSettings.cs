@@ -52,8 +52,9 @@ namespace QoD_DataCentre.Src.UI
                 qoDForm.enable_text_control();
                 qoDForm.reset_text_control();
             });
-            write_to_text_control(QoDMain.networkCommunicationManager.xmppClient.JID.ToString() + ">");
+           
             this.Hide();
+            qoDForm.Activate();
         }
 
         public void write_to_text_control(String text)

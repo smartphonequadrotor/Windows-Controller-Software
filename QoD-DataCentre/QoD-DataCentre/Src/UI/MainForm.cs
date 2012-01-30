@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using QoD_DataCentre.Src.UI;
+using System.Text.RegularExpressions;
 
 namespace QoD_DataCentre
 {
@@ -59,32 +60,111 @@ namespace QoD_DataCentre
 
         public void insert_write_to_text_control(string text)
         {
+            text = convert_line_endings(text);
             textControlTerminal.Text = textControlTerminal.Text.Insert(line_count, text);
             line_count += text.Length;
+            line_length += text.Length;
+        }
+
+        private string convert_line_endings(string text)
+        {
+            //only convert unix style line endings
+            Match line_end = Regex.Match(text, @"(?<!\r)\n");
+            while(line_end.Success)
+            {
+                text = text.Insert(line_end.Index,"\r");
+                line_end = Regex.Match(text, @"(?<!\r)\n");
+            }
+            //only convert macintosh style line endings
+            line_end = Regex.Match(text, @"\r(?!\n)");
+            while (line_end.Success)
+            {
+                text = text.Insert(line_end.Index+1, "\r");
+                line_end = Regex.Match(text, @"(?<!\r)\n");
+            }
+            return text;
         }
 
         int line_length;
+        int carat_pos;
+        List<String> command_list = new List<String>();
+        int command_number = -1;
         private void textControlTerminal_KeyDown(object sender, KeyEventArgs e)
         {
             int send = line_count + (QoDMain.networkCommunicationManager.xmppClient.JID + ">").Length;
             if (e.KeyCode == Keys.Enter)
             {
-                line_length = 0;
-                QoDMain.networkCommunicationManager.xmppClient.writeMessage(textControlTerminal.Text.Substring(send));
-                line_count = textControlTerminal.Text.Length + 2;
-                textControlTerminal.Text += "\r\n" + QoDMain.networkCommunicationManager.xmppClient.JID + ">";
-                e.SuppressKeyPress = true;
-                textControlTerminal.SelectionStart = textControlTerminal.Text.Length;
+                if (!e.Shift)
+                {
+                    string message = textControlTerminal.Text.Substring(send);
+                    QoDMain.networkCommunicationManager.xmppClient.writeMessage(message);
+                    command_list.Add(message);
+                    command_number = command_list.Count-1;
+
+                    line_count = textControlTerminal.Text.Length + 2;
+                    textControlTerminal.Text += "\r\n" + QoDMain.networkCommunicationManager.xmppClient.JID + ">";
+                    line_length = textControlTerminal.Text.Length;
+                    carat_pos = line_length;
+                    e.SuppressKeyPress = true;
+                    textControlTerminal.SelectionStart = carat_pos;
+                }
+                else
+                {
+                    if (textControlTerminal.SelectionStart < line_length)
+                        e.SuppressKeyPress = true;
+                }
             }
             else if (e.KeyCode == Keys.Back)
             {
-                if (line_length == 0)
+                if (textControlTerminal.SelectionStart <= line_length)
                     e.SuppressKeyPress = true;
                 else{
-                    line_length--;
-                    textControlTerminal.Text = textControlTerminal.Text.Substring(0, textControlTerminal.Text.Length-1);
-                    e.SuppressKeyPress = true;
+                    carat_pos--;
                 }
+            }
+            else if ((e.Alt || e.Control ) && !e.Shift)
+            {
+                if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+                {
+
+                }
+                if (e.Control && !e.Alt)
+                {
+                    if (e.KeyCode == Keys.Up && command_number > -1)
+                    {
+                        e.SuppressKeyPress = true;
+                        if (textControlTerminal.Text.Length > line_length)
+                            textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
+
+                        textControlTerminal.Text += command_list[command_number];
+                        command_number--;
+                        carat_pos = textControlTerminal.Text.Length;
+                        textControlTerminal.SelectionStart = textControlTerminal.Text.Length;
+                    }
+                    if (e.KeyCode == Keys.Down && command_number < command_list.Count-1)
+                    {
+                        e.SuppressKeyPress = true;
+                        if (textControlTerminal.Text.Length > line_length)
+                            textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
+
+                        command_number++;
+                        textControlTerminal.Text += command_list[command_number];
+                        
+                        carat_pos = textControlTerminal.Text.Length;
+                        textControlTerminal.SelectionStart = textControlTerminal.Text.Length;
+                    }
+                }
+
+            }
+            else
+            {
+                if(e.KeyCode == Keys.Left || e.KeyCode == Keys.Down || e.KeyCode == Keys.Right || e.KeyCode == Keys.Up)
+                {
+
+                }
+                else if (textControlTerminal.SelectionStart < line_length)
+                    e.SuppressKeyPress = true;
+
             }
             
         }
@@ -95,6 +175,13 @@ namespace QoD_DataCentre
         {
             line_count = 0;
             textControlTerminal.Text = "";
+            int send = line_count + (QoDMain.networkCommunicationManager.xmppClient.JID + ">").Length;
+            line_count = textControlTerminal.Text.Length;
+            textControlTerminal.Text += QoDMain.networkCommunicationManager.xmppClient.JID + ">";
+            line_length = textControlTerminal.Text.Length;
+            carat_pos = line_length;
+            textControlTerminal.SelectionStart = carat_pos;
+            
         }
 
         private void textControlTerminal_KeyPress(object sender, KeyPressEventArgs e)
@@ -109,10 +196,13 @@ namespace QoD_DataCentre
                 e.KeyChar != '\t' &&
                 e.KeyChar != '\v')
             {
-                line_length++;
-                textControlTerminal.Text += e.KeyChar;
-                textControlTerminal.SelectionStart = textControlTerminal.Text.Length;
+                if (textControlTerminal.SelectionStart >= line_length)
+                {
+                    carat_pos++;
+                }
             }
         }
+
+
     }
 }
