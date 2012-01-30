@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace QoD_DataCentre.Src.Communication
 {
     /// <summary>
@@ -18,12 +19,21 @@ namespace QoD_DataCentre.Src.Communication
     {
         public XmppClient xmppClient;
         public DirectSocketServer directSocketServer;
+        
+        
 
         public NetworkCommunicationManager()
         {
             xmppClient = new XmppClient();
             directSocketServer = new DirectSocketServer();
         }
+
+        public NetworkCommunicationManager(QoDForm main_Form)
+        {
+            xmppClient = new XmppClient(main_Form);
+            directSocketServer = new DirectSocketServer();
+        }
+
 
         public ConnectionType connectionType { get; set; }
 

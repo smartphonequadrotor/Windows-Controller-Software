@@ -11,7 +11,7 @@ namespace QoD_DataCentre
         /// <summary>
         /// A static instance of the network communication manager.
         /// </summary>
-        public static NetworkCommunicationManager networkCommunicationManager = new NetworkCommunicationManager();
+        public static NetworkCommunicationManager networkCommunicationManager;
 
         /// <summary>
         /// The main entry point for the application.
@@ -19,9 +19,13 @@ namespace QoD_DataCentre
         [STAThread]
         static void Main()
         {
+            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new QoDForm());
+            QoDForm mainForm = new QoDForm();
+            networkCommunicationManager = new NetworkCommunicationManager(mainForm);
+            Application.Run(mainForm);
+            
         }
     }
 }
