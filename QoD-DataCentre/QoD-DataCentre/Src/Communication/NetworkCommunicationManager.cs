@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
+using QoD_DataCentre.Src.UI;
 
 
 namespace QoD_DataCentre.Src.Communication
@@ -17,10 +19,16 @@ namespace QoD_DataCentre.Src.Communication
     /// </summary>
     class NetworkCommunicationManager
     {
-        public XmppClient xmppClient;
-        public DirectSocketServer directSocketServer;
-        
-        
+        private QoDForm main_GUI;
+        private ConnectionSettings connectionSettings;
+        private XmppClient xmppClient;
+        private DirectSocketServer directSocketServer;
+
+        //TODO: Create listeners or something to be called upon sucessful disconnect & connect (whenever status is changed)
+
+        internal bool isConnected;
+        internal string client_id;
+        internal string phone_id;
 
         public NetworkCommunicationManager()
         {
@@ -28,14 +36,158 @@ namespace QoD_DataCentre.Src.Communication
             directSocketServer = new DirectSocketServer();
         }
 
-        public NetworkCommunicationManager(QoDForm main_Form)
+        public NetworkCommunicationManager(QoDForm main_Form, ConnectionSettings cs)
         {
-            xmppClient = new XmppClient(main_Form);
+
+            main_GUI = main_Form;
+            connectionSettings = cs;
+            xmppClient = new XmppClient(this);
             directSocketServer = new DirectSocketServer();
         }
 
+        public void SendMessage(string message)
+        {
+
+            if (connectionType == ConnectionType.DirectSocket)
+            {
+
+            }
+            else if (connectionType == ConnectionType.XMPP)
+            {
+                xmppClient.writeMessage(message);
+            }
+
+        }
+
+        public void Connect(string phoneID){
+            phone_id = phoneID;
+
+            if (connectionType == ConnectionType.DirectSocket)
+            {
+
+            }
+            else if (connectionType == ConnectionType.XMPP)
+            {
+
+                xmppClient.connect(phoneID);
+                main_GUI.Invoke((MethodInvoker)delegate
+                {
+                    main_GUI.disable_text_control();
+                });
+            }
+        }
+
+        public bool xmppUserConnect(string username, string password)
+        {
+            client_id = username;
+            return xmppClient.login(username, password);
+        }
+
+        public void Disconnect()
+        {
+
+            if (connectionType == ConnectionType.DirectSocket)
+            {
+
+            }
+            else if (connectionType == ConnectionType.XMPP)
+            {
+                xmppClient.disconnect();
+                main_GUI.Invoke((MethodInvoker)delegate
+                {
+                    main_GUI.disable_text_control();
+                });
+            }
+
+        }
+
+        
+
+        internal void change_connectionText_text(string text)
+        {
+            //invoke start progress...
+            main_GUI.Invoke((MethodInvoker)delegate
+            {
+                main_GUI.change_connectionText_text(text);
+            });
+        }
+
+        public void RecieveMessage(string message)
+        {
+            write_msg_to_text_control(message);
+            
+        }
+
+        internal void write_msg_to_text_control(String text)
+        {
+            //invoke start progress...
+            main_GUI.Invoke((MethodInvoker)delegate
+            {
+                main_GUI.insert_write_to_text_control(phone_id + ">" + text + "\r\n");
+            });
+        }
 
         public ConnectionType connectionType { get; set; }
 
+
+        internal void FatalConnectionError(string error)
+        {
+            MessageBox.Show
+                (
+                    "Connection Failure: "+error,
+                    "Connection Failure",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1
+                );
+            Console.Out.WriteLine(error);
+        }
+
+        internal void start_progress()
+        {
+            //invoke start progress...
+            if (connectionSettings.IsHandleCreated)
+                connectionSettings.Invoke((MethodInvoker)delegate
+                {
+                    connectionSettings.start_progress();
+                });
+        }
+
+        internal void write_connection_status(String status)
+        {
+            //invoke start progress...
+            if (connectionSettings.IsHandleCreated)
+                connectionSettings.Invoke((MethodInvoker)delegate
+                {
+                    connectionSettings.write_connection_status(status);
+                });
+        }
+
+
+
+        internal void stop_progress()
+        {
+            //invoke start progress...
+            if (connectionSettings.IsHandleCreated)
+                connectionSettings.Invoke((MethodInvoker)delegate
+                {
+                    connectionSettings.stop_progress();
+                });
+        }
+
+        internal void write_contact_list()
+        {
+            //invoke start progress...
+            if (connectionSettings.IsHandleCreated)
+                connectionSettings.Invoke((MethodInvoker)delegate
+                {
+                    connectionSettings.write_contact_list(xmppClient.USER_DICTIONARY);
+                });
+        }
+
+        internal Dictionary<string, int> getXmppUsers()
+        {
+            return xmppClient.USER_DICTIONARY;
+        }
     }
 }

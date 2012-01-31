@@ -13,20 +13,23 @@ namespace QoD_DataCentre
 {
     public partial class QoDForm : Form
     {
-        ConnectionSettings connectionSettings;
+        private ConnectionSettings connectionSettings;
+
+        public ConnectionSettings ConnectionSettings
+        {
+            get { return connectionSettings; }
+        }
+
         int line_count = 0;
 
         public QoDForm()
         {
+            connectionSettings = new ConnectionSettings(this);
             InitializeComponent();
         }
 
         private void setupConnectionBtn_Click(object sender, EventArgs e)
         {
-            if (connectionSettings == null)
-            {
-                connectionSettings = new ConnectionSettings(this);
-            }
             connectionSettings.ShowDialog();
             
 
@@ -91,18 +94,18 @@ namespace QoD_DataCentre
         int command_number = -1;
         private void textControlTerminal_KeyDown(object sender, KeyEventArgs e)
         {
-            int send = line_count + (QoDMain.networkCommunicationManager.xmppClient.JID + ">").Length;
+            int send = line_count + (QoDMain.networkCommunicationManager.client_id + ">").Length;
             if (e.KeyCode == Keys.Enter)
             {
                 if (!e.Shift)
                 {
                     string message = textControlTerminal.Text.Substring(send);
-                    QoDMain.networkCommunicationManager.xmppClient.writeMessage(message);
+                    QoDMain.networkCommunicationManager.SendMessage(message);
                     command_list.Add(message);
                     command_number = command_list.Count-1;
 
                     line_count = textControlTerminal.Text.Length + 2;
-                    textControlTerminal.Text += "\r\n" + QoDMain.networkCommunicationManager.xmppClient.JID + ">";
+                    textControlTerminal.Text += "\r\n" + QoDMain.networkCommunicationManager.client_id + ">";
                     line_length = textControlTerminal.Text.Length;
                     carat_pos = line_length;
                     e.SuppressKeyPress = true;
@@ -175,9 +178,9 @@ namespace QoD_DataCentre
         {
             line_count = 0;
             textControlTerminal.Text = "";
-            int send = line_count + (QoDMain.networkCommunicationManager.xmppClient.JID + ">").Length;
+            int send = line_count + (QoDMain.networkCommunicationManager.client_id + ">").Length;
             line_count = textControlTerminal.Text.Length;
-            textControlTerminal.Text += QoDMain.networkCommunicationManager.xmppClient.JID + ">";
+            textControlTerminal.Text += QoDMain.networkCommunicationManager.client_id + ">";
             line_length = textControlTerminal.Text.Length;
             carat_pos = line_length;
             textControlTerminal.SelectionStart = carat_pos;

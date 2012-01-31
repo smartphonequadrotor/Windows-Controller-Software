@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using QoD_DataCentre.Src.Communication;
+using QoD_DataCentre.Src.UI;
 
 namespace QoD_DataCentre
 {
@@ -22,8 +23,9 @@ namespace QoD_DataCentre
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            
             QoDForm mainForm = new QoDForm();
-            networkCommunicationManager = new NetworkCommunicationManager(mainForm);
+            networkCommunicationManager = new NetworkCommunicationManager(mainForm, mainForm.ConnectionSettings);
             Application.Run(mainForm);
             
         }

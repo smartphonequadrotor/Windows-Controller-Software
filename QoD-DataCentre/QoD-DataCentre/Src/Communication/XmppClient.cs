@@ -23,12 +23,13 @@ namespace QoD_DataCentre.Src.Communication
         {
 
         }
-        private QoDForm main_Form;
+        
 
-        public XmppClient(QoDForm main_form)
+
+        public XmppClient(NetworkCommunicationManager networkCommunicationManager)
         {
-
-            main_Form = main_form;
+            
+            this.networkCommunicationManager = networkCommunicationManager;
         }
 
         private bool is_connected = false;
@@ -69,45 +70,14 @@ namespace QoD_DataCentre.Src.Communication
         /// </summary>
         private String Partner_Jabber_ID;
 
-        /// <summary>
-        /// Tells whether an xmpp connection is established or not.
-        /// </summary>
-        public bool IS_CONNECTED
-        {
-            get { return is_connected; }
-        }
+        
 
-        /// <summary>
-        /// This is the client's connecting JID.
-        /// </summary>
-        public String JID
-        {
-            get { return Jabber_ID; }
-            set { Jabber_ID = value; }
-        }
-
-        /// <summary>
-        /// This is the partner's connecting JID.
-        /// </summary>
-        public String P_JID
-        {
-            get { return Partner_Jabber_ID; }
-            set { Partner_Jabber_ID = value; }
-        }
 
         /// <summary>
         /// This is the client's connecting Password.
         /// </summary>
         private String Jabber_Pass;
 
-        /// <summary>
-        /// This is password to the user's account.
-        /// </summary>
-        public String Password 
-        {
-            get { return Jabber_Pass; }
-            set { Jabber_Pass = value; }
-        }
 
         /// <summary>
         /// Not Implemented
@@ -126,7 +96,7 @@ namespace QoD_DataCentre.Src.Communication
         /// <summary>
         /// This reference to the connectionSettings form is required to update it.
         /// </summary>
-        private ConnectionSettings connectionSettingsForm;
+        private NetworkCommunicationManager networkCommunicationManager;
         
         #endregion
 
@@ -138,15 +108,14 @@ namespace QoD_DataCentre.Src.Communication
         /// </summary>
         /// <param name="senderForm">The connection settings form whose status strip label needs to be updated</param>
         /// <returns>True if the connection was successful and false otherwise.</returns>
-        public bool connect(ConnectionSettings connectionSettings)
+        public bool login(string username, string password)
         {
+            Jabber_ID = username;
             
-            connectionSettingsForm = connectionSettings;
-
             contact_num = 0;
             contact_dictionary = new Dictionary<string, int>();
 
-            start_progress();
+            networkCommunicationManager.start_progress();
 
              /*
              * Creating the Jid and the XmppClientConnection objects
@@ -164,14 +133,14 @@ namespace QoD_DataCentre.Src.Communication
                 xmpp.OnSocketError += new ErrorHandler(xmppCon_OnSocketError);
                 xmpp.OnLogin += new ObjectHandler(xmpp_OnLogin);
                 xmpp.OnAuthError += new XmppElementHandler(xmpp_OnAuthError);
-                xmpp.Open(jidSender.User, Password);
+                xmpp.Open(jidSender.User, password);
     
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                stop_progress();
-                write_connection_status("Connection Failed!");
+                networkCommunicationManager.stop_progress();
+                networkCommunicationManager.write_connection_status("Connection Failed!");
                 return false;
             }
 
@@ -180,53 +149,9 @@ namespace QoD_DataCentre.Src.Communication
 
         
 
-        private void start_progress()
-        {
-            //invoke start progress...
-            if (connectionSettingsForm.IsHandleCreated)
-            connectionSettingsForm.Invoke((MethodInvoker)delegate
-            {
-                connectionSettingsForm.start_progress();
-            }); 
-        }
-
-        private void write_connection_status(String status)
-        {
-            //invoke start progress...
-            if (connectionSettingsForm.IsHandleCreated)
-            connectionSettingsForm.Invoke((MethodInvoker)delegate
-            {
-                connectionSettingsForm.write_connection_status(status);
-            }); 
-        }
         
-        private void change_setupConnectionBtn_text(string text)
-        {
-            //invoke start progress...
-            main_Form.Invoke((MethodInvoker)delegate
-            {
-                main_Form.change_setupConnectionBtn_text(text);
-            });
-        }
 
-        private void change_connectionText_text(string text)
-        {
-            //invoke start progress...
-            main_Form.Invoke((MethodInvoker)delegate
-            {
-                main_Form.change_connectionText_text(text);
-            });
-        } 
-
-        private void stop_progress()
-        {
-            //invoke start progress...
-            if (connectionSettingsForm.IsHandleCreated)
-            connectionSettingsForm.Invoke((MethodInvoker)delegate
-            {
-                connectionSettingsForm.stop_progress();
-            });
-        }
+        
 
         public void send_precence()
         {
@@ -257,8 +182,8 @@ namespace QoD_DataCentre.Src.Communication
             Console.WriteLine();
             Thread.Sleep(500);
 
-            stop_progress();
-            write_connection_status("Connected to server!");
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.write_connection_status("Connected to server!");
         }
 
         // Is called, if the precence of a roster contact changed        
@@ -287,31 +212,20 @@ namespace QoD_DataCentre.Src.Communication
             }
             
             
-            write_contact_list();
+            networkCommunicationManager.write_contact_list();
             
         }
 
-        public void set_connected()
+        public void connect(string partnerID)
         {
+            Partner_Jabber_ID = partnerID;
             is_connected = true;
             foreach (KeyValuePair<string, int> pair in contact_dictionary)
                 if(pair.Key != Partner_Jabber_ID)
-                    xmpp.MessageGrabber.Remove(new Jid(pair.Key));
-            //ignore all other msg requests while connected.
-            
-
-            
+                    xmpp.MessageGrabber.Remove(new Jid(pair.Key));          
         }
 
-        void write_contact_list()
-        {
-            //invoke start progress...
-            if(connectionSettingsForm.IsHandleCreated)
-            connectionSettingsForm.Invoke((MethodInvoker)delegate
-            {
-                connectionSettingsForm.write_contact_list(contact_dictionary);
-            }); 
-        }
+        
 
         //Handles incoming messages
         void MessageCallBack(object sender, agsXMPP.protocol.client.Message msg, object data)
@@ -319,18 +233,11 @@ namespace QoD_DataCentre.Src.Communication
             Console.Out.WriteLine(msg.From.User + '@' + msg.From.Server+">"+msg.Body);
             if (msg.Body != null && msg.From.User+'@'+msg.From.Server == Partner_Jabber_ID)
             {
-                write_msg_to_text_control(msg.Body);
+                networkCommunicationManager.RecieveMessage(msg.Body);
             }
         }
 
-        void write_msg_to_text_control(String text)
-        {
-            //invoke start progress...
-                main_Form.Invoke((MethodInvoker)delegate
-                {
-                    main_Form.insert_write_to_text_control(Partner_Jabber_ID+">"+text+"\r\n");
-                });
-        }
+        
         
 
         /// <summary>
@@ -340,24 +247,10 @@ namespace QoD_DataCentre.Src.Communication
         public bool disconnect()
         {
             Partner_Jabber_ID = null;
+            Jabber_ID = null;
             is_connected = false;
-            change_connectionText_text("Not Connected");
-            change_setupConnectionBtn_text("Setup Connection");
+            //add listener 
 
-            //add listeners for all in dictionary.
-            if (xmpp != null)
-            {
-                xmpp.MessageGrabber.Clear();
-                foreach (KeyValuePair<string, int> pair in contact_dictionary)
-                    xmpp.MessageGrabber.Add(new Jid(pair.Key),
-                                         new BareJidComparer(),
-                                         new MessageCB(MessageCallBack),
-                                         null);
-            }
-            main_Form.Invoke((MethodInvoker)delegate
-            {
-                main_Form.disable_text_control();
-            });
             try
             {
                 xmpp.Close();
@@ -380,8 +273,6 @@ namespace QoD_DataCentre.Src.Communication
             return true;
         }
 
-        
-
         #endregion
 
         #region Helper methods
@@ -394,17 +285,9 @@ namespace QoD_DataCentre.Src.Communication
         /// <param name="ex"></param>
         void xmppCon_OnError(object sender, Exception ex)
         {
-            System.Windows.Forms.MessageBox.Show
-            (
-                ex.Message,
-                "XMPP Communication error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error,
-                MessageBoxDefaultButton.Button1
-            );
-            Console.Out.WriteLine("connection error: " + ex.Message);
-            stop_progress();
-            write_connection_status("Connection Failed!");
+            networkCommunicationManager.FatalConnectionError("XMPP Error!");
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.write_connection_status("Connection Failed!");
         }
 
         /// <summary>
@@ -414,20 +297,13 @@ namespace QoD_DataCentre.Src.Communication
         /// <param name="ex"></param>
         void xmppCon_OnSocketError(object sender, Exception ex)
         {
-            MessageBox.Show
-                (
-                    "Failed to connect to xmpp server",
-                    "Connection Failure",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error,
-                    MessageBoxDefaultButton.Button1
-                );
-            Console.Out.WriteLine("socket exception: " + ex.Message);
-            stop_progress();
-            write_connection_status("Connection Failed!");
-            change_connectionText_text("Not Connected");
-            change_setupConnectionBtn_text("Setup Connection");
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.write_connection_status("Connection Failed!");
+            networkCommunicationManager.FatalConnectionError("Socket Error!");
+            disconnect();
         }
+
+        
 
         /// <summary>
         /// This reports errors to the user through a message box.
@@ -436,19 +312,11 @@ namespace QoD_DataCentre.Src.Communication
         /// <param name="ex"></param>
         void xmpp_OnAuthError(object sender, agsXMPP.Xml.Dom.Element e)
         {
-            MessageBox.Show
-                (
-                    "Failed to authorize!",
-                    "Connection Failure",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error,
-                    MessageBoxDefaultButton.Button1
-                );
-            Console.Out.WriteLine("authorization exception: " + e.Value);
-            stop_progress();
-            write_connection_status("Authorization Failed!");
-            change_connectionText_text("Not Connected");
-            change_setupConnectionBtn_text("Setup Connection");
+
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.write_connection_status("Authorization Failed!");
+            networkCommunicationManager.FatalConnectionError("Authorization Error!");
+            disconnect();
         }
         #endregion
     }

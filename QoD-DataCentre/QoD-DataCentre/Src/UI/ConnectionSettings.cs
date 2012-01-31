@@ -15,10 +15,7 @@ namespace QoD_DataCentre.Src.UI
         private QoDForm qoDForm;
 
         
-        public ConnectionSettings()
-        {
-            InitializeComponent();
-        }
+
 
         public ConnectionSettings(QoDForm qoDForm)
         {
@@ -36,8 +33,8 @@ namespace QoD_DataCentre.Src.UI
             if (connectionSettingsTab.SelectedIndex == 0)
             {
                 
-                QoDMain.networkCommunicationManager.xmppClient.P_JID = xmppUsers.SelectedItem.ToString();
-                QoDMain.networkCommunicationManager.xmppClient.set_connected();
+                QoDMain.networkCommunicationManager.Connect(xmppUsers.SelectedItem.ToString());
+                
                 change_connectionText_text("Connected to: " + xmppUsers.SelectedItem.ToString());
                 change_setupConnectionBtn_text("Setup Connection");
             }
@@ -91,14 +88,9 @@ namespace QoD_DataCentre.Src.UI
 
         private void xmppConnect_Click(object sender, EventArgs e)
         {
-            QoDMain.networkCommunicationManager.xmppClient.disconnect();
+            QoDMain.networkCommunicationManager.Disconnect();
             connectBtn.Enabled = false;
             xmppUsers.Items.Clear();
-
-            #region Setting XMPP parameters
-            QoDMain.networkCommunicationManager.xmppClient.JID = xmppUsernameTxt.Text;
-            QoDMain.networkCommunicationManager.xmppClient.Password = xmppPwdTxt.Text;
-            #endregion
 
             if (xmpp_async_connect.IsBusy != true)
             {
@@ -112,7 +104,7 @@ namespace QoD_DataCentre.Src.UI
         private void xmpp_async_connect_DoWork(object sender, DoWorkEventArgs e)
         {
             //BackgroundWorker worker = sender as BackgroundWorker;
-            e.Result = QoDMain.networkCommunicationManager.xmppClient.connect(this);
+            e.Result = QoDMain.networkCommunicationManager.xmppUserConnect(xmppUsernameTxt.Text, xmppPwdTxt.Text);
         }
 
 
@@ -159,9 +151,9 @@ namespace QoD_DataCentre.Src.UI
                 xmppUsers.Items.Add(pair.Key);
         }
 
-        public void refresh_contact_list()
+        public void refresh_contact_list(Dictionary<string, int> contact_dictionary)
         {
-            Dictionary<string, int> contact_dictionary = QoDMain.networkCommunicationManager.xmppClient.USER_DICTIONARY;
+            
             connectBtn.Enabled = false;
             xmppUsers.Items.Clear();
             foreach (KeyValuePair<string, int> pair in contact_dictionary)
@@ -178,7 +170,7 @@ namespace QoD_DataCentre.Src.UI
 
         private void ConnectionSettings_VisibleChanged(object sender, EventArgs e)
         {
-            refresh_contact_list();
+            refresh_contact_list(QoDMain.networkCommunicationManager.getXmppUsers());
         }
     }
 }
