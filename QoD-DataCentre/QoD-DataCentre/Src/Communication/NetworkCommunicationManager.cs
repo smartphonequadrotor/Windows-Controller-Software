@@ -30,6 +30,9 @@ namespace QoD_DataCentre.Src.Communication
         internal string client_id;
         internal string phone_id;
 
+        private string connectionStatus = "";
+        public string ConnectionStatus { get{return connectionStatus;} set {connectionStatus = value; write_connection_status(); } }
+
         public NetworkCommunicationManager()
         {
             xmppClient = new XmppClient();
@@ -61,20 +64,23 @@ namespace QoD_DataCentre.Src.Communication
 
         public void Connect(string phoneID){
             phone_id = phoneID;
-
+            
             if (connectionType == ConnectionType.DirectSocket)
             {
 
             }
             else if (connectionType == ConnectionType.XMPP)
             {
-
                 xmppClient.connect(phoneID);
-                main_GUI.Invoke((MethodInvoker)delegate
-                {
-                    main_GUI.disable_text_control();
-                });
             }
+            
+            main_GUI.Invoke((MethodInvoker)delegate
+            {
+                main_GUI.enable_text_control();
+            });
+            
+            isConnected = true;
+            ConnectionStatus = "Connected To: " + phoneID;
         }
 
         public bool xmppUserConnect(string username, string password)
@@ -85,6 +91,7 @@ namespace QoD_DataCentre.Src.Communication
 
         public void Disconnect()
         {
+            
 
             if (connectionType == ConnectionType.DirectSocket)
             {
@@ -93,12 +100,23 @@ namespace QoD_DataCentre.Src.Communication
             else if (connectionType == ConnectionType.XMPP)
             {
                 xmppClient.disconnect();
-                main_GUI.Invoke((MethodInvoker)delegate
-                {
-                    main_GUI.disable_text_control();
-                });
+                
             }
+            
+            disconnectCallback();
 
+        }
+
+        internal void disconnectCallback()
+        {
+            ConnectionStatus = "Not Connected.";
+            isConnected = false;
+            client_id = null;
+            phone_id = null;
+            main_GUI.Invoke((MethodInvoker)delegate
+            {
+                main_GUI.disable_text_control();
+            });
         }
 
         
@@ -153,14 +171,16 @@ namespace QoD_DataCentre.Src.Communication
                 });
         }
 
-        internal void write_connection_status(String status)
+        private void write_connection_status()
         {
             //invoke start progress...
             if (connectionSettings.IsHandleCreated)
                 connectionSettings.Invoke((MethodInvoker)delegate
                 {
-                    connectionSettings.write_connection_status(status);
+                    connectionSettings.write_connection_status();
                 });
+
+            change_connectionText_text(ConnectionStatus);
         }
 
 
@@ -189,5 +209,7 @@ namespace QoD_DataCentre.Src.Communication
         {
             return xmppClient.USER_DICTIONARY;
         }
+
+        
     }
 }

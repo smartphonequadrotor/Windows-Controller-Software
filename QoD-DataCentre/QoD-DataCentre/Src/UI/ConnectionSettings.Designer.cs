@@ -41,8 +41,8 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStripLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.connectionProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.xmpp_async_connect = new System.ComponentModel.BackgroundWorker();
             this.connection_status = new System.Windows.Forms.ToolStripStatusLabel();
+            this.xmpp_async_connect = new System.ComponentModel.BackgroundWorker();
             this.connectionSettingsTab.SuspendLayout();
             this.xmppTabPage.SuspendLayout();
             this.statusStrip.SuspendLayout();
@@ -173,19 +173,20 @@
             this.connectionProgressBar.MarqueeAnimationSpeed = 0;
             this.connectionProgressBar.Maximum = 1;
             this.connectionProgressBar.Name = "connectionProgressBar";
-            this.connectionProgressBar.Size = new System.Drawing.Size(100, 16);
+            this.connectionProgressBar.Size = new System.Drawing.Size(265, 16);
             this.connectionProgressBar.Step = 0;
             this.connectionProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            // 
-            // xmpp_async_connect
-            // 
-            this.xmpp_async_connect.DoWork += new System.ComponentModel.DoWorkEventHandler(this.xmpp_async_connect_DoWork);
-            this.xmpp_async_connect.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.xmpp_async_connect_RunWorkerCompleted);
+            this.connectionProgressBar.Visible = false;
             // 
             // connection_status
             // 
             this.connection_status.Name = "connection_status";
             this.connection_status.Size = new System.Drawing.Size(0, 17);
+            // 
+            // xmpp_async_connect
+            // 
+            this.xmpp_async_connect.DoWork += new System.ComponentModel.DoWorkEventHandler(this.xmpp_async_connect_DoWork);
+            this.xmpp_async_connect.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.xmpp_async_connect_RunWorkerCompleted);
             // 
             // ConnectionSettings
             // 

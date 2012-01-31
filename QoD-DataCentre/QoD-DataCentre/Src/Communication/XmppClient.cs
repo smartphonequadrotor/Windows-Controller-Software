@@ -32,7 +32,7 @@ namespace QoD_DataCentre.Src.Communication
             this.networkCommunicationManager = networkCommunicationManager;
         }
 
-        private bool is_connected = false;
+        
 
         /// <summary>
         /// Dictionary to contain possible contacts. 
@@ -71,13 +71,6 @@ namespace QoD_DataCentre.Src.Communication
         private String Partner_Jabber_ID;
 
         
-
-
-        /// <summary>
-        /// This is the client's connecting Password.
-        /// </summary>
-        private String Jabber_Pass;
-
 
         /// <summary>
         /// Not Implemented
@@ -140,7 +133,7 @@ namespace QoD_DataCentre.Src.Communication
             {
                 Console.WriteLine(e.Message);
                 networkCommunicationManager.stop_progress();
-                networkCommunicationManager.write_connection_status("Connection Failed!");
+                networkCommunicationManager.ConnectionStatus = "Connection Failed!";
                 return false;
             }
 
@@ -183,7 +176,8 @@ namespace QoD_DataCentre.Src.Communication
             Thread.Sleep(500);
 
             networkCommunicationManager.stop_progress();
-            networkCommunicationManager.write_connection_status("Connected to server!");
+            networkCommunicationManager.ConnectionStatus = "Connected to XMPP server.";
+
         }
 
         // Is called, if the precence of a roster contact changed        
@@ -194,7 +188,7 @@ namespace QoD_DataCentre.Src.Communication
             Console.WriteLine();
 
             if(pres.Type.ToString() == "available"){
-                if(!is_connected)
+                if(!networkCommunicationManager.isConnected)
                 xmpp.MessageGrabber.Add(new Jid(pres.From.User + '@' + pres.From.Server),
                                      new BareJidComparer(),
                                      new MessageCB(MessageCallBack),
@@ -208,6 +202,7 @@ namespace QoD_DataCentre.Src.Communication
                 contact_dictionary.Remove(pres.From.User + '@' + pres.From.Server);
                 if (Partner_Jabber_ID != null && Partner_Jabber_ID == pres.From.User + '@' + pres.From.Server){
                     disconnect();
+                    networkCommunicationManager.disconnectCallback();
                 }
             }
             
@@ -219,7 +214,6 @@ namespace QoD_DataCentre.Src.Communication
         public void connect(string partnerID)
         {
             Partner_Jabber_ID = partnerID;
-            is_connected = true;
             foreach (KeyValuePair<string, int> pair in contact_dictionary)
                 if(pair.Key != Partner_Jabber_ID)
                     xmpp.MessageGrabber.Remove(new Jid(pair.Key));          
@@ -248,8 +242,9 @@ namespace QoD_DataCentre.Src.Communication
         {
             Partner_Jabber_ID = null;
             Jabber_ID = null;
-            is_connected = false;
-            //add listener 
+
+            if(contact_dictionary != null)
+                contact_dictionary.Clear();
 
             try
             {
@@ -287,7 +282,7 @@ namespace QoD_DataCentre.Src.Communication
         {
             networkCommunicationManager.FatalConnectionError("XMPP Error!");
             networkCommunicationManager.stop_progress();
-            networkCommunicationManager.write_connection_status("Connection Failed!");
+            networkCommunicationManager.ConnectionStatus = "Connection Failed!";
         }
 
         /// <summary>
@@ -298,7 +293,7 @@ namespace QoD_DataCentre.Src.Communication
         void xmppCon_OnSocketError(object sender, Exception ex)
         {
             networkCommunicationManager.stop_progress();
-            networkCommunicationManager.write_connection_status("Connection Failed!");
+            networkCommunicationManager.ConnectionStatus = "Connection Failed!";
             networkCommunicationManager.FatalConnectionError("Socket Error!");
             disconnect();
         }
@@ -314,7 +309,7 @@ namespace QoD_DataCentre.Src.Communication
         {
 
             networkCommunicationManager.stop_progress();
-            networkCommunicationManager.write_connection_status("Authorization Failed!");
+            networkCommunicationManager.ConnectionStatus = "Authorization Failed!";
             networkCommunicationManager.FatalConnectionError("Authorization Error!");
             disconnect();
         }

@@ -30,8 +30,7 @@ namespace QoD_DataCentre
 
         private void setupConnectionBtn_Click(object sender, EventArgs e)
         {
-            connectionSettings.ShowDialog();
-            
+            connectionSettings.ShowDialog(this);
 
         }
 
