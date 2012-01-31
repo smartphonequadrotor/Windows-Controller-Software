@@ -101,7 +101,7 @@ namespace QoD_DataCentre
                     string message = textControlTerminal.Text.Substring(send);
                     QoDMain.networkCommunicationManager.SendMessage(message);
                     command_list.Add(message);
-                    command_number = command_list.Count-1;
+                    command_number = command_list.Count;
 
                     line_count = textControlTerminal.Text.Length + 2;
                     textControlTerminal.Text += "\r\n" + QoDMain.networkCommunicationManager.client_id + ">";
@@ -132,26 +132,45 @@ namespace QoD_DataCentre
                 }
                 if (e.Control && !e.Alt)
                 {
-                    if (e.KeyCode == Keys.Up && command_number > -1)
+                    e.SuppressKeyPress = true;
+                    if (e.KeyCode == Keys.Up && command_number > 0 && command_list.Count != 0)
                     {
-                        e.SuppressKeyPress = true;
+                        
                         if (textControlTerminal.Text.Length > line_length)
                             textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
 
-                        textControlTerminal.Text += command_list[command_number];
+                        /*if (command_number == command_list.Count && command_number > 0 )
+                            command_number--;
+                        */
+
                         command_number--;
+                        textControlTerminal.Text += command_list[command_number];
+                        
                         carat_pos = textControlTerminal.Text.Length;
                         textControlTerminal.SelectionStart = textControlTerminal.Text.Length;
                     }
-                    if (e.KeyCode == Keys.Down && command_number < command_list.Count-1)
+                    if (e.KeyCode == Keys.Down && command_number < command_list.Count-1 && command_list.Count != 0)
                     {
-                        e.SuppressKeyPress = true;
+                        
                         if (textControlTerminal.Text.Length > line_length)
                             textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
-
+                        /*
+                        if (command_number == -1 && command_number < command_list.Count)
+                            command_number++;
+                        */
                         command_number++;
                         textControlTerminal.Text += command_list[command_number];
                         
+
+                        carat_pos = textControlTerminal.Text.Length;
+                        textControlTerminal.SelectionStart = textControlTerminal.Text.Length;
+                    }
+                    else if (e.KeyCode == Keys.Down)
+                    {
+                        command_number = command_list.Count;
+                        if (textControlTerminal.Text.Length > line_length)
+                            textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
+
                         carat_pos = textControlTerminal.Text.Length;
                         textControlTerminal.SelectionStart = textControlTerminal.Text.Length;
                     }
