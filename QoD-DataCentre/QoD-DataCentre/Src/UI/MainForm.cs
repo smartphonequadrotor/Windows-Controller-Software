@@ -132,10 +132,10 @@ namespace QoD_DataCentre
                 }
                 if (e.Control && !e.Alt)
                 {
-                    e.SuppressKeyPress = true;
+                    
                     if (e.KeyCode == Keys.Up && command_number > 0 && command_list.Count != 0)
                     {
-                        
+                        e.SuppressKeyPress = true;
                         if (textControlTerminal.Text.Length > line_length)
                             textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
 
@@ -151,7 +151,7 @@ namespace QoD_DataCentre
                     }
                     if (e.KeyCode == Keys.Down && command_number < command_list.Count-1 && command_list.Count != 0)
                     {
-                        
+                        e.SuppressKeyPress = true;
                         if (textControlTerminal.Text.Length > line_length)
                             textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
                         /*
@@ -167,6 +167,7 @@ namespace QoD_DataCentre
                     }
                     else if (e.KeyCode == Keys.Down)
                     {
+                        e.SuppressKeyPress = true;
                         command_number = command_list.Count;
                         if (textControlTerminal.Text.Length > line_length)
                             textControlTerminal.Text = textControlTerminal.Text.Remove(line_length);
