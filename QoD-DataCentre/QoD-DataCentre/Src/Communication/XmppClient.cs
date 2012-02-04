@@ -3,103 +3,93 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using agsXMPP;
-using agsXMPP.protocol;
 using agsXMPP.protocol.client;
+using agsXMPP.Collections;
+using agsXMPP.protocol.iq.roster;
 using System.Windows.Forms;
 using QoD_DataCentre.Src.UI;
+using System.Threading;
+
 
 namespace QoD_DataCentre.Src.Communication
 {
     class XmppClient// : INetworkConnection
     {
+
         /// <summary>
         /// Constructor
         /// </summary>
         public XmppClient()
         {
-            this.xmppCon = new XmppClientConnection();
+
         }
+        
 
-        #region Connection Parameters
-        /// <summary>
-        /// This is an instance of the XmppClientConnection that does all the XMPP stuff.
-        /// </summary>
-        private XmppClientConnection xmppCon;
 
-        /// <summary>
-        /// This is the username that will identify this client. The user will be required to enter this.
-        /// </summary>
-        public String Username 
-        { 
-            get { return xmppCon.Username; }
-            set { xmppCon.Username = value; }
-        }
-
-        /// <summary>
-        /// This is password to the user's account.
-        /// </summary>
-        public String Password 
+        public XmppClient(NetworkCommunicationManager networkCommunicationManager)
         {
-            get { return xmppCon.Password; }
-            set { xmppCon.Password = value; }
+            
+            this.networkCommunicationManager = networkCommunicationManager;
         }
 
-        /// <summary>
-        /// This is the name of the Jabber server. Note that this is not the IP address. This name
-        /// is set in the configuration of the XMPP server.
-        /// </summary>
-        public String Server 
-        {
-            get { return xmppCon.Server; }
-            set { xmppCon.Server = value; }
-        }
+        
 
         /// <summary>
-        /// This is the actual IP address of the machine hosting the server. For example, in a demo where the server
-        /// is hosted by the same machine as this application, this will be "localhost".
+        /// Dictionary to contain possible contacts. 
         /// </summary>
-        public String ConnectServer 
-        {
-            get { return xmppCon.ConnectServer; }
-            set { xmppCon.ConnectServer = value; }
-        }
+        private Dictionary<string, int> contact_dictionary;
 
         /// <summary>
-        /// This is a string that will correctly identify the machine running this application to the user.
-        /// Since a particular user account can be logged into from multiple machines, this string will be
-        /// used to identify the machine currently being used.
+        /// current contact number;
         /// </summary>
-        public String Resource
-        {
-            get { return xmppCon.Resource; }
-            set { xmppCon.Resource = value; }
-        }
+        private int contact_num;
 
         /// <summary>
         /// This is the username of the QPhone's account on the Jabber server.
         /// </summary>
-        public String QPhoneUsername
+        public Dictionary<string, int> USER_DICTIONARY
         {
-            get;
-            set;
+            get{return contact_dictionary;}
+            
         }
 
         /// <summary>
-        /// This is the resource name of the QPhone.
+        /// XmppCLientConnection Instance. 
         /// </summary>
-        public String QPhoneResource
+        private XmppClientConnection xmpp;
+
+        #region Connection Parameters
+        
+        /// <summary>
+        /// This is the client's connecting JID.
+        /// </summary>
+        private String Jabber_ID;
+
+        /// <summary>
+        /// This is the partners's connecting JID.
+        /// </summary>
+        private String Partner_Jabber_ID;
+
+        
+
+        /// <summary>
+        /// Not Implemented
+        /// </summary>
+        public String Server 
         {
-            get;
-            set;
+            get { return "Not Implemented"; }
         }
+
+       
+
         #endregion
 
         #region UI related variables
 
         /// <summary>
-        /// This reference to the connectionSettings form is required to update its status strip label.
+        /// This reference to the connectionSettings form is required to update it.
         /// </summary>
-        private ConnectionSettings connectionSettingsForm;
+        private NetworkCommunicationManager networkCommunicationManager;
         
         #endregion
 
@@ -111,29 +101,138 @@ namespace QoD_DataCentre.Src.Communication
         /// </summary>
         /// <param name="senderForm">The connection settings form whose status strip label needs to be updated</param>
         /// <returns>True if the connection was successful and false otherwise.</returns>
-        public bool connect(ConnectionSettings connectionSettingsForm)
+        public bool login(string username, string password)
         {
-            this.connectionSettingsForm = connectionSettingsForm;
+            Jabber_ID = username;
+            
+            contact_num = 0;
+            contact_dictionary = new Dictionary<string, int>();
 
-            xmppCon.AutoResolveConnectServer = false;
-            xmppCon.AutoAgents = false;
-            xmppCon.AutoPresence = true;
-            xmppCon.AutoRoster = true;
-            xmppCon.AutoResolveConnectServer = true;
+            networkCommunicationManager.start_progress();
 
+             /*
+             * Creating the Jid and the XmppClientConnection objects
+             */
+            Jid jidSender = new Jid(Jabber_ID);
+            xmpp = new XmppClientConnection(jidSender.Server);
+
+            /*
+             * Open the connection
+             * and register the OnLogin event handler
+             */
             try
             {
-                xmppCon.OnMessage += new agsXMPP.protocol.client.MessageHandler(xmppCon_OnMessage);
-                xmppCon.OnXmppConnectionStateChanged += new XmppConnectionStateHandler(xmppCon_OnXmppConnectionStateChanged);
-                xmppCon.OnError += new ErrorHandler(xmppCon_OnError);
-                xmppCon.Open();
+                xmpp.OnError += new ErrorHandler(xmppCon_OnError);
+                xmpp.OnSocketError += new ErrorHandler(xmppCon_OnSocketError);
+                xmpp.OnLogin += new ObjectHandler(xmpp_OnLogin);
+                xmpp.OnAuthError += new XmppElementHandler(xmpp_OnAuthError);
+                xmpp.Open(jidSender.User, password);
+    
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
+                networkCommunicationManager.stop_progress();
+                networkCommunicationManager.ConnectionStatus = "Connection Failed!";
                 return false;
             }
+
             return true;
         }
+
+        
+
+        
+
+        
+
+        public void send_precence()
+        {
+            Console.WriteLine("Sending Precence");
+            Presence p = new Presence(ShowType.chat, "Online");
+            p.Type = PresenceType.available;
+            xmpp.Send(p);
+            Console.WriteLine();
+        }
+
+        void xmpp_OnLogin(object sender)
+        {
+            
+            Console.WriteLine("Login Status:");
+            Console.WriteLine("xmpp Connection State {0}", xmpp.XmppConnectionState);
+            Console.WriteLine("xmpp Authenticated? {0}", xmpp.Authenticated);
+            Console.WriteLine();
+            send_precence();
+
+            /*
+            * 
+            * get the roster (see who's online)
+            */
+            xmpp.OnPresence += new PresenceHandler(xmpp_OnPresence);
+            
+
+            //wait until we received the list of available contacts            
+            Console.WriteLine();
+            Thread.Sleep(500);
+
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.ConnectionStatus = "Connected to XMPP server.";
+
+        }
+
+        // Is called, if the precence of a roster contact changed        
+        void xmpp_OnPresence(object sender, Presence pres)
+        {
+            Console.WriteLine("Available Contacts: ");
+            Console.WriteLine(pres.From.User + "@" + pres.From.Server + "  " + pres.Type);
+            Console.WriteLine();
+
+            if(pres.Type.ToString() == "available"){
+                if(!networkCommunicationManager.isConnected)
+                xmpp.MessageGrabber.Add(new Jid(pres.From.User + '@' + pres.From.Server),
+                                     new BareJidComparer(),
+                                     new MessageCB(MessageCallBack),
+                                     null);
+                if(!contact_dictionary.ContainsKey(pres.From.User + '@' + pres.From.Server))
+                    contact_dictionary.Add(pres.From.User + '@' + pres.From.Server, ++contact_num);
+            }
+            else if (pres.Type.ToString() == "unavailable")
+            {
+                xmpp.MessageGrabber.Remove(new Jid(pres.From.User + '@' + pres.From.Server));
+                contact_dictionary.Remove(pres.From.User + '@' + pres.From.Server);
+                if (Partner_Jabber_ID != null && Partner_Jabber_ID == pres.From.User + '@' + pres.From.Server){
+                    disconnect();
+                    networkCommunicationManager.disconnectCallback();
+                }
+            }
+            
+            
+            networkCommunicationManager.write_contact_list();
+            
+        }
+
+        public void connect(string partnerID)
+        {
+            Partner_Jabber_ID = partnerID;
+            foreach (KeyValuePair<string, int> pair in contact_dictionary)
+                if(pair.Key != Partner_Jabber_ID)
+                    xmpp.MessageGrabber.Remove(new Jid(pair.Key));          
+        }
+
+        
+
+        //Handles incoming messages
+        void MessageCallBack(object sender, agsXMPP.protocol.client.Message msg, object data)
+        {
+            Console.Out.WriteLine(msg.From.User + '@' + msg.From.Server+">"+msg.Body);
+            if (msg.Body != null && msg.From.User+'@'+msg.From.Server == Partner_Jabber_ID)
+            {
+                networkCommunicationManager.RecieveMessage(msg.Body);
+            }
+        }
+
+        
+        
 
         /// <summary>
         /// This method disconnects this client from the Jabber server.
@@ -141,9 +240,15 @@ namespace QoD_DataCentre.Src.Communication
         /// <returns>True if the connection was closed successfully and false otherwise.</returns>
         public bool disconnect()
         {
+            Partner_Jabber_ID = null;
+            Jabber_ID = null;
+
+            if(contact_dictionary != null)
+                contact_dictionary.Clear();
+
             try
             {
-                xmppCon.Close();
+                xmpp.Close();
             }
             catch (Exception)
             {
@@ -159,45 +264,15 @@ namespace QoD_DataCentre.Src.Communication
         /// <returns>True if the message was sent successfully and false otherwise</returns>
         public bool writeMessage(string message)
         {
-            try
-            {
-                xmppCon.Send(new agsXMPP.protocol.client.Message(new Jid(QPhoneUsername, Server, QPhoneResource), message));
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            xmpp.Send(new agsXMPP.protocol.client.Message(new Jid(Partner_Jabber_ID), MessageType.chat, message));
             return true;
         }
-
-        public event EventHandler onMessageReceived;
 
         #endregion
 
         #region Helper methods
 
-        private void xmppCon_OnMessage(object sender, agsXMPP.protocol.client.Message msg)
-        {
-            if (onMessageReceived != null)
-            {
-                onMessageReceived(this, new QPhoneMessageEventArgs(msg.Body));
-            }
-        }
-
-        /// <summary>
-        /// Temporary method for debugging.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="state"></param>
-        void xmppCon_OnXmppConnectionStateChanged(object sender, XmppConnectionState state)
-        {
-            Console.WriteLine("Connection state changed to: " + state.ToString());
-            if (connectionSettingsForm != null)
-            {
-                connectionSettingsForm.BeginInvoke(connectionSettingsForm.updateStatusStripLabelDelegate, new Object[] { state.ToString() });
-            }
-        }
-
+        
         /// <summary>
         /// This reports errors to the user through a message box.
         /// </summary>
@@ -205,16 +280,39 @@ namespace QoD_DataCentre.Src.Communication
         /// <param name="ex"></param>
         void xmppCon_OnError(object sender, Exception ex)
         {
-            System.Windows.Forms.MessageBox.Show
-            (
-                ex.Message,
-                "XMPP Communication error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error,
-                MessageBoxDefaultButton.Button1
-            );
+            networkCommunicationManager.FatalConnectionError("XMPP Error!");
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.ConnectionStatus = "Connection Failed!";
         }
 
+        /// <summary>
+        /// This reports errors to the user through a message box.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ex"></param>
+        void xmppCon_OnSocketError(object sender, Exception ex)
+        {
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.ConnectionStatus = "Connection Failed!";
+            networkCommunicationManager.FatalConnectionError("Socket Error!");
+            disconnect();
+        }
+
+        
+
+        /// <summary>
+        /// This reports errors to the user through a message box.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ex"></param>
+        void xmpp_OnAuthError(object sender, agsXMPP.Xml.Dom.Element e)
+        {
+
+            networkCommunicationManager.stop_progress();
+            networkCommunicationManager.ConnectionStatus = "Authorization Failed!";
+            networkCommunicationManager.FatalConnectionError("Authorization Error!");
+            disconnect();
+        }
         #endregion
     }
 }

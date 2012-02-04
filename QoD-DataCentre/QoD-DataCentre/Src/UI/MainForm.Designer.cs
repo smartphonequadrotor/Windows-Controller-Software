@@ -32,22 +32,22 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.welcome1 = new QoD_DataCentre.Modules.Welcome();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.location1 = new QoD_DataCentre.Controls.Location();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.statistics1 = new QoD_DataCentre.Controls.Statistics();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
+            this.textControlTerminal = new System.Windows.Forms.TextBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.plugins1 = new QoD_DataCentre.Controls.Plugins();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.setupConnectionBtn = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.connectionText = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.welcome1 = new QoD_DataCentre.Modules.Welcome();
+            this.location1 = new QoD_DataCentre.Controls.Location();
+            this.statistics1 = new QoD_DataCentre.Controls.Statistics();
+            this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
+            this.plugins1 = new QoD_DataCentre.Controls.Plugins();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -60,16 +60,21 @@
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(252, 9);
+            this.label1.Location = new System.Drawing.Point(218, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(353, 42);
+            this.label1.Size = new System.Drawing.Size(419, 42);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Quadrotor of Doom";
+            this.label1.Text = "Smartphone Quadrotor";
             // 
             // tabControl1
             // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
@@ -93,14 +98,6 @@
             this.tabPage1.Text = "Welcome";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // welcome1
-            // 
-            this.welcome1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.welcome1.Location = new System.Drawing.Point(6, 6);
-            this.welcome1.Name = "welcome1";
-            this.welcome1.Size = new System.Drawing.Size(762, 348);
-            this.welcome1.TabIndex = 0;
-            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.location1);
@@ -111,14 +108,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Location";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // location1
-            // 
-            this.location1.BackColor = System.Drawing.Color.Orange;
-            this.location1.Location = new System.Drawing.Point(6, 6);
-            this.location1.Name = "location1";
-            this.location1.Size = new System.Drawing.Size(762, 348);
-            this.location1.TabIndex = 0;
             // 
             // tabPage3
             // 
@@ -131,14 +120,6 @@
             this.tabPage3.Text = "Statistics";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // statistics1
-            // 
-            this.statistics1.BackColor = System.Drawing.Color.Pink;
-            this.statistics1.Location = new System.Drawing.Point(6, 6);
-            this.statistics1.Name = "statistics1";
-            this.statistics1.Size = new System.Drawing.Size(762, 348);
-            this.statistics1.TabIndex = 0;
-            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.liveFeed1);
@@ -149,17 +130,9 @@
             this.tabPage4.Text = "Live Feed";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // liveFeed1
-            // 
-            this.liveFeed1.BackColor = System.Drawing.Color.Green;
-            this.liveFeed1.Location = new System.Drawing.Point(3, 3);
-            this.liveFeed1.Name = "liveFeed1";
-            this.liveFeed1.Size = new System.Drawing.Size(768, 354);
-            this.liveFeed1.TabIndex = 0;
-            // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.textControl1);
+            this.tabPage5.Controls.Add(this.textControlTerminal);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(774, 360);
@@ -167,13 +140,20 @@
             this.tabPage5.Text = "Text Control";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // textControl1
+            // textControlTerminal
             // 
-            this.textControl1.BackColor = System.Drawing.Color.Goldenrod;
-            this.textControl1.Location = new System.Drawing.Point(3, 3);
-            this.textControl1.Name = "textControl1";
-            this.textControl1.Size = new System.Drawing.Size(768, 354);
-            this.textControl1.TabIndex = 0;
+            this.textControlTerminal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textControlTerminal.Enabled = false;
+            this.textControlTerminal.Font = new System.Drawing.Font("Monospac821 BT", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textControlTerminal.Location = new System.Drawing.Point(3, 3);
+            this.textControlTerminal.Multiline = true;
+            this.textControlTerminal.Name = "textControlTerminal";
+            this.textControlTerminal.Size = new System.Drawing.Size(768, 354);
+            this.textControlTerminal.TabIndex = 0;
+            this.textControlTerminal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textControlTerminal_KeyDown);
+            this.textControlTerminal.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textControlTerminal_KeyPress);
             // 
             // tabPage6
             // 
@@ -184,14 +164,6 @@
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Plugins";
             this.tabPage6.UseVisualStyleBackColor = true;
-            // 
-            // plugins1
-            // 
-            this.plugins1.BackColor = System.Drawing.Color.Blue;
-            this.plugins1.Location = new System.Drawing.Point(3, 3);
-            this.plugins1.Name = "plugins1";
-            this.plugins1.Size = new System.Drawing.Size(768, 354);
-            this.plugins1.TabIndex = 0;
             // 
             // pictureBox1
             // 
@@ -214,6 +186,7 @@
             // 
             // setupConnectionBtn
             // 
+            this.setupConnectionBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.setupConnectionBtn.Location = new System.Drawing.Point(643, 56);
             this.setupConnectionBtn.Name = "setupConnectionBtn";
             this.setupConnectionBtn.Size = new System.Drawing.Size(147, 23);
@@ -222,14 +195,17 @@
             this.setupConnectionBtn.UseVisualStyleBackColor = true;
             this.setupConnectionBtn.Click += new System.EventHandler(this.setupConnectionBtn_Click);
             // 
-            // label3
+            // connectionText
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(523, 61);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(114, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Connected to {device}";
+            this.connectionText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.connectionText.Location = new System.Drawing.Point(203, 61);
+            this.connectionText.Name = "connectionText";
+            this.connectionText.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.connectionText.Size = new System.Drawing.Size(434, 13);
+            this.connectionText.TabIndex = 6;
+            this.connectionText.Text = "Not Connected.";
+            this.connectionText.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // label4
             // 
@@ -240,18 +216,63 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "00:00";
             // 
+            // welcome1
+            // 
+            this.welcome1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.welcome1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.welcome1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.welcome1.Location = new System.Drawing.Point(6, 6);
+            this.welcome1.Name = "welcome1";
+            this.welcome1.Size = new System.Drawing.Size(762, 348);
+            this.welcome1.TabIndex = 0;
+            // 
+            // location1
+            // 
+            this.location1.BackColor = System.Drawing.Color.Orange;
+            this.location1.Location = new System.Drawing.Point(6, 6);
+            this.location1.Name = "location1";
+            this.location1.Size = new System.Drawing.Size(762, 348);
+            this.location1.TabIndex = 0;
+            // 
+            // statistics1
+            // 
+            this.statistics1.BackColor = System.Drawing.Color.Pink;
+            this.statistics1.Location = new System.Drawing.Point(6, 6);
+            this.statistics1.Name = "statistics1";
+            this.statistics1.Size = new System.Drawing.Size(762, 348);
+            this.statistics1.TabIndex = 0;
+            // 
+            // liveFeed1
+            // 
+            this.liveFeed1.BackColor = System.Drawing.Color.Green;
+            this.liveFeed1.Location = new System.Drawing.Point(3, 3);
+            this.liveFeed1.Name = "liveFeed1";
+            this.liveFeed1.Size = new System.Drawing.Size(768, 354);
+            this.liveFeed1.TabIndex = 0;
+            // 
+            // plugins1
+            // 
+            this.plugins1.BackColor = System.Drawing.Color.Blue;
+            this.plugins1.Location = new System.Drawing.Point(3, 3);
+            this.plugins1.Name = "plugins1";
+            this.plugins1.Size = new System.Drawing.Size(768, 354);
+            this.plugins1.TabIndex = 0;
+            // 
             // QoDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(806, 478);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.connectionText);
             this.Controls.Add(this.setupConnectionBtn);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label1);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "QoDForm";
             this.Text = "Quadrotor of Doom";
@@ -261,6 +282,7 @@
             this.tabPage3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.tabPage6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
@@ -281,14 +303,14 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.Button setupConnectionBtn;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label connectionText;
         private System.Windows.Forms.Label label4;
         private Modules.Welcome welcome1;
         private Controls.Location location1;
         private Controls.Statistics statistics1;
         private Controls.LiveFeed liveFeed1;
-        private Controls.TextControl textControl1;
         private Controls.Plugins plugins1;
+        private System.Windows.Forms.TextBox textControlTerminal;
     }
 }
 
