@@ -54,6 +54,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,16 +101,16 @@
     <Compile Include="Controls\TextControl.Designer.cs">
       <DependentUpon>TextControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\UI\ConnectionSettings.cs">
+    <Compile Include="Controls\ConnectionSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\UI\ConnectionSettings.Designer.cs">
+    <Compile Include="Controls\ConnectionSettings.Designer.cs">
       <DependentUpon>ConnectionSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\UI\MainForm.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\UI\MainForm.Designer.cs">
+    <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\Welcome.cs">
@@ -120,11 +121,11 @@
     </Compile>
     <Compile Include="QoDMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Src\Communication\DirectSocketServer.cs" />
-    <Compile Include="Src\Communication\NetworkCommunicationManager.cs" />
-    <Compile Include="Src\Communication\INetworkConnection.cs" />
-    <Compile Include="Src\Communication\QPhoneMessageEventArgs.cs" />
-    <Compile Include="Src\Communication\XmppClient.cs" />
+    <Compile Include="Domain\Communication\DirectSocketServer.cs" />
+    <Compile Include="Domain\Communication\NetworkCommunicationManager.cs" />
+    <Compile Include="Domain\Communication\INetworkConnection.cs" />
+    <Compile Include="Domain\Communication\QPhoneMessageEventArgs.cs" />
+    <Compile Include="Domain\Communication\XmppClient.cs" />
     <EmbeddedResource Include="Controls\Coordinates.resx">
       <DependentUpon>Coordinates.cs</DependentUpon>
     </EmbeddedResource>
@@ -146,10 +147,10 @@
     <EmbeddedResource Include="Controls\Welcome.resx">
       <DependentUpon>Welcome.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\UI\ConnectionSettings.resx">
+    <EmbeddedResource Include="Controls\ConnectionSettings.resx">
       <DependentUpon>ConnectionSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\UI\MainForm.resx">
+    <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -194,9 +195,8 @@
     <None Include="Resources\80percent.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Domain\Trip\" />
     <Folder Include="lib\" />
-    <Folder Include="Src\BusinessLogic\" />
-    <Folder Include="Src\Input\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">

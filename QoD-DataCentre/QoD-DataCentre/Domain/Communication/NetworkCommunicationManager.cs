@@ -22,7 +22,7 @@ namespace QoD_DataCentre.Src.Communication
         public NetworkCommunicationManager()
         {
             xmppClient = new XmppClient();
-            directSocketServer = new DirectSocketServer();
+            directSocketServer = new DirectSocketServer(null, null);
         }
 
         public ConnectionType connectionType { get; set; }

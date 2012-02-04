@@ -126,6 +126,10 @@ namespace QoD_DataCentre.Src.Communication
                 xmppCon.OnMessage += new agsXMPP.protocol.client.MessageHandler(xmppCon_OnMessage);
                 xmppCon.OnXmppConnectionStateChanged += new XmppConnectionStateHandler(xmppCon_OnXmppConnectionStateChanged);
                 xmppCon.OnError += new ErrorHandler(xmppCon_OnError);
+                xmppCon.OnAuthError += delegate(Object sender, agsXMPP.Xml.Dom.Element e)
+                {
+                    MessageBox.Show("AUTH ERROR: " + e.ToString());
+                };
                 xmppCon.Open();
             }
             catch (Exception)
