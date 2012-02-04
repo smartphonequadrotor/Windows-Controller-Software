@@ -48,19 +48,7 @@ namespace NetworkCommunicationTests
         //{
         //}
 
-        //Use TestInitialize to run code before running each test
-        [TestInitialize()]
-        public void MyTestInitialize()
-        {
-            xmppClient = new XmppClient();
-            xmppClient.ConnectServer = "127.0.0.1";
-            xmppClient.Username = "ControllerTest";
-            xmppClient.Password = "MegatronDump";
-            xmppClient.Resource = "XmppClientTest";
-            xmppClient.Server = "smartphonequadrotor";
-            xmppClient.QPhoneUsername = "QPhoneTest";
-            xmppClient.QPhoneResource = "";
-        }
+
         
         //Use TestCleanup to run code after each test has run
         [TestCleanup()]
@@ -72,29 +60,8 @@ namespace NetworkCommunicationTests
         #endregion
 
 
-        /// <summary>
-        ///A test for connect
-        ///</summary>
-        [TestMethod()]
-        public void connectTest()
-        {
-            bool expected = true;
-            bool actual;
-            actual = xmppClient.connect(null);
-            Assert.AreEqual(expected, actual);
-        }
 
-        /// <summary>
-        ///A test for writeMessage
-        ///</summary>
-        [TestMethod()]
-        public void writeMessageTest()
-        {
-            Assert.IsTrue(xmppClient.connect(null));
-            string message = "hello there!";
-            bool expected = true;
-            bool actual = xmppClient.writeMessage(message);
-            Assert.AreEqual(expected, actual);
-        }
+
+        
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using QoD_DataCentre.Src.Communication;
+using QoD_DataCentre.Src.UI;
 
 namespace QoD_DataCentre
 {
@@ -11,7 +12,7 @@ namespace QoD_DataCentre
         /// <summary>
         /// A static instance of the network communication manager.
         /// </summary>
-        public static NetworkCommunicationManager networkCommunicationManager = new NetworkCommunicationManager();
+        public static NetworkCommunicationManager networkCommunicationManager;
 
         /// <summary>
         /// The main entry point for the application.
@@ -19,9 +20,14 @@ namespace QoD_DataCentre
         [STAThread]
         static void Main()
         {
+            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new QoDForm());
+            
+            QoDForm mainForm = new QoDForm();
+            networkCommunicationManager = new NetworkCommunicationManager(mainForm, mainForm.ConnectionSettings);
+            Application.Run(mainForm);
+            
         }
     }
 }

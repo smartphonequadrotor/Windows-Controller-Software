@@ -31,12 +31,14 @@ namespace QoD_DataCentre.Src.Communication
         public String httpBody;
 
         private static int MAX_POST_SIZE = 10 * 1024 * 1024; // 10MB
+
+        private NetworkCommunicationManager networkCommunicationManager;
         #endregion
 
-        public DirectSocketServer(TcpClient s, HttpServer srv)
+        public DirectSocketServer(TcpClient c, HttpServer h)
         {
-            this.socket = s;
-            this.httpServer = srv;
+            this.socket = c;
+            this.httpServer = h;
         }
 
         private string streamReadLine(Stream inputStream)
