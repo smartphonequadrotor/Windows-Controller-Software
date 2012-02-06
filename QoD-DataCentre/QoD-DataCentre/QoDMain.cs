@@ -26,8 +26,10 @@ namespace QoD_DataCentre
             
             QoDForm mainForm = new QoDForm();
             networkCommunicationManager = new NetworkCommunicationManager(mainForm, mainForm.ConnectionSettings);
+            QoDMain.networkCommunicationManager.msgRecieved += new Src.Communication.NetworkCommunicationManager.msgRecieve(mainForm.networkCommunicationManager_msgRecieved);
             Application.Run(mainForm);
             
         }
+
     }
 }

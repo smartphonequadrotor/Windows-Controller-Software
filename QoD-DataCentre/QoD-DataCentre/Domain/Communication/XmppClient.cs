@@ -212,7 +212,16 @@ namespace QoD_DataCentre.Src.Communication
 
         public void connect(string partnerID)
         {
+            if (Partner_Jabber_ID != null && Partner_Jabber_ID != partnerID)
+            {
+                xmpp.MessageGrabber.Add(new Jid(partnerID),
+                                     new BareJidComparer(),
+                                     new MessageCB(MessageCallBack),
+                                     null);
+            }
+
             Partner_Jabber_ID = partnerID;
+            
             foreach (KeyValuePair<string, int> pair in contact_dictionary)
                 if(pair.Key != Partner_Jabber_ID)
                     xmpp.MessageGrabber.Remove(new Jid(pair.Key));          

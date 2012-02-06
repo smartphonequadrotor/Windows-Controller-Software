@@ -11,18 +11,34 @@ namespace QoD_DataCentre.Src.Communication
     /// <summary>
     /// The two types of connections that can be used.
     /// </summary>
-    enum ConnectionType { XMPP, DirectSocket };
+    public enum ConnectionType { XMPP, DirectSocket };
 
     /// <summary>
     /// This class is used by the UI and the business logic for sending messages to and receiving messages from
     /// the QPhone.
     /// </summary>
-    class NetworkCommunicationManager
+    public class NetworkCommunicationManager
     {
+        public class MsgRecievedEventArgs : EventArgs
+        {
+            private string message;
+            public string Message { get { return message; } set { message = value;} }
+            public MsgRecievedEventArgs(string message)
+            {
+                this.Message = message;
+            }
+        }  
+
         private QoDForm main_GUI;
         private ConnectionSettings connectionSettings;
         private XmppClient xmppClient;
         private DirectSocketServer directSocketServer;
+
+        //msg recieved
+        public delegate void msgRecieve(object sender, MsgRecievedEventArgs data);
+
+        //called when message is recieved...
+        public event msgRecieve msgRecieved;
 
         //TODO: Create listeners or something to be called upon sucessful disconnect & connect (whenever status is changed)
 
@@ -65,6 +81,7 @@ namespace QoD_DataCentre.Src.Communication
             }
             else if (connectionType == ConnectionType.XMPP)
             {
+                
                 xmppClient.connect(phoneID);
             }
             
@@ -126,8 +143,10 @@ namespace QoD_DataCentre.Src.Communication
 
         public void RecieveMessage(string message)
         {
-            write_msg_to_text_control(message);
-            
+            main_GUI.Invoke((MethodInvoker)delegate
+            {
+                msgRecieved(this, new MsgRecievedEventArgs(message));
+            });
         }
 
         internal void write_msg_to_text_control(String text)
@@ -135,7 +154,7 @@ namespace QoD_DataCentre.Src.Communication
             //invoke start progress...
             main_GUI.Invoke((MethodInvoker)delegate
             {
-                main_GUI.insert_write_to_text_control(phone_id + ">" + text + "\r\n");
+                main_GUI.insert_write_to_text_control(text);
             });
         }
 

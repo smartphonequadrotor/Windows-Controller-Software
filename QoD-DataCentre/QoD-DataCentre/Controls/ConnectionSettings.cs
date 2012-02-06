@@ -107,18 +107,15 @@ namespace QoD_DataCentre.Src.UI
         // This event handler deals with the results of the background operation.
         private void xmpp_async_connect_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled == true)
+            if ((bool)e.Result)
             {
-
-            }
-            else if (e.Error != null)
-            {
-
+                xmppConnect.Text = "Change Connection";
             }
             else
             {
-
+                xmppConnect.Text = "Connect To Server";
             }
+
         }
 
         public void start_progress()
