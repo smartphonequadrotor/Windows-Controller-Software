@@ -32,6 +32,8 @@ namespace QoD_DataCentre
             InitializeComponent();
         }
 
+
+
         //recieved message callback. Currently just adds data... 
         public void networkCommunicationManager_msgRecieved(object sender,  NetworkCommunicationManager.MsgRecievedEventArgs data)
         {
@@ -41,8 +43,9 @@ namespace QoD_DataCentre
             {
                 JsonManager commandConvert = new JsonManager();
                 JsonObjects.Envelope response = commandConvert.DeserializeEnvelope(recievedText);
-                if(response.Responses != null)
-                    recievedText = response.Responses.ToString();
+                
+                if(response != null)
+                    recievedText = response.ToString();
 
             }
             catch (Exception e)

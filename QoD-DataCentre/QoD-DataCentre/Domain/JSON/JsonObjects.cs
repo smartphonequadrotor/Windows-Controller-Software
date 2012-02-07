@@ -63,12 +63,22 @@ namespace QoD_DataCentre.Domain.JSON
                 this.Duration = duration;
             }
 
+            override
+            public string ToString()
+            {
+                return "X: " + XVector + ", Y: " + YVector + ", Z: " + ZVector + ", Speed: " + Speed + ", Duration: " + Duration;
+
+            }
+
+
             public string ToJSON()
             {
                 JsonSerializerSettings JsonSettings = new JsonSerializerSettings();
                 JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                 return JsonConvert.SerializeObject(this, Formatting.Indented, JsonSettings);
             }
+
+            
 
         }
 
@@ -87,6 +97,17 @@ namespace QoD_DataCentre.Domain.JSON
             {
 
             }
+
+            override
+            public string ToString(){
+                string returnString = "Commands:\r\n";
+                foreach (MovementCommand m in move)
+                    returnString += "\r\nMove:\r\n\t" + m.ToString();
+
+
+                return returnString;
+            }
+
         }
 
         public class Request
@@ -115,6 +136,12 @@ namespace QoD_DataCentre.Domain.JSON
             {
                 this.resource = resource;
                 this.period = period;
+            }
+
+            public override string ToString()
+            {
+                return "Resource: " + Resource + ", Period: " + Period;
+
             }
         }
 
@@ -201,7 +228,9 @@ namespace QoD_DataCentre.Domain.JSON
             override
             public string ToString()
             {
-                string response = "Timestamp: "+this.Timestamp+"\r\n";
+                DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                string time = origin.AddSeconds(this.Timestamp).ToString("{0:d/M/yyyy HH:mm:ss}");
+                string response = "Timestamp: "+time+"\r\n";
                 response += "X: " + this.data.X + ", Y: " + this.data.Y + ", Z: " + this.data.Z;
 
                 return response;
@@ -234,15 +263,15 @@ namespace QoD_DataCentre.Domain.JSON
             override
             public string ToString()
             {
-                string responses = "";
+                string responses = "Responses:";
 
                 if (Gyro != null && Gyro.Length > 0)
                 {
-                    responses += "Gyroscope:\r\n\r\n";
+                    responses += "\r\n\r\nGyroscope:\r\n";
 
                     foreach (QoD_DataCentre.Domain.JSON.JsonObjects.TriAxisResponse gyro in Gyro)
                     {
-                        responses += gyro.ToString() + "\r\n\r\n";
+                        responses += "\r\n\t" + gyro.ToString().Replace("\r\n","\r\n\t");
                     }
 
 
@@ -250,11 +279,11 @@ namespace QoD_DataCentre.Domain.JSON
 
                 if (Accel != null && Accel.Length > 0)
                 {
-                    responses += "Accelarometer:\r\n\r\n";
+                    responses += "\r\n\r\nAccelarometer:\r\n";
 
                     foreach (QoD_DataCentre.Domain.JSON.JsonObjects.TriAxisResponse accel in Accel)
                     {
-                        responses += accel.ToString() + "\r\n\r\n";
+                        responses += "\r\n\t" + accel.ToString().Replace("\r\n", "\r\n\t");
                     }
 
 
@@ -308,10 +337,28 @@ namespace QoD_DataCentre.Domain.JSON
                 this.responses = responses;
             }
 
+            override
+            public string ToString()
+            {
+                string returnString = "\r\nEnvelope: \r\n";
+                if(commands != null)
+                    returnString += "\r\n" + commands.ToString().Replace("\r\n","\r\n\t");
+                if (requests != null)
+                {
+                    returnString += "\r\n\r\nRequests\r\n";
+                    foreach (Request req in requests)
+                        returnString += "\t" + req.ToString() + "\r\n";
+                }
+                if(responses != null)
+                    returnString += "\r\n" + responses.ToString().Replace("\r\n", "\r\n\t");
+
+                return returnString;
+            }
+
             public string ToJSON()
             {
                 JsonSerializerSettings JsonSettings = new JsonSerializerSettings();
-                JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+                //JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                 return JsonConvert.SerializeObject(this, Formatting.Indented, JsonSettings); 
             }
 
