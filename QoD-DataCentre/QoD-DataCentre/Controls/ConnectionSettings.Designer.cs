@@ -197,7 +197,7 @@
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.connectBtn);
             this.Controls.Add(this.connectionSettingsTab);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ConnectionSettings";
             this.Text = "ConnectionSettings";
             this.VisibleChanged += new System.EventHandler(this.ConnectionSettings_VisibleChanged);
