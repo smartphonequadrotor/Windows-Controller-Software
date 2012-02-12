@@ -28,32 +28,66 @@ namespace QoD_DataCentre
         public QoDForm()
         {
             connectionSettings = new ConnectionSettings(this);
-            
+            QoDMain.networkCommunicationManager.msgRecieved += new Src.Communication.NetworkCommunicationManager.msgRecieveEvent(this.networkCommunicationManager_msgRecieved);
+            QoDMain.networkCommunicationManager.onConnect += new NetworkCommunicationManager.connectEvent(networkCommunicationManager_onConnect);
+            QoDMain.networkCommunicationManager.onDisconnect += new NetworkCommunicationManager.disconnectEvent(networkCommunicationManager_onDisconnect);
+            QoDMain.networkCommunicationManager.onStatusChanged += new NetworkCommunicationManager.statusEvent(networkCommunicationManager_onStatusChanged);
             InitializeComponent();
+        }
+
+        //when the status changes... we may want to update the status.
+        void networkCommunicationManager_onStatusChanged(object sender, NetworkCommunicationManager.StatusEventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.textControlTerminal.Enabled = false;
+                this.connectionText.Text = data.Status;
+            });
+        }
+
+        //on disconnect... do things here
+        void networkCommunicationManager_onDisconnect(object sender, EventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.textControlTerminal.Enabled = false;
+            });
+        }
+
+        //on sucessful connect... do stuff here.
+        void networkCommunicationManager_onConnect(object sender, EventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.textControlTerminal.Enabled = true;
+            });
         }
 
 
 
-        //recieved message callback. Currently just adds data... 
+        //recieved message callback. Currently just adds data to command window... 
         public void networkCommunicationManager_msgRecieved(object sender,  NetworkCommunicationManager.MsgRecievedEventArgs data)
         {
-            string recievedText = data.Message;
-
-            try
+            this.Invoke((MethodInvoker)delegate
             {
-                JsonManager commandConvert = new JsonManager();
-                JsonObjects.Envelope response = commandConvert.DeserializeEnvelope(recievedText);
+                string recievedText = data.Message;
+
+                try
+                {
+                    JsonManager commandConvert = new JsonManager();
+                    JsonObjects.Envelope response = commandConvert.DeserializeEnvelope(recievedText);
                 
-                if(response != null)
-                    recievedText = response.ToString();
+                    if(response != null)
+                        recievedText = response.ToString();
 
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
 
-            insert_write_to_text_control(recievedText);
+                insert_write_to_text_control(recievedText);
+            });
         }
 
         private void setupConnectionBtn_Click(object sender, EventArgs e)
