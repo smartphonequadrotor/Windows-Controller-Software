@@ -37,14 +37,26 @@
             this.xmppPwdLabel = new System.Windows.Forms.Label();
             this.xmppUsernameLabel = new System.Windows.Forms.Label();
             this.directSocketTabPage = new System.Windows.Forms.TabPage();
+            this.serverStartedLbl = new System.Windows.Forms.Label();
+            this.startDirectSocketServerBtn = new System.Windows.Forms.Button();
+            this.directSocketWarning = new System.Windows.Forms.TextBox();
+            this.directSocketInternalIp = new System.Windows.Forms.Label();
+            this.directSocketExternalPortLbl = new System.Windows.Forms.Label();
+            this.directSocketInternalIpLbl = new System.Windows.Forms.Label();
+            this.directSocketPortTxt = new System.Windows.Forms.TextBox();
+            this.directSocketExternalIp = new System.Windows.Forms.Label();
+            this.directSocketInternalPortLbl = new System.Windows.Forms.Label();
+            this.directSocketExternalIpLbl = new System.Windows.Forms.Label();
             this.connectBtn = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStripLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.connectionProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.connection_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.xmpp_async_connect = new System.ComponentModel.BackgroundWorker();
+            this.directSocket_async_connect = new System.ComponentModel.BackgroundWorker();
             this.connectionSettingsTab.SuspendLayout();
             this.xmppTabPage.SuspendLayout();
+            this.directSocketTabPage.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,7 +98,7 @@
             // 
             // xmppConnect
             // 
-            this.xmppConnect.Location = new System.Drawing.Point(123, 56);
+            this.xmppConnect.Location = new System.Drawing.Point(9, 56);
             this.xmppConnect.Name = "xmppConnect";
             this.xmppConnect.Size = new System.Drawing.Size(119, 23);
             this.xmppConnect.TabIndex = 5;
@@ -131,6 +143,16 @@
             // 
             // directSocketTabPage
             // 
+            this.directSocketTabPage.Controls.Add(this.serverStartedLbl);
+            this.directSocketTabPage.Controls.Add(this.startDirectSocketServerBtn);
+            this.directSocketTabPage.Controls.Add(this.directSocketWarning);
+            this.directSocketTabPage.Controls.Add(this.directSocketInternalIp);
+            this.directSocketTabPage.Controls.Add(this.directSocketExternalPortLbl);
+            this.directSocketTabPage.Controls.Add(this.directSocketInternalIpLbl);
+            this.directSocketTabPage.Controls.Add(this.directSocketPortTxt);
+            this.directSocketTabPage.Controls.Add(this.directSocketExternalIp);
+            this.directSocketTabPage.Controls.Add(this.directSocketInternalPortLbl);
+            this.directSocketTabPage.Controls.Add(this.directSocketExternalIpLbl);
             this.directSocketTabPage.Location = new System.Drawing.Point(4, 22);
             this.directSocketTabPage.Name = "directSocketTabPage";
             this.directSocketTabPage.Padding = new System.Windows.Forms.Padding(3);
@@ -138,6 +160,100 @@
             this.directSocketTabPage.TabIndex = 1;
             this.directSocketTabPage.Text = "DirectSocket";
             this.directSocketTabPage.UseVisualStyleBackColor = true;
+            // 
+            // serverStartedLbl
+            // 
+            this.serverStartedLbl.AutoSize = true;
+            this.serverStartedLbl.Location = new System.Drawing.Point(102, 147);
+            this.serverStartedLbl.Name = "serverStartedLbl";
+            this.serverStartedLbl.Size = new System.Drawing.Size(75, 13);
+            this.serverStartedLbl.TabIndex = 9;
+            this.serverStartedLbl.Text = "Server Started";
+            this.serverStartedLbl.Visible = false;
+            // 
+            // startDirectSocketServerBtn
+            // 
+            this.startDirectSocketServerBtn.Location = new System.Drawing.Point(6, 142);
+            this.startDirectSocketServerBtn.Name = "startDirectSocketServerBtn";
+            this.startDirectSocketServerBtn.Size = new System.Drawing.Size(89, 23);
+            this.startDirectSocketServerBtn.TabIndex = 8;
+            this.startDirectSocketServerBtn.Text = "Start Server";
+            this.startDirectSocketServerBtn.UseVisualStyleBackColor = true;
+            this.startDirectSocketServerBtn.Click += new System.EventHandler(this.startDirectSocketServerBtn_Click);
+            // 
+            // directSocketWarning
+            // 
+            this.directSocketWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.directSocketWarning.ForeColor = System.Drawing.Color.Black;
+            this.directSocketWarning.Location = new System.Drawing.Point(9, 7);
+            this.directSocketWarning.Multiline = true;
+            this.directSocketWarning.Name = "directSocketWarning";
+            this.directSocketWarning.ReadOnly = true;
+            this.directSocketWarning.Size = new System.Drawing.Size(233, 36);
+            this.directSocketWarning.TabIndex = 7;
+            this.directSocketWarning.Text = "Warning: Unless you know what you are doing, please stick with XMPP.";
+            // 
+            // directSocketInternalIp
+            // 
+            this.directSocketInternalIp.AutoSize = true;
+            this.directSocketInternalIp.Location = new System.Drawing.Point(67, 93);
+            this.directSocketInternalIp.Name = "directSocketInternalIp";
+            this.directSocketInternalIp.Size = new System.Drawing.Size(13, 13);
+            this.directSocketInternalIp.TabIndex = 6;
+            this.directSocketInternalIp.Text = "0";
+            // 
+            // directSocketExternalPortLbl
+            // 
+            this.directSocketExternalPortLbl.AutoSize = true;
+            this.directSocketExternalPortLbl.Location = new System.Drawing.Point(39, 65);
+            this.directSocketExternalPortLbl.Name = "directSocketExternalPortLbl";
+            this.directSocketExternalPortLbl.Size = new System.Drawing.Size(140, 13);
+            this.directSocketExternalPortLbl.TabIndex = 5;
+            this.directSocketExternalPortLbl.Text = "Port: Defined on your router.";
+            // 
+            // directSocketInternalIpLbl
+            // 
+            this.directSocketInternalIpLbl.AutoSize = true;
+            this.directSocketInternalIpLbl.Location = new System.Drawing.Point(10, 93);
+            this.directSocketInternalIpLbl.Name = "directSocketInternalIpLbl";
+            this.directSocketInternalIpLbl.Size = new System.Drawing.Size(61, 13);
+            this.directSocketInternalIpLbl.TabIndex = 4;
+            this.directSocketInternalIpLbl.Text = "Internal IP: ";
+            // 
+            // directSocketPortTxt
+            // 
+            this.directSocketPortTxt.Location = new System.Drawing.Point(67, 109);
+            this.directSocketPortTxt.Name = "directSocketPortTxt";
+            this.directSocketPortTxt.Size = new System.Drawing.Size(100, 20);
+            this.directSocketPortTxt.TabIndex = 3;
+            this.directSocketPortTxt.Text = "5225";
+            // 
+            // directSocketExternalIp
+            // 
+            this.directSocketExternalIp.AutoSize = true;
+            this.directSocketExternalIp.Location = new System.Drawing.Point(65, 48);
+            this.directSocketExternalIp.Name = "directSocketExternalIp";
+            this.directSocketExternalIp.Size = new System.Drawing.Size(13, 13);
+            this.directSocketExternalIp.TabIndex = 2;
+            this.directSocketExternalIp.Text = "0";
+            // 
+            // directSocketInternalPortLbl
+            // 
+            this.directSocketInternalPortLbl.AutoSize = true;
+            this.directSocketInternalPortLbl.Location = new System.Drawing.Point(39, 112);
+            this.directSocketInternalPortLbl.Name = "directSocketInternalPortLbl";
+            this.directSocketInternalPortLbl.Size = new System.Drawing.Size(29, 13);
+            this.directSocketInternalPortLbl.TabIndex = 1;
+            this.directSocketInternalPortLbl.Text = "Port:";
+            // 
+            // directSocketExternalIpLbl
+            // 
+            this.directSocketExternalIpLbl.AutoSize = true;
+            this.directSocketExternalIpLbl.Location = new System.Drawing.Point(6, 48);
+            this.directSocketExternalIpLbl.Name = "directSocketExternalIpLbl";
+            this.directSocketExternalIpLbl.Size = new System.Drawing.Size(64, 13);
+            this.directSocketExternalIpLbl.TabIndex = 0;
+            this.directSocketExternalIpLbl.Text = "External IP: ";
             // 
             // connectBtn
             // 
@@ -189,6 +305,11 @@
             this.xmpp_async_connect.DoWork += new System.ComponentModel.DoWorkEventHandler(this.xmpp_async_connect_DoWork);
             this.xmpp_async_connect.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.xmpp_async_connect_RunWorkerCompleted);
             // 
+            // directSocket_async_connect
+            // 
+            this.directSocket_async_connect.DoWork += new System.ComponentModel.DoWorkEventHandler(this.directSocket_async_connect_DoWork);
+            this.directSocket_async_connect.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.directSocket_async_connect_RunWorkerCompleted);
+            // 
             // ConnectionSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -204,6 +325,8 @@
             this.connectionSettingsTab.ResumeLayout(false);
             this.xmppTabPage.ResumeLayout(false);
             this.xmppTabPage.PerformLayout();
+            this.directSocketTabPage.ResumeLayout(false);
+            this.directSocketTabPage.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -228,5 +351,16 @@
         private System.Windows.Forms.ToolStripProgressBar connectionProgressBar;
         private System.ComponentModel.BackgroundWorker xmpp_async_connect;
         private System.Windows.Forms.ToolStripStatusLabel connection_status;
+        private System.Windows.Forms.TextBox directSocketPortTxt;
+        private System.Windows.Forms.Label directSocketExternalIp;
+        private System.Windows.Forms.Label directSocketInternalPortLbl;
+        private System.Windows.Forms.Label directSocketExternalIpLbl;
+        private System.Windows.Forms.Label directSocketInternalIpLbl;
+        private System.Windows.Forms.Label directSocketExternalPortLbl;
+        private System.Windows.Forms.Label directSocketInternalIp;
+        private System.Windows.Forms.TextBox directSocketWarning;
+        private System.Windows.Forms.Button startDirectSocketServerBtn;
+        private System.Windows.Forms.Label serverStartedLbl;
+        private System.ComponentModel.BackgroundWorker directSocket_async_connect;
     }
 }

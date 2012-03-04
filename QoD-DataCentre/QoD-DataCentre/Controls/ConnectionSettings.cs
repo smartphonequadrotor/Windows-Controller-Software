@@ -6,8 +6,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Threading;
 using System.Net;
+using System.Threading;
+using QoD_DataCentre.Src.Communication;
 
 namespace QoD_DataCentre.Src.UI
 {
@@ -16,17 +17,20 @@ namespace QoD_DataCentre.Src.UI
     {
         private QoDForm qoDForm;
 
-        
-
-
         public ConnectionSettings(QoDForm qoDForm)
         {
             QoDMain.networkCommunicationManager.xmppContactsUpdated += new Communication.NetworkCommunicationManager.xmppContactEvent(networkCommunicationManager_xmppContactsUpdated);
+            QoDMain.networkCommunicationManager.IPsUpdated += new Communication.NetworkCommunicationManager.IPsUpdateEvent(networkCommunicationManager_IPsUpdated);
             QoDMain.networkCommunicationManager.onWorking += new Communication.NetworkCommunicationManager.busyEvent(networkCommunicationManager_onWorking);
             QoDMain.networkCommunicationManager.onIdle += new Communication.NetworkCommunicationManager.busyEvent(networkCommunicationManager_onIdle);
             QoDMain.networkCommunicationManager.onStatusChanged += new Communication.NetworkCommunicationManager.statusEvent(networkCommunicationManager_onStatusChanged);
             InitializeComponent();
             this.qoDForm = qoDForm;
+        }
+
+        void networkCommunicationManager_IPsUpdated(object sender, Communication.NetworkCommunicationManager.IPPopulationEventArgs data)
+        {
+            populateDirectSocketIps(data.ExternalIP, data.InternalIP, data.Port);
         }
 
         void networkCommunicationManager_onStatusChanged(object sender, Communication.NetworkCommunicationManager.StatusEventArgs data)
@@ -61,34 +65,25 @@ namespace QoD_DataCentre.Src.UI
         void networkCommunicationManager_xmppContactsUpdated(object sender, Communication.NetworkCommunicationManager.XmppContactEventArgs data)
         {
             if (this.IsHandleCreated == true)
-                {
-            this.Invoke((MethodInvoker)delegate
             {
-                this.refresh_contact_list(data.Contacts);
-            });
-            
-                }
+                this.Invoke((MethodInvoker)delegate
+                {
+                    this.refresh_contact_list(data.Contacts);
+                });
+
+            }
         }
 
         private void ConnectBtn_Click(object sender, EventArgs e)
         {
-            #region Setting Direct Server parameters - empty
-            #endregion
-            //TODO should be changed to one common call
             if (connectionSettingsTab.SelectedIndex == 0)
-            {                
-                QoDMain.networkCommunicationManager.Connect(xmppUsers.SelectedItem.ToString());
+            {
+                QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.XMPP;
+                QoDMain.networkCommunicationManager.Connect(xmppUsers.SelectedItem.ToString(), 0);
             }
             else if (connectionSettingsTab.SelectedIndex == 1)
             {
                 QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.DirectSocket;
-
-                Src.Communication.HttpServer httpServer;
-                System.Net.IPAddress localAddress = Dns.GetHostAddresses("localhost")[1];
-                httpServer = new Src.Communication.MyHttpServer(localAddress, 5225);
-                
-                Thread thread = new Thread(new ThreadStart(httpServer.listen));
-                thread.Start();
             }
 
             //invoke start progress...
@@ -97,10 +92,8 @@ namespace QoD_DataCentre.Src.UI
                 qoDForm.enable_text_control();
                 qoDForm.reset_text_control();
             });
-           
+
             this.Hide();
-            //qoDForm.Show();
-            
         }
 
         public void change_setupConnectionBtn_text(string text)
@@ -109,7 +102,7 @@ namespace QoD_DataCentre.Src.UI
             qoDForm.Invoke((MethodInvoker)delegate
             {
                 qoDForm.change_setupConnectionBtn_text(text);
-            }); 
+            });
         }
 
         private void updateStatusStrip(String msg)
@@ -128,7 +121,7 @@ namespace QoD_DataCentre.Src.UI
                 // Start the asynchronous operation.
                 xmpp_async_connect.RunWorkerAsync();
             }
-            
+
         }
 
         // This event handler is where the time-consuming work is done.
@@ -137,7 +130,6 @@ namespace QoD_DataCentre.Src.UI
             //BackgroundWorker worker = sender as BackgroundWorker;
             e.Result = QoDMain.networkCommunicationManager.xmppUserConnect(xmppUsernameTxt.Text, xmppPwdTxt.Text);
         }
-
 
         // This event handler deals with the results of the background operation.
         private void xmpp_async_connect_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -158,7 +150,7 @@ namespace QoD_DataCentre.Src.UI
             connectionProgressBar.Style = ProgressBarStyle.Marquee;
             connection_status.Visible = false;
             connectionProgressBar.Visible = true;
-            
+
             connectionProgressBar.MarqueeAnimationSpeed = 50;
         }
 
@@ -172,6 +164,7 @@ namespace QoD_DataCentre.Src.UI
 
         public void write_connection_status(string status)
         {
+
             connection_status.Text = status;
 
         }
@@ -180,16 +173,23 @@ namespace QoD_DataCentre.Src.UI
         public void refresh_contact_list(Dictionary<string, int> contact_dictionary)
         {
 
-                connectBtn.Enabled = false;
-                xmppUsers.Items.Clear();
-                foreach (KeyValuePair<string, int> pair in contact_dictionary)
-                    xmppUsers.Items.Add(pair.Key);
+            connectBtn.Enabled = false;
+            xmppUsers.Items.Clear();
+            foreach (KeyValuePair<string, int> pair in contact_dictionary)
+                xmppUsers.Items.Add(pair.Key);
 
-                if (QoDMain.networkCommunicationManager.isConnected && QoDMain.networkCommunicationManager.connectionType == Communication.ConnectionType.XMPP)
-                {
-                    xmppUsers.SelectedItem = QoDMain.networkCommunicationManager.phone_id;
-                }
-            
+            if (QoDMain.networkCommunicationManager.isConnected && QoDMain.networkCommunicationManager.connectionType == Communication.ConnectionType.XMPP)
+            {
+                xmppUsers.SelectedItem = QoDMain.networkCommunicationManager.phone_id;
+            }
+
+        }
+
+        public void populateDirectSocketIps(string externalIp, string internalIp, int port)
+        {
+            directSocketExternalIp.Text = externalIp;
+            directSocketInternalIp.Text = internalIp;
+            directSocketPortTxt.Text = port.ToString();
         }
 
         private void xmppUsers_SelectedIndexChanged(object sender, EventArgs e)
@@ -204,20 +204,85 @@ namespace QoD_DataCentre.Src.UI
         {
             refresh_contact_list(QoDMain.networkCommunicationManager.getXmppUsers());
             write_connection_status(QoDMain.networkCommunicationManager.ConnectionStatus);
-            
+
         }
 
         private void connectionSettingsTab_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (connectionSettingsTab.SelectedIndex == 0)
             {
-                QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.XMPP;
+                connectBtn.Visible = true;
+                if (xmppUsers.SelectedIndex >= 0)
+                {
+                    connectBtn.Enabled = true;
+                }
+                else
+                    connectBtn.Enabled = false;
             }
             else
             {
-                connectBtn.Enabled = true;
-                QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.DirectSocket;
+                connectBtn.Visible = false;
             }
+        }
+
+        private void startDirectSocketServerBtn_Click(object sender, EventArgs e)
+        {
+            if (startDirectSocketServerBtn.Text.Equals("Start Server"))
+            {
+                int port = 0;
+                QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.DirectSocket;
+                try
+                {
+                    port = Convert.ToInt32(directSocketPortTxt.Text);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Port must be an integer.");
+                }
+
+
+                if (directSocket_async_connect.IsBusy != true)
+                {
+                    // Start the asynchronous operation.
+                    start_progress();
+                    directSocket_async_connect.RunWorkerAsync(port);
+                }
+
+
+                serverStartedLbl.Visible = true; ;
+            }
+            else
+            {
+                QoDMain.networkCommunicationManager.Disconnect();
+                serverStartedLbl.Visible = false;
+            }
+        }
+
+        // This event handler is where the time-consuming work is done.
+        private void directSocket_async_connect_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //BackgroundWorker worker = sender as BackgroundWorker;
+            e.Result = QoDMain.networkCommunicationManager.directSocketServerConnect((int)e.Argument);
+        }
+
+        // This event handler deals with the results of the background operation.
+        private void directSocket_async_connect_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            stop_progress();
+            if ((HttpServer)e.Result != null)
+            {
+                Thread Listener = new Thread(new ThreadStart(((HttpServer)e.Result).listen));
+                Listener.Start();
+                QoDMain.networkCommunicationManager.ConnectionStatus = "Waiting for incoming connections...";
+                startDirectSocketServerBtn.Text = "Stop Server";
+            }
+            else
+            {
+                MessageBox.Show("Error starting server. Check the port is valid and try again.");
+                xmppConnect.Text = "Start Server";
+                serverStartedLbl.Visible = false;
+            }
+
         }
 
     }

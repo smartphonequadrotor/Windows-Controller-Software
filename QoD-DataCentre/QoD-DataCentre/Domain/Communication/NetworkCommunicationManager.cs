@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Net;
+using System.Threading;
+using System.IO;
 using QoD_DataCentre.Src.UI;
-
 
 namespace QoD_DataCentre.Src.Communication
 {
@@ -54,12 +56,31 @@ namespace QoD_DataCentre.Src.Communication
             }
         }
 
+        public class IPPopulationEventArgs : EventArgs
+        {
+            string externalIp;
+            string internalIp;
+            int port;
+            
+
+            public IPPopulationEventArgs(string externalIp, string internalIp, int port)
+            {
+                this.externalIp = externalIp;
+                this.internalIp = internalIp;
+                this.port = port;
+            }
+
+            public String ExternalIP { get { return externalIp;} }
+            public String InternalIP { get { return internalIp; } }
+            public int Port { get { return port; } }
+
+        }
         
+
 
         //private QoDForm main_GUI;
         //private ConnectionSettings connectionSettings;
         private XmppClient xmppClient;
-        private DirectSocketServer directSocketServer;
 
         //msg recieved
         public delegate void msgRecieveEvent(object sender, MsgRecievedEventArgs data);
@@ -97,14 +118,18 @@ namespace QoD_DataCentre.Src.Communication
 
         public delegate void xmppContactEvent(object sender, XmppContactEventArgs data);
 
-
         public event xmppContactEvent xmppContactsUpdated;
 
-        
+
+        public delegate void IPsUpdateEvent(object sender, IPPopulationEventArgs data);
+
+        public event IPsUpdateEvent IPsUpdated;
+
 
         internal bool isConnected;
         internal string client_id;
         internal string phone_id;
+        internal HttpServer httpServer;
 
         private string connectionStatus = "";
         public string ConnectionStatus
@@ -125,12 +150,10 @@ namespace QoD_DataCentre.Src.Communication
             //main_GUI = main_Form;
             connectionType = ConnectionType.XMPP;
             xmppClient = new XmppClient(this);
-            //directSocketServer = new DirectSocketServer(this);
         }
 
         public void SendMessage(string message)
         {
-
             if (connectionType == ConnectionType.DirectSocket)
             {
 
@@ -139,27 +162,92 @@ namespace QoD_DataCentre.Src.Communication
             {
                 xmppClient.writeMessage(message);
             }
-
         }
 
-        public void Connect(string phoneID){
+        public void Connect(string phoneID, int port){
             phone_id = phoneID;
             
             if (connectionType == ConnectionType.DirectSocket)
             {
-
+                
             }
             else if (connectionType == ConnectionType.XMPP)
             {
                 
                 xmppClient.connect(phoneID);
+                ConnectionStatus = "Connected to " + phoneID;
             }
 
             if (onConnect != null)
                 onConnect(this, new EventArgs());
 
             isConnected = true;
-            ConnectionStatus = "Connected To: " + phoneID;
+        }
+
+        public string getServerIp()
+        {
+            String ip = "";
+            WebRequest request = WebRequest.Create("http://checkip.dyndns.org/");
+            using (WebResponse response = request.GetResponse())
+            {
+                using (StreamReader stream = new StreamReader(response.GetResponseStream()))
+                {
+                    ip = stream.ReadToEnd();
+                }
+            }
+
+            //Search for the ip in the html
+            int first = ip.IndexOf("Address: ") + 9;
+            int last = ip.LastIndexOf("</body>");
+            ip = ip.Substring(first, last - first);
+
+            return ip;
+        }
+
+        public void populateDirectSocketIps(string externalIp, string internalIp, int port)
+        {
+
+            if (IPsUpdated != null)
+                IPsUpdated(this, new IPPopulationEventArgs( externalIp, internalIp, port));
+
+        }
+
+        public HttpServer directSocketServerConnect( int port)
+        {
+            
+            try
+            {
+                //get server's ip (external)
+                string externalIp = getServerIp();
+
+                //get server's ip (internal)/port
+                IPAddress[] ips = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+                String internalIp = "";
+                foreach (IPAddress ip in ips)
+                {
+                    if (ip.AddressFamily.ToString() == "InterNetwork")
+                    {
+                        internalIp = ip.ToString();
+                        break;
+                    }
+                }
+                IPAddress ipAddress = Dns.GetHostAddresses("localhost")[1];
+                httpServer = new Src.Communication.MyHttpServer(ipAddress, port);
+
+                //print interna/external ips and port
+                //populateDirectSocketIps(externalIp, internalIp, port);
+
+                
+
+                return httpServer;
+                
+            }
+            catch
+            {
+                return null;
+            }
+
+            
         }
 
         public bool xmppUserConnect(string username, string password)
@@ -170,20 +258,16 @@ namespace QoD_DataCentre.Src.Communication
 
         public void Disconnect()
         {
-            
-
             if (connectionType == ConnectionType.DirectSocket)
             {
-
+                httpServer.disconnect();
             }
             else if (connectionType == ConnectionType.XMPP)
             {
                 xmppClient.disconnect();
-                
             }
             
             disconnectCallback();
-
         }
 
         internal void disconnectCallback()
@@ -192,10 +276,11 @@ namespace QoD_DataCentre.Src.Communication
             isConnected = false;
             client_id = null;
             phone_id = null;
-
+            
             if (onDisconnect != null)
                 onDisconnect(this, new EventArgs());
-        }     
+        }
+
 
         public void RecieveMessage(string message)
         {
@@ -239,6 +324,6 @@ namespace QoD_DataCentre.Src.Communication
         {
             return xmppClient.USER_DICTIONARY;
         }
-        
+
     }
 }

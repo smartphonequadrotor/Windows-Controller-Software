@@ -23,18 +23,13 @@ namespace QoD_DataCentre.Src.Communication
         /// </summary>
         public XmppClient()
         {
-
         }
-        
-
 
         public XmppClient(NetworkCommunicationManager networkCommunicationManager)
         {
             contact_dictionary = new Dictionary<string, int>();
             this.networkCommunicationManager = networkCommunicationManager;
         }
-
-        
 
         /// <summary>
         /// Dictionary to contain possible contacts. 
