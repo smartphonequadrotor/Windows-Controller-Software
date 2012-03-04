@@ -93,7 +93,6 @@ namespace QoD_DataCentre
         private void setupConnectionBtn_Click(object sender, EventArgs e)
         {
             connectionSettings.ShowDialog(this);
-
         }
 
         public void change_setupConnectionBtn_text(string text)
@@ -355,7 +354,5 @@ namespace QoD_DataCentre
                 }
             }
         }
-
-
     }
 }
