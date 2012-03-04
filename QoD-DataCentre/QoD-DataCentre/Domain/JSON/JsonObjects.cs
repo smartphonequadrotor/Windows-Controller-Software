@@ -358,7 +358,7 @@ namespace QoD_DataCentre.Domain.JSON
             public string ToJSON()
             {
                 JsonSerializerSettings JsonSettings = new JsonSerializerSettings();
-                //JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+                JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                 return JsonConvert.SerializeObject(this, Formatting.Indented, JsonSettings); 
             }
 

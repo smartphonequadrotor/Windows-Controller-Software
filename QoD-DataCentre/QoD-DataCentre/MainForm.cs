@@ -300,11 +300,24 @@ namespace QoD_DataCentre
                         throw new Exception();
 
                 }
-                catch(Exception e){
+                catch{
                     MessageBox.Show("invalid arguments!");
                 }
             }
 
+            else if (words[0] == "req")
+            {
+                try
+                {
+                        test.Requests = new JsonObjects.Request[1];
+                        test.Requests[0] = new JsonObjects.Request(words[1], int.Parse(words[2]));
+
+                }
+                catch 
+                {
+                    MessageBox.Show("invalid arguments!");
+                }
+            }
 
             QoDMain.networkCommunicationManager.SendMessage(test.ToJSON());
         }

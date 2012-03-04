@@ -100,7 +100,7 @@ namespace QoD_DataCentre.Src.Communication
 
         public event xmppContactEvent xmppContactsUpdated;
 
-        //TODO: Create listeners or something to be called upon sucessful disconnect & connect (whenever status is changed)
+        
 
         internal bool isConnected;
         internal string client_id;
@@ -221,7 +221,6 @@ namespace QoD_DataCentre.Src.Communication
             if(onWorking != null)
                 onWorking(this, new EventArgs());
         }
-
 
         internal void stop_progress()
         {
