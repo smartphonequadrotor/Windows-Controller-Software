@@ -230,7 +230,6 @@ namespace QoD_DataCentre.Src.Communication
 
     public abstract class HttpServer
     {
-
         protected int port;
         IPAddress localAddress;
         TcpListener listener;
@@ -253,14 +252,41 @@ namespace QoD_DataCentre.Src.Communication
             {
                 MessageBox.Show(e.ToString());
             }
+
             while (is_active)
             {
-                TcpClient s = listener.AcceptTcpClient();
-                DirectSocketServer processor = new DirectSocketServer(s, this);
-                Thread thread = new Thread(new ThreadStart(processor.process));
-                thread.Start();
+                TcpClient s = null;
+                try
+                {
+                    s = listener.AcceptTcpClient();
+                }
+                catch (Exception e)
+                {
+                    if (!is_active)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        s = listener.AcceptTcpClient();
+                    }
+                }
+                DialogResult result = MessageBox.Show("Accept incoming connection " + s.Client.RemoteEndPoint.ToString().Substring(0, s.Client.RemoteEndPoint.ToString().IndexOf(':')) + " ?", "Incoming Connection", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    DirectSocketServer processor = new DirectSocketServer(s, this);
+                    Thread thread = new Thread(new ThreadStart(processor.process));
+                    thread.Start();
+                    QoDMain.networkCommunicationManager.ConnectionStatus = "Connected to " + s.Client.RemoteEndPoint.ToString().Substring(0, s.Client.RemoteEndPoint.ToString().IndexOf(':'));
+                }
                 Thread.Sleep(1);
             }
+        }
+
+        public void disconnect()
+        {
+            is_active = false;
+            listener.Stop();
         }
 
         public abstract void handleGETRequest(DirectSocketServer p);

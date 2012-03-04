@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Threading;
 using System.Net;
 
 namespace QoD_DataCentre.Src.UI
@@ -16,9 +15,6 @@ namespace QoD_DataCentre.Src.UI
     {
         private QoDForm qoDForm;
 
-        
-
-
         public ConnectionSettings(QoDForm qoDForm)
         {
             InitializeComponent();
@@ -27,23 +23,14 @@ namespace QoD_DataCentre.Src.UI
 
         private void ConnectBtn_Click(object sender, EventArgs e)
         {
-            #region Setting Direct Server parameters - empty
-            #endregion
-            //TODO should be changed to one common call
             if (connectionSettingsTab.SelectedIndex == 0)
-            {                
-                QoDMain.networkCommunicationManager.Connect(xmppUsers.SelectedItem.ToString());
+            {
+                QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.XMPP;
+                QoDMain.networkCommunicationManager.Connect(xmppUsers.SelectedItem.ToString(), 0);
             }
             else if (connectionSettingsTab.SelectedIndex == 1)
             {
                 QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.DirectSocket;
-
-                Src.Communication.HttpServer httpServer;
-                System.Net.IPAddress localAddress = Dns.GetHostAddresses("localhost")[1];
-                httpServer = new Src.Communication.MyHttpServer(localAddress, 5225);
-                
-                Thread thread = new Thread(new ThreadStart(httpServer.listen));
-                thread.Start();
             }
 
             //invoke start progress...
@@ -52,10 +39,8 @@ namespace QoD_DataCentre.Src.UI
                 qoDForm.enable_text_control();
                 qoDForm.reset_text_control();
             });
-           
+
             this.Hide();
-            //qoDForm.Show();
-            
         }
 
         public void write_to_text_control(String text)
@@ -75,7 +60,6 @@ namespace QoD_DataCentre.Src.UI
                 qoDForm.change_setupConnectionBtn_text(text);
             }); 
         }
-
 
         private void updateStatusStrip(String msg)
         {
@@ -102,7 +86,6 @@ namespace QoD_DataCentre.Src.UI
             //BackgroundWorker worker = sender as BackgroundWorker;
             e.Result = QoDMain.networkCommunicationManager.xmppUserConnect(xmppUsernameTxt.Text, xmppPwdTxt.Text);
         }
-
 
         // This event handler deals with the results of the background operation.
         private void xmpp_async_connect_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -141,7 +124,6 @@ namespace QoD_DataCentre.Src.UI
         public void write_connection_status()
         {
             connection_status.Text = QoDMain.networkCommunicationManager.ConnectionStatus;
-
         }
 
         public void write_contact_list(Dictionary<string, int> contact_dictionary)
@@ -154,11 +136,17 @@ namespace QoD_DataCentre.Src.UI
 
         public void refresh_contact_list(Dictionary<string, int> contact_dictionary)
         {
-            
             connectBtn.Enabled = false;
             xmppUsers.Items.Clear();
             foreach (KeyValuePair<string, int> pair in contact_dictionary)
                 xmppUsers.Items.Add(pair.Key);
+        }
+
+        public void populateDirectSocketIps(string externalIp, string internalIp, int port)
+        {
+            directSocketExternalIp.Text = externalIp;
+            directSocketInternalIp.Text = internalIp;
+            directSocketPortTxt.Text = port.ToString();
         }
 
         private void xmppUsers_SelectedIndexChanged(object sender, EventArgs e)
@@ -179,12 +167,44 @@ namespace QoD_DataCentre.Src.UI
         {
             if (connectionSettingsTab.SelectedIndex == 0)
             {
-                QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.XMPP;
+                connectBtn.Visible = true;
+                if (xmppUsers.SelectedIndex >= 0)
+                {
+                    connectBtn.Enabled = true;
+                }
+                else
+                    connectBtn.Enabled = false;
             }
             else
             {
-                connectBtn.Enabled = true;
+                connectBtn.Visible = false;
+            }
+        }
+
+        private void startDirectSocketServerBtn_Click(object sender, EventArgs e)
+        {
+            if (startDirectSocketServerBtn.Text.Equals("Start Server"))
+            {
+                int port = 0;
                 QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.DirectSocket;
+                try
+                {
+                    port = Convert.ToInt32(directSocketPortTxt.Text);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Port must be an integer.");
+                }
+                QoDMain.networkCommunicationManager.Connect(null, port);
+
+                startDirectSocketServerBtn.Text = "Stop Server";
+                serverStartedLbl.Visible = true; ;
+            }
+            else
+            {
+                QoDMain.networkCommunicationManager.Disconnect();
+                startDirectSocketServerBtn.Text = "Start Server";
+                serverStartedLbl.Visible = false; ;
             }
         }
 
