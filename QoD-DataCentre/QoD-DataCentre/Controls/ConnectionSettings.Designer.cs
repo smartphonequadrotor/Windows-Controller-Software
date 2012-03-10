@@ -37,6 +37,8 @@
             this.xmppPwdLabel = new System.Windows.Forms.Label();
             this.xmppUsernameLabel = new System.Windows.Forms.Label();
             this.directSocketTabPage = new System.Windows.Forms.TabPage();
+            this.serverStartedLbl = new System.Windows.Forms.Label();
+            this.startDirectSocketServerBtn = new System.Windows.Forms.Button();
             this.directSocketWarning = new System.Windows.Forms.TextBox();
             this.directSocketInternalIp = new System.Windows.Forms.Label();
             this.directSocketExternalPortLbl = new System.Windows.Forms.Label();
@@ -51,8 +53,7 @@
             this.connectionProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.connection_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.xmpp_async_connect = new System.ComponentModel.BackgroundWorker();
-            this.startDirectSocketServerBtn = new System.Windows.Forms.Button();
-            this.serverStartedLbl = new System.Windows.Forms.Label();
+            this.directSocket_async_connect = new System.ComponentModel.BackgroundWorker();
             this.connectionSettingsTab.SuspendLayout();
             this.xmppTabPage.SuspendLayout();
             this.directSocketTabPage.SuspendLayout();
@@ -159,6 +160,26 @@
             this.directSocketTabPage.TabIndex = 1;
             this.directSocketTabPage.Text = "DirectSocket";
             this.directSocketTabPage.UseVisualStyleBackColor = true;
+            // 
+            // serverStartedLbl
+            // 
+            this.serverStartedLbl.AutoSize = true;
+            this.serverStartedLbl.Location = new System.Drawing.Point(102, 147);
+            this.serverStartedLbl.Name = "serverStartedLbl";
+            this.serverStartedLbl.Size = new System.Drawing.Size(75, 13);
+            this.serverStartedLbl.TabIndex = 9;
+            this.serverStartedLbl.Text = "Server Started";
+            this.serverStartedLbl.Visible = false;
+            // 
+            // startDirectSocketServerBtn
+            // 
+            this.startDirectSocketServerBtn.Location = new System.Drawing.Point(6, 142);
+            this.startDirectSocketServerBtn.Name = "startDirectSocketServerBtn";
+            this.startDirectSocketServerBtn.Size = new System.Drawing.Size(89, 23);
+            this.startDirectSocketServerBtn.TabIndex = 8;
+            this.startDirectSocketServerBtn.Text = "Start Server";
+            this.startDirectSocketServerBtn.UseVisualStyleBackColor = true;
+            this.startDirectSocketServerBtn.Click += new System.EventHandler(this.startDirectSocketServerBtn_Click);
             // 
             // directSocketWarning
             // 
@@ -284,25 +305,10 @@
             this.xmpp_async_connect.DoWork += new System.ComponentModel.DoWorkEventHandler(this.xmpp_async_connect_DoWork);
             this.xmpp_async_connect.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.xmpp_async_connect_RunWorkerCompleted);
             // 
-            // startDirectSocketServerBtn
+            // directSocket_async_connect
             // 
-            this.startDirectSocketServerBtn.Location = new System.Drawing.Point(6, 142);
-            this.startDirectSocketServerBtn.Name = "startDirectSocketServerBtn";
-            this.startDirectSocketServerBtn.Size = new System.Drawing.Size(89, 23);
-            this.startDirectSocketServerBtn.TabIndex = 8;
-            this.startDirectSocketServerBtn.Text = "Start Server";
-            this.startDirectSocketServerBtn.UseVisualStyleBackColor = true;
-            this.startDirectSocketServerBtn.Click += new System.EventHandler(this.startDirectSocketServerBtn_Click);
-            // 
-            // serverStartedLbl
-            // 
-            this.serverStartedLbl.AutoSize = true;
-            this.serverStartedLbl.Location = new System.Drawing.Point(102, 147);
-            this.serverStartedLbl.Name = "serverStartedLbl";
-            this.serverStartedLbl.Size = new System.Drawing.Size(75, 13);
-            this.serverStartedLbl.TabIndex = 9;
-            this.serverStartedLbl.Text = "Server Started";
-            this.serverStartedLbl.Visible = false;
+            this.directSocket_async_connect.DoWork += new System.ComponentModel.DoWorkEventHandler(this.directSocket_async_connect_DoWork);
+            this.directSocket_async_connect.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.directSocket_async_connect_RunWorkerCompleted);
             // 
             // ConnectionSettings
             // 
@@ -312,7 +318,7 @@
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.connectBtn);
             this.Controls.Add(this.connectionSettingsTab);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ConnectionSettings";
             this.Text = "ConnectionSettings";
             this.VisibleChanged += new System.EventHandler(this.ConnectionSettings_VisibleChanged);
@@ -355,5 +361,6 @@
         private System.Windows.Forms.TextBox directSocketWarning;
         private System.Windows.Forms.Button startDirectSocketServerBtn;
         private System.Windows.Forms.Label serverStartedLbl;
+        private System.ComponentModel.BackgroundWorker directSocket_async_connect;
     }
 }

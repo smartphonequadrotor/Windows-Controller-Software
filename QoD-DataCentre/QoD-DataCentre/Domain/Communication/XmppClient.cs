@@ -16,6 +16,8 @@ namespace QoD_DataCentre.Src.Communication
     class XmppClient// : INetworkConnection
     {
 
+        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -117,7 +119,7 @@ namespace QoD_DataCentre.Src.Communication
              */
             try
             {
-                xmpp.OnError += new ErrorHandler(xmppCon_OnError);
+                //xmpp.OnError += new ErrorHandler(xmppCon_OnError);
                 xmpp.OnSocketError += new ErrorHandler(xmppCon_OnSocketError);
                 xmpp.OnLogin += new ObjectHandler(xmpp_OnLogin);
                 xmpp.OnAuthError += new XmppElementHandler(xmpp_OnAuthError);
@@ -199,15 +201,23 @@ namespace QoD_DataCentre.Src.Communication
                     networkCommunicationManager.disconnectCallback();
                 }
             }
-            
-            
-            networkCommunicationManager.write_contact_list();
+
+            networkCommunicationManager.updateContacts();
             
         }
 
         public void connect(string partnerID)
         {
+            if (Partner_Jabber_ID != null && Partner_Jabber_ID != partnerID)
+            {
+                xmpp.MessageGrabber.Add(new Jid(partnerID),
+                                     new BareJidComparer(),
+                                     new MessageCB(MessageCallBack),
+                                     null);
+            }
+
             Partner_Jabber_ID = partnerID;
+            
             foreach (KeyValuePair<string, int> pair in contact_dictionary)
                 if(pair.Key != Partner_Jabber_ID)
                     xmpp.MessageGrabber.Remove(new Jid(pair.Key));          
@@ -242,9 +252,10 @@ namespace QoD_DataCentre.Src.Communication
 
             try
             {
-                xmpp.Close();
+                if(xmpp != null && xmpp.Binded)
+                    xmpp.Close();
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }

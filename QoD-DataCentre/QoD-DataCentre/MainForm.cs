@@ -8,6 +8,9 @@ using System.Text;
 using System.Windows.Forms;
 using QoD_DataCentre.Src.UI;
 using System.Text.RegularExpressions;
+using QoD_DataCentre.Domain.JSON;
+using QoD_DataCentre.Src.Communication;
+
 
 enum TabName
 {
@@ -35,7 +38,66 @@ namespace QoD_DataCentre
         public QoDForm()
         {
             connectionSettings = new ConnectionSettings(this);
+            QoDMain.networkCommunicationManager.msgRecieved += new Src.Communication.NetworkCommunicationManager.msgRecieveEvent(this.networkCommunicationManager_msgRecieved);
+            QoDMain.networkCommunicationManager.onConnect += new NetworkCommunicationManager.connectEvent(networkCommunicationManager_onConnect);
+            QoDMain.networkCommunicationManager.onDisconnect += new NetworkCommunicationManager.disconnectEvent(networkCommunicationManager_onDisconnect);
+            QoDMain.networkCommunicationManager.onStatusChanged += new NetworkCommunicationManager.statusEvent(networkCommunicationManager_onStatusChanged);
             InitializeComponent();
+        }
+
+        //when the status changes... we may want to update the status.
+        void networkCommunicationManager_onStatusChanged(object sender, NetworkCommunicationManager.StatusEventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.textControlTerminal.Enabled = false;
+                this.connectionText.Text = data.Status;
+            });
+        }
+
+        //on disconnect... do things here
+        void networkCommunicationManager_onDisconnect(object sender, EventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.textControlTerminal.Enabled = false;
+            });
+        }
+
+        //on sucessful connect... do stuff here.
+        void networkCommunicationManager_onConnect(object sender, EventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.textControlTerminal.Enabled = true;
+            });
+        }
+
+
+
+        //recieved message callback. Currently just adds data to command window... 
+        public void networkCommunicationManager_msgRecieved(object sender,  NetworkCommunicationManager.MsgRecievedEventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+            {
+                string recievedText = data.Message;
+
+                try
+                {
+                    JsonManager commandConvert = new JsonManager();
+                    JsonObjects.Envelope response = commandConvert.DeserializeEnvelope(recievedText);
+                
+                    if(response != null)
+                        recievedText = response.ToString();
+
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+
+                insert_write_to_text_control(recievedText);
+            });
         }
 
         private void setupConnectionBtn_Click(object sender, EventArgs e)
@@ -72,9 +134,21 @@ namespace QoD_DataCentre
         public void insert_write_to_text_control(string text)
         {
             text = convert_line_endings(text);
+            text = QoDMain.networkCommunicationManager.phone_id + ">" + text + "\r\n";
+            int carat = textControlTerminal.SelectionStart;
             textControlTerminal.Text = textControlTerminal.Text.Insert(line_count, text);
+
+            if (carat >= line_length)
+                carat += text.Length;
+
+            carat_pos += text.Length;
             line_count += text.Length;
             line_length += text.Length;
+
+
+            textControlTerminal.SelectionStart = carat;
+            textControlTerminal.ScrollToCaret();
+
         }
 
         private string convert_line_endings(string text)
@@ -96,10 +170,12 @@ namespace QoD_DataCentre
             return text;
         }
 
+
         int line_length;
         int carat_pos;
         List<String> command_list = new List<String>();
         int command_number = -1;
+
         private void textControlTerminal_KeyDown(object sender, KeyEventArgs e)
         {
             int send = line_count + (QoDMain.networkCommunicationManager.client_id + ">").Length;
@@ -108,10 +184,12 @@ namespace QoD_DataCentre
                 if (!e.Shift)
                 {
                     string message = textControlTerminal.Text.Substring(send);
-                    QoDMain.networkCommunicationManager.SendMessage(message);
                     command_list.Add(message);
                     command_number = command_list.Count;
 
+                    CommandParser(message);
+                    
+                    
                     line_count = textControlTerminal.Text.Length + 2;
                     textControlTerminal.Text += "\r\n" + QoDMain.networkCommunicationManager.client_id + ">";
                     line_length = textControlTerminal.Text.Length;
@@ -137,7 +215,15 @@ namespace QoD_DataCentre
             {
                 if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
                 {
-
+                    if(e.KeyCode == Keys.Left)
+                    {
+                        if (carat_pos > line_length)
+                        carat_pos--;
+                    }
+                    else{
+                        if(carat_pos < textControlTerminal.Text.Length)
+                        carat_pos++;
+                    }
                 }
                 if (e.Control && !e.Alt)
                 {
@@ -197,7 +283,52 @@ namespace QoD_DataCentre
                     e.SuppressKeyPress = true;
 
             }
+
             
+            textControlTerminal.ScrollToCaret();
+
+        }
+
+        private void CommandParser(string message)
+        {
+            JsonObjects.Envelope test = new JsonObjects.Envelope();
+            string[] words = message.Split(' ');
+
+            if (words[0] == "cmd")
+            {
+                try
+                {
+                    if (words[1] == "move")
+                    {
+
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.Move = new JsonObjects.MovementCommand[1];
+                        test.Commands.Move[0] = new JsonObjects.MovementCommand(float.Parse(words[2]), float.Parse(words[3]), float.Parse(words[4]), int.Parse(words[5]), uint.Parse(words[6]));
+                    }
+                    else 
+                        throw new Exception();
+
+                }
+                catch{
+                    MessageBox.Show("invalid arguments!");
+                }
+            }
+
+            else if (words[0] == "req")
+            {
+                try
+                {
+                        test.Requests = new JsonObjects.Request[1];
+                        test.Requests[0] = new JsonObjects.Request(words[1], int.Parse(words[2]));
+
+                }
+                catch 
+                {
+                    MessageBox.Show("invalid arguments!");
+                }
+            }
+
+            QoDMain.networkCommunicationManager.SendMessage(test.ToJSON());
         }
 
 

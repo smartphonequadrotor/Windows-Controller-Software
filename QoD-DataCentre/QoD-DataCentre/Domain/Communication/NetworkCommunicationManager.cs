@@ -13,19 +13,118 @@ namespace QoD_DataCentre.Src.Communication
     /// <summary>
     /// The two types of connections that can be used.
     /// </summary>
-    enum ConnectionType { XMPP, DirectSocket };
+    public enum ConnectionType { XMPP, DirectSocket };
+
+    
 
     /// <summary>
     /// This class is used by the UI and the business logic for sending messages to and receiving messages from
     /// the QPhone.
     /// </summary>
-    class NetworkCommunicationManager
+    public class NetworkCommunicationManager
     {
-        private QoDForm main_GUI;
-        private ConnectionSettings connectionSettings;
+
+        public ConnectionType connectionType { get; set; }
+
+        public class MsgRecievedEventArgs : EventArgs
+        {
+            private string message;
+            public string Message { get { return message; } set { message = value;} }
+            public MsgRecievedEventArgs(string message)
+            {
+                this.Message = message;
+            }
+        }
+
+        public class StatusEventArgs : EventArgs
+        {
+            private string status;
+            public string Status { get { return status; } set { status = value; } }
+            public StatusEventArgs(string status)
+            {
+                this.status = status;
+            }
+        }
+
+        public class XmppContactEventArgs : EventArgs
+        {
+            Dictionary<string, int> contacts;
+            public Dictionary<string, int> Contacts { get { return contacts; } set { contacts = value; } }
+            public XmppContactEventArgs(Dictionary<string, int> contacts)
+            {
+                this.contacts = contacts;
+            }
+        }
+
+        public class IPPopulationEventArgs : EventArgs
+        {
+            string externalIp;
+            string internalIp;
+            int port;
+            
+
+            public IPPopulationEventArgs(string externalIp, string internalIp, int port)
+            {
+                this.externalIp = externalIp;
+                this.internalIp = internalIp;
+                this.port = port;
+            }
+
+            public String ExternalIP { get { return externalIp;} }
+            public String InternalIP { get { return internalIp; } }
+            public int Port { get { return port; } }
+
+        }
+        
+
+
+        //private QoDForm main_GUI;
+        //private ConnectionSettings connectionSettings;
         private XmppClient xmppClient;
 
-        //TODO: Create listeners or something to be called upon sucessful disconnect & connect (whenever status is changed)
+        //msg recieved
+        public delegate void msgRecieveEvent(object sender, MsgRecievedEventArgs data);
+
+        //called when message is recieved...
+        public event msgRecieveEvent msgRecieved;
+
+        //connect event
+        public delegate void connectEvent(object sender, EventArgs data);
+
+        //called when a connection is setup...
+        public event connectEvent onConnect;
+
+        //disconnect event
+        public delegate void disconnectEvent(object sender, EventArgs data);
+
+        //called when a connection is disconnected
+        public event disconnectEvent onDisconnect;
+
+        //status event
+        public delegate void statusEvent(object sender, StatusEventArgs data);
+
+        //called when a connection status changes
+        public event statusEvent onStatusChanged;
+
+        //start busyness event
+        public delegate void busyEvent(object sender, EventArgs data);
+
+        //called when connecting...
+        public event busyEvent onWorking;
+
+        //called when now idle
+        public event busyEvent onIdle;
+
+
+        public delegate void xmppContactEvent(object sender, XmppContactEventArgs data);
+
+        public event xmppContactEvent xmppContactsUpdated;
+
+
+        public delegate void IPsUpdateEvent(object sender, IPPopulationEventArgs data);
+
+        public event IPsUpdateEvent IPsUpdated;
+
 
         internal bool isConnected;
         internal string client_id;
@@ -33,13 +132,23 @@ namespace QoD_DataCentre.Src.Communication
         internal HttpServer httpServer;
 
         private string connectionStatus = "";
-        public string ConnectionStatus { get{return connectionStatus;} set {connectionStatus = value; write_connection_status(); } }
-
-        public NetworkCommunicationManager(QoDForm main_Form, ConnectionSettings cs)
+        public string ConnectionStatus
         {
-            main_GUI = main_Form;
+            get { return connectionStatus; }
+            set
+            {
+                connectionStatus = value; 
+                if (onStatusChanged != null)
+                {
+                    onStatusChanged(this, new StatusEventArgs(value));
+                }
+            }
+        }
+
+        public NetworkCommunicationManager()
+        {
+            //main_GUI = main_Form;
             connectionType = ConnectionType.XMPP;
-            connectionSettings = cs;
             xmppClient = new XmppClient(this);
         }
 
@@ -60,49 +169,18 @@ namespace QoD_DataCentre.Src.Communication
             
             if (connectionType == ConnectionType.DirectSocket)
             {
-                try
-                {
-                    //get server's ip (external)
-                    string externalIp = getServerIp();
-
-                    //get server's ip (internal)/port
-                    IPAddress[] ips = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
-                    String internalIp = "";
-                    foreach (IPAddress ip in ips)
-                    {
-                        if (ip.AddressFamily.ToString() == "InterNetwork")
-                        {
-                            internalIp = ip.ToString();
-                            break;
-                        }
-                    }
-                    IPAddress ipAddress = Dns.GetHostAddresses("localhost")[1];
-                    httpServer = new Src.Communication.MyHttpServer(ipAddress, port);
-
-                    //print interna/external ips and port
-                    populateDirectSocketIps(externalIp, internalIp, port);
-
-                    Thread thread = new Thread(new ThreadStart(httpServer.listen));
-                    thread.Start();
-
-                    ConnectionStatus = "Waiting for incoming connections...";
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show("Error starting server. Check the port is valid and try again.");
-                }
+                
             }
             else if (connectionType == ConnectionType.XMPP)
             {
+                
                 xmppClient.connect(phoneID);
                 ConnectionStatus = "Connected to " + phoneID;
             }
-            
-            main_GUI.Invoke((MethodInvoker)delegate
-            {
-                main_GUI.enable_text_control();
-            });
-            
+
+            if (onConnect != null)
+                onConnect(this, new EventArgs());
+
             isConnected = true;
         }
 
@@ -129,11 +207,47 @@ namespace QoD_DataCentre.Src.Communication
         public void populateDirectSocketIps(string externalIp, string internalIp, int port)
         {
 
-            if (connectionSettings.IsHandleCreated)
-                connectionSettings.Invoke((MethodInvoker)delegate
+            if (IPsUpdated != null)
+                IPsUpdated(this, new IPPopulationEventArgs( externalIp, internalIp, port));
+
+        }
+
+        public HttpServer directSocketServerConnect( int port)
+        {
+            
+            try
+            {
+                //get server's ip (external)
+                string externalIp = getServerIp();
+
+                //get server's ip (internal)/port
+                IPAddress[] ips = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+                String internalIp = "";
+                foreach (IPAddress ip in ips)
                 {
-                    connectionSettings.populateDirectSocketIps(externalIp, internalIp, port);
-                });
+                    if (ip.AddressFamily.ToString() == "InterNetwork")
+                    {
+                        internalIp = ip.ToString();
+                        break;
+                    }
+                }
+                IPAddress ipAddress = Dns.GetHostAddresses("localhost")[1];
+                httpServer = new Src.Communication.MyHttpServer(ipAddress, port);
+
+                //print interna/external ips and port
+                //populateDirectSocketIps(externalIp, internalIp, port);
+
+                
+
+                return httpServer;
+                
+            }
+            catch
+            {
+                return null;
+            }
+
+            
         }
 
         public bool xmppUserConnect(string username, string password)
@@ -162,37 +276,18 @@ namespace QoD_DataCentre.Src.Communication
             isConnected = false;
             client_id = null;
             phone_id = null;
-            main_GUI.Invoke((MethodInvoker)delegate
-            {
-                main_GUI.disable_text_control();
-            });
+            
+            if (onDisconnect != null)
+                onDisconnect(this, new EventArgs());
         }
 
-        internal void change_connectionText_text(string text)
-        {
-            //invoke start progress...
-            main_GUI.Invoke((MethodInvoker)delegate
-            {
-                main_GUI.change_connectionText_text(text);
-            });
-        }
 
         public void RecieveMessage(string message)
         {
-            write_msg_to_text_control(message);
+            if(msgRecieved != null)
+                msgRecieved(this, new MsgRecievedEventArgs(message));   
         }
-
-        internal void write_msg_to_text_control(String text)
-        {
-            //invoke start progress...
-            main_GUI.Invoke((MethodInvoker)delegate
-            {
-                main_GUI.insert_write_to_text_control(phone_id + ">" + text + "\r\n");
-            });
-        }
-
-        public ConnectionType connectionType { get; set; }
-
+        
         internal void FatalConnectionError(string error)
         {
             MessageBox.Show
@@ -208,49 +303,27 @@ namespace QoD_DataCentre.Src.Communication
 
         internal void start_progress()
         {
-            //invoke start progress...
-            if (connectionSettings.IsHandleCreated)
-                connectionSettings.Invoke((MethodInvoker)delegate
-                {
-                    connectionSettings.start_progress();
-                });
-        }
-
-        private void write_connection_status()
-        {
-            //invoke start progress...
-            if (connectionSettings.IsHandleCreated)
-                connectionSettings.Invoke((MethodInvoker)delegate
-                {
-                    connectionSettings.write_connection_status();
-                });
-
-            change_connectionText_text(ConnectionStatus);
+            if(onWorking != null)
+                onWorking(this, new EventArgs());
         }
 
         internal void stop_progress()
         {
             //invoke start progress...
-            if (connectionSettings.IsHandleCreated)
-                connectionSettings.Invoke((MethodInvoker)delegate
-                {
-                    connectionSettings.stop_progress();
-                });
+            if (onIdle != null)
+                onIdle(this, new EventArgs());
         }
 
-        internal void write_contact_list()
+        internal void updateContacts()
         {
-            //invoke start progress...
-            if (connectionSettings.IsHandleCreated)
-                connectionSettings.Invoke((MethodInvoker)delegate
-                {
-                    connectionSettings.write_contact_list(xmppClient.USER_DICTIONARY);
-                });
+            if (xmppContactsUpdated != null)
+                xmppContactsUpdated(this, new XmppContactEventArgs(xmppClient.USER_DICTIONARY));
         }
-
+        
         internal Dictionary<string, int> getXmppUsers()
         {
             return xmppClient.USER_DICTIONARY;
         }
+
     }
 }

@@ -23,11 +23,14 @@ namespace QoD_DataCentre
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
+
+            networkCommunicationManager = new NetworkCommunicationManager();
             QoDForm mainForm = new QoDForm();
-            networkCommunicationManager = new NetworkCommunicationManager(mainForm, mainForm.ConnectionSettings);
+            
+            
             Application.Run(mainForm);
             
         }
+
     }
 }

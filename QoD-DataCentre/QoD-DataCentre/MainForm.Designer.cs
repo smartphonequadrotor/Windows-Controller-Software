@@ -187,6 +187,7 @@
             this.textControlTerminal.Location = new System.Drawing.Point(3, 3);
             this.textControlTerminal.Multiline = true;
             this.textControlTerminal.Name = "textControlTerminal";
+            this.textControlTerminal.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textControlTerminal.Size = new System.Drawing.Size(768, 354);
             this.textControlTerminal.TabIndex = 0;
             this.textControlTerminal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textControlTerminal_KeyDown);
