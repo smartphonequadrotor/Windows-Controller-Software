@@ -9,6 +9,16 @@ using System.Windows.Forms;
 using QoD_DataCentre.Src.UI;
 using System.Text.RegularExpressions;
 
+enum TabName
+{
+    Welcome = 1,
+    Location,
+    Statistics,
+    LiveFeed,
+    TextControl,
+    Plugins
+}
+
 namespace QoD_DataCentre
 {
     public partial class QoDForm : Form
@@ -221,6 +231,35 @@ namespace QoD_DataCentre
                 {
                     carat_pos++;
                 }
+            }
+        }
+
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Statistics)))
+            {
+                statistics1.InitializeControl();
+            }
+        }
+
+        public string tabPagesEnumToString(int i)
+        {
+            switch (i)
+            {
+                case 1:
+                    return "Welcome";
+                case 2:
+                    return "Location";
+                case 3:
+                    return "Statistics";
+                case 4:
+                    return "Live Feed";
+                case 5: 
+                    return "Text Control";
+                case 6:
+                    return "Plugins";
+                default:
+                    return "";
             }
         }
     }

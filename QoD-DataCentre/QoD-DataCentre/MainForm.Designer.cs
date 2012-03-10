@@ -32,22 +32,22 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.welcome1 = new QoD_DataCentre.Modules.Welcome();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.location1 = new QoD_DataCentre.Controls.Location();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.statistics1 = new QoD_DataCentre.Controls.Statistics();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.textControlTerminal = new System.Windows.Forms.TextBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.plugins1 = new QoD_DataCentre.Controls.Plugins();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.setupConnectionBtn = new System.Windows.Forms.Button();
             this.connectionText = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.welcome1 = new QoD_DataCentre.Modules.Welcome();
-            this.location1 = new QoD_DataCentre.Controls.Location();
-            this.statistics1 = new QoD_DataCentre.Controls.Statistics();
-            this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
-            this.plugins1 = new QoD_DataCentre.Controls.Plugins();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -86,6 +86,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(782, 386);
             this.tabControl1.TabIndex = 2;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
             // tabPage1
             // 
@@ -98,6 +99,18 @@
             this.tabPage1.Text = "Welcome";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // welcome1
+            // 
+            this.welcome1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.welcome1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.welcome1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.welcome1.Location = new System.Drawing.Point(6, 6);
+            this.welcome1.Name = "welcome1";
+            this.welcome1.Size = new System.Drawing.Size(762, 348);
+            this.welcome1.TabIndex = 0;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.location1);
@@ -108,6 +121,14 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Location";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // location1
+            // 
+            this.location1.BackColor = System.Drawing.Color.Orange;
+            this.location1.Location = new System.Drawing.Point(6, 6);
+            this.location1.Name = "location1";
+            this.location1.Size = new System.Drawing.Size(762, 348);
+            this.location1.TabIndex = 0;
             // 
             // tabPage3
             // 
@@ -120,6 +141,14 @@
             this.tabPage3.Text = "Statistics";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // statistics1
+            // 
+            this.statistics1.BackColor = System.Drawing.Color.Pink;
+            this.statistics1.Location = new System.Drawing.Point(6, 6);
+            this.statistics1.Name = "statistics1";
+            this.statistics1.Size = new System.Drawing.Size(762, 348);
+            this.statistics1.TabIndex = 0;
+            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.liveFeed1);
@@ -129,6 +158,14 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Live Feed";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // liveFeed1
+            // 
+            this.liveFeed1.BackColor = System.Drawing.Color.Green;
+            this.liveFeed1.Location = new System.Drawing.Point(3, 3);
+            this.liveFeed1.Name = "liveFeed1";
+            this.liveFeed1.Size = new System.Drawing.Size(768, 354);
+            this.liveFeed1.TabIndex = 0;
             // 
             // tabPage5
             // 
@@ -164,6 +201,14 @@
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Plugins";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // plugins1
+            // 
+            this.plugins1.BackColor = System.Drawing.Color.Blue;
+            this.plugins1.Location = new System.Drawing.Point(3, 3);
+            this.plugins1.Name = "plugins1";
+            this.plugins1.Size = new System.Drawing.Size(768, 354);
+            this.plugins1.TabIndex = 0;
             // 
             // pictureBox1
             // 
@@ -215,50 +260,6 @@
             this.label4.Size = new System.Drawing.Size(34, 13);
             this.label4.TabIndex = 7;
             this.label4.Text = "00:00";
-            // 
-            // welcome1
-            // 
-            this.welcome1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.welcome1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.welcome1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.welcome1.Location = new System.Drawing.Point(6, 6);
-            this.welcome1.Name = "welcome1";
-            this.welcome1.Size = new System.Drawing.Size(762, 348);
-            this.welcome1.TabIndex = 0;
-            // 
-            // location1
-            // 
-            this.location1.BackColor = System.Drawing.Color.Orange;
-            this.location1.Location = new System.Drawing.Point(6, 6);
-            this.location1.Name = "location1";
-            this.location1.Size = new System.Drawing.Size(762, 348);
-            this.location1.TabIndex = 0;
-            // 
-            // statistics1
-            // 
-            this.statistics1.BackColor = System.Drawing.Color.Pink;
-            this.statistics1.Location = new System.Drawing.Point(6, 6);
-            this.statistics1.Name = "statistics1";
-            this.statistics1.Size = new System.Drawing.Size(762, 348);
-            this.statistics1.TabIndex = 0;
-            // 
-            // liveFeed1
-            // 
-            this.liveFeed1.BackColor = System.Drawing.Color.Green;
-            this.liveFeed1.Location = new System.Drawing.Point(3, 3);
-            this.liveFeed1.Name = "liveFeed1";
-            this.liveFeed1.Size = new System.Drawing.Size(768, 354);
-            this.liveFeed1.TabIndex = 0;
-            // 
-            // plugins1
-            // 
-            this.plugins1.BackColor = System.Drawing.Color.Blue;
-            this.plugins1.Location = new System.Drawing.Point(3, 3);
-            this.plugins1.Name = "plugins1";
-            this.plugins1.Size = new System.Drawing.Size(768, 354);
-            this.plugins1.TabIndex = 0;
             // 
             // QoDForm
             // 
