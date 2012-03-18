@@ -6,12 +6,30 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using ZedGraph;
+using QoD_DataCentre.Domain.JSON;
+//using QoD_DataCentre.Domain.Enum;
 
 namespace QoD_DataCentre.Controls
 {
     public partial class Statistics : UserControl
     {
+        public bool initialized = false;
+
+        private int xMaxRange = 5; //range of x axis in ms
+        List<RollingPointPairList> accelerometerDataSets = new List<RollingPointPairList>();
+        List<RollingPointPairList> orientationDataSets = new List<RollingPointPairList>();
+
+        private string[] labelArrayXYZ = new string[] { "x", "y", "z" };
+        private string[] labelArrayLatLong = new string[] { "latitude", "longitude", "height" };
+        private string[] labelArrayMotors = new string[] { "Motor 1", "Motor 2", "Motor 3", "Motor 4" };
+
+        private long time = 0;
+
+        long maxAccelTimeStamp;
+        long maxGyroTimeStamp;
+
         public Statistics()
         {
             InitializeComponent();
@@ -19,142 +37,66 @@ namespace QoD_DataCentre.Controls
 
         public void InitializeControl()
         {
-            //todo lisa -- for the actual data, probably want to use the RollingPointPairList as in the
-            //stack overflow question - http://stackoverflow.com/questions/7671070/scrolling-does-not-work-with-zedgraph
             // Make up some data points based on the Sine function
-            RollingPointPairList list = new RollingPointPairList(40);
-            RollingPointPairList list2 = new RollingPointPairList(40);
-            RollingPointPairList list3 = new RollingPointPairList(40);
-            RollingPointPairList list4 = new RollingPointPairList(40);
-            for (int i = 0; i < 40; i++)
+            RollingPointPairList accelerometerX = new RollingPointPairList(30000);
+            RollingPointPairList accelerometerY = new RollingPointPairList(30000);
+            RollingPointPairList accelerometerZ = new RollingPointPairList(30000);
+
+            RollingPointPairList orientationX = new RollingPointPairList(30000);
+            RollingPointPairList orientationY = new RollingPointPairList(30000);
+            RollingPointPairList orientationZ = new RollingPointPairList(30000);
+
+            //initialize point pair lists
+            for (int i = 0; i < 30000; i++)
             {
-                double x = (double)i * 5.0;
+                accelerometerX.Add(0, 0);
+                accelerometerY.Add(0, 0);
+                accelerometerZ.Add(0, 0);
+                orientationX.Add(0, 0);
+                orientationY.Add(0, 0);
+                orientationZ.Add(0, 0);
+                /*double x = (double)i * 0.2;
                 double y = Math.Sin((double)i * Math.PI / 15.0) * 16.0;
                 double y2 = y / 2;
                 double y3 = y / 4;
                 double y4 = Math.Cos((double)i * Math.PI / 15.0) * 16.0;
-                list.Add(x, y);
-                list2.Add(x, y2);
-                list3.Add(x, y3);
-                list4.Add(x, y4);
+                accelerometerX.Add(x, y);
+                accelerometerY.Add(x, y2);
+                accelerometerZ.Add(x, y3);
+                list4.Add(x, y4);*/
             }
 
-            List<RollingPointPairList> dataSets = new List<RollingPointPairList>();
-            dataSets.Add(list);
-            dataSets.Add(list2);
-            dataSets.Add(list3);
-            dataSets.Add(list4);
+            accelerometerDataSets.Add(accelerometerX);
+            accelerometerDataSets.Add(accelerometerY);
+            accelerometerDataSets.Add(accelerometerZ);
 
-            string[] labelArray = new string[]{"x", "y", "z", "woohoo!"};
+            orientationDataSets.Add(orientationX);
+            orientationDataSets.Add(orientationY);
+            orientationDataSets.Add(orientationZ);
 
-            initializeGraph(accelerationVsTime.GraphPane, "Acceleration vs Time", "Acceleration", "Time", dataSets, labelArray);
+            maxAccelTimeStamp = 0;
+            maxGyroTimeStamp = 0;
 
-            System.Threading.Thread.Sleep(200);
+            initializeGraph(accelerationVsTime, "Acceleration vs Time", "Acceleration", "Time", accelerometerDataSets, labelArrayXYZ);
+            // Size the control to fit the window
+            SetSize(ref accelerationVsTime, 10);
 
-            //this should update every 30 ms
+            initializeGraph(orientationVsTime, "Orientation vs Time", "Orientation", "Time", orientationDataSets, labelArrayXYZ);
+            SetSize(ref orientationVsTime, 320);
 
-            int time = 200;
-
-            dataSets[0].Add(time, 10);
-            dataSets[1].Add(time, 5);
-            dataSets[2].Add(time, 0);
-            dataSets[3].Add(time, -10);
-
-            //need to change the x axis values shown to user
-            /*double xRange = myPane02m.XAxis.Scale.Max - myPane02m.XAxis.Scale.Min;
-            myPane02m.XAxis.Scale.Max = new XDate(DateTime.Now);
-            myPane02m.XAxis.Scale.Min = myPane02m.XAxis.Scale.Max - xRange;*/
-
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time+10, 10);
-            dataSets[1].Add(time+10, 5);
-            dataSets[2].Add(time+10, 0);
-            dataSets[3].Add(time+10, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time+20, 10);
-            dataSets[1].Add(time+20, 5);
-            dataSets[2].Add(time+20, 0);
-            dataSets[3].Add(time+20, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time+30, 10);
-            dataSets[1].Add(time+30, 5);
-            dataSets[2].Add(time+30, 0);
-            dataSets[3].Add(time+30, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time+40, 10);
-            dataSets[1].Add(time+40, 5);
-            dataSets[2].Add(time+40, 0);
-            dataSets[3].Add(time+40, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time+50, 10);
-            dataSets[1].Add(time+50, 5);
-            dataSets[2].Add(time+50, 0);
-            dataSets[3].Add(time+50, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 60, 10);
-            dataSets[1].Add(time+60, 5);
-            dataSets[2].Add(time+60, 0);
-            dataSets[3].Add(time+60, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 70, 10);
-            dataSets[1].Add(time+70, 5);
-            dataSets[2].Add(time+70, 0);
-            dataSets[3].Add(time+70, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 80, 10);
-            dataSets[1].Add(time+80, 5);
-            dataSets[2].Add(time+80, 0);
-            dataSets[3].Add(time+80, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 90, 10);
-            dataSets[1].Add(time+90, 5);
-            dataSets[2].Add(time+90, 0);
-            dataSets[3].Add(time+90, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 100, 10);
-            dataSets[1].Add(time+100, 5);
-            dataSets[2].Add(time+100, 0);
-            dataSets[3].Add(time+100, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 110, 10);
-            dataSets[1].Add(time+110, 5);
-            dataSets[2].Add(time+110, 0);
-            dataSets[3].Add(time+110, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 120, 10);
-            dataSets[1].Add(time+120, 5);
-            dataSets[2].Add(time+120, 0);
-            dataSets[3].Add(time+120, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 130, 10);
-            dataSets[1].Add(time+130, 5);
-            dataSets[2].Add(time+130, 0);
-            dataSets[3].Add(time+130, -10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 140, 10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 150, 10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 160, 10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 170, 10);
-            System.Threading.Thread.Sleep(200);
-            dataSets[0].Add(time + 180, 10);
-
-            //todo lisa - all graphs in goodnotes are expected to have 3 sets of data (x, y, z; lat, long, height, etc)
-            //except raw data which has 4 (data for each motor). suggested method of implementation - initializeGraph
-            //will accept an array of pointLists
+            initialized = true;
         }
 
-        private void initializeGraph(GraphPane gp, string title, string yTitle, string xTitle, List<RollingPointPairList> dataSets, string[] labelArray)
+        private void initializeGraph(ZedGraphControl graph, string title, string yTitle, string xTitle, List<RollingPointPairList> dataSets, string[] labelArray)
         {
+            GraphPane gp = graph.GraphPane;
             // Set the titles and axis labels
             gp.Title.Text = title;
             gp.XAxis.Title.Text = xTitle;
             gp.YAxis.Title.Text = yTitle;
             //gp.Y2Axis.Title.Text = "Parameter B";
 
-            Color[] colorArray = new Color[]{Color.Red, Color.Blue, Color.Green, Color.Yellow};
+            Color[] colorArray = new Color[] { Color.Red, Color.Blue, Color.Green, Color.Yellow };
 
             int arrayIndex = 0;
 
@@ -167,6 +109,11 @@ namespace QoD_DataCentre.Controls
             // Show the x axis grid
             gp.XAxis.MajorGrid.IsVisible = true;
 
+            //if(dataSets[
+            //gp.XAxis.Scale.Max = 
+            //gp.XAxis.Scale.Min = 0;
+            //gp.XAxis.Scale.Max = xMaxRange;
+
             // turn off the opposite tics so the Y tics don't show up on the Y2 axis
             //gp.YAxis.MajorTic.IsOpposite = false;
             //gp.YAxis.MinorTic.IsOpposite = false;
@@ -175,8 +122,8 @@ namespace QoD_DataCentre.Controls
             // Align the Y axis labels so they are flush to the axis
             //gp.YAxis.Scale.Align = AlignP.Inside;
             // Manually set the axis range
-            //gp.YAxis.Scale.Min = -30;
-            //gp.YAxis.Scale.Max = 30;
+            gp.YAxis.Scale.Min = -30;
+            gp.YAxis.Scale.Max = 30;
 
             // Enable the Y2 axis display
             /*gp.Y2Axis.IsVisible = true;
@@ -202,38 +149,107 @@ namespace QoD_DataCentre.Controls
             gp.GraphObjList.Add(text);
 
             // Enable scrollbars if needed
-            /*accelerationVsTime.IsShowHScrollBar = true;
-            accelerationVsTime.IsShowVScrollBar = true;
-            accelerationVsTime.IsAutoScrollRange = true;
-            accelerationVsTime.IsScrollY2 = true;*/
+            /*accelerationVsTime.IsShowHScrollBar = true;*/
+            //accelerationVsTime.IsShowVScrollBar = true;
+            graph.IsAutoScrollRange = true;
+            //accelerationVsTime.IsScrollY2 = true;*/
 
             // OPTIONAL: Show tooltips when the mouse hovers over a point
-            accelerationVsTime.IsShowPointValues = true;
-            accelerationVsTime.PointValueEvent += new ZedGraphControl.PointValueHandler(MyPointValueHandler);
+            graph.IsShowPointValues = true;
+            graph.PointValueEvent += new ZedGraphControl.PointValueHandler(MyPointValueHandler);
 
             // OPTIONAL: Add a custom context menu item
             //accelerationVsTime.ContextMenuBuilder += new ZedGraphControl.ContextMenuBuilderEventHandler(
-              //              MyContextMenuBuilder);
+            //              MyContextMenuBuilder);
 
             // OPTIONAL: Handle the Zoom Event
-            accelerationVsTime.ZoomEvent += new ZedGraphControl.ZoomEventHandler(MyZoomEvent);
-
-            // Size the control to fit the window
-            SetSize();
+            graph.ZoomEvent += new ZedGraphControl.ZoomEventHandler(MyZoomEvent);
 
             // Tell ZedGraph to calculate the axis ranges
             // Note that you MUST call this after enabling IsAutoScrollRange, since AxisChange() sets
             // up the proper scrolling parameters
-            accelerationVsTime.AxisChange();
+            graph.AxisChange();
             // Make sure the Graph gets redrawn
-            accelerationVsTime.Invalidate();
+            graph.Invalidate();
         }
 
-        private void SetSize()
+        public void updateGraph(ref JsonObjects.Envelope j)
         {
-            accelerationVsTime.Location = new Point(10, 10);
+            //update acceleration vs time graph as needed
+            for (int i = 0; i < j.Responses.Accel.Length; i++)
+            {
+                if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                {
+                    updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.X, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].X);
+                    updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Y, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Y);
+                    updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Z, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Z);
+                }
+            }
+
+            //find max acceleration time stamp
+            for (int i = 0; i < j.Responses.Accel.Length; i++)
+            {
+                if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                {
+                    maxAccelTimeStamp = j.Responses.Accel[i].Timestamp;
+                }
+            }
+
+            //update orientation vs time graph as needed
+            for (int i = 0; i < j.Responses.Gyro.Length; i++)
+            {
+                if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
+                {
+                    updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].X);
+                    updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Y);
+                    updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Z);
+                }
+            }
+
+            //find max orientation time stamp
+            for (int i = 0; i < j.Responses.Gyro.Length; i++)
+            {
+                if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
+                {
+                    maxGyroTimeStamp = j.Responses.Gyro[i].Timestamp;
+                }
+            }
+            //todo lisa
+            /*for (int i = 0; i < j.Responses.Gyro.Length; i++)
+            {
+                if (j.Responses.Accel[i].Timestamp == maxAccelTimeStamp)
+                {
+                    updateGraph(GraphingData.accelerometerX, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].X);
+                    updateGraph(GraphingData.accelerometerY, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Y);
+                    updateGraph(GraphingData.accelerometerZ, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Z);
+                }
+            }*/
+        }
+
+        public void updateGraph(ref ZedGraphControl graph, ref List<RollingPointPairList> dataSets, GraphData valueToChange, long time, float data)
+        {
+            //change the x axis values shown to user
+            double incomingTimeVal = (double)time;
+            if (graph.GraphPane.XAxis.Scale.Max < incomingTimeVal)
+            {
+                graph.GraphPane.XAxis.Scale.Max = incomingTimeVal;
+            }
+            graph.GraphPane.XAxis.Scale.Min = graph.GraphPane.XAxis.Scale.Max - xMaxRange;
+
+            dataSets[(int)valueToChange].Add(time, data);
+            //dataSets[1].Add(time, y + 5);
+            //dataSets[2].Add(time, y);
+            //dataSets[3].Add(x, y - 10);
+
+            //accelerationVsTime.GraphPane.AxisChange();
+            graph.Invalidate();
+        }
+
+        private void SetSize(ref ZedGraphControl graph, int locationY)
+        {
+            graph.Location = new Point(10, locationY);
             // Leave a small margin around the outside of the control
-            accelerationVsTime.Size = new Size(500,//this.ClientRectangle.Width - 20,
+            graph.Size = new Size(500,//this.ClientRectangle.Width - 20,
                     300);//this.ClientRectangle.Height - 20);
         }
 
@@ -290,46 +306,3 @@ namespace QoD_DataCentre.Controls
         }
     }
 }
-
-/*
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using ZedGraph;
-
-namespace ZGControlTest
-{
-	public partial class Form1 : Form
-	{
-		public Form1()
-		{
-			InitializeComponent();
-		}
-
-		private void Form1_Load( object sender, EventArgs e )
-		{
-			
-		}
-
-		/// <summary>
-		/// On resize action, resize the ZedGraphControl to fill most of the Form, with a small
-		/// margin around the outside
-		/// </summary>
-		private void Form1_Resize( object sender, EventArgs e )
-		{
-			SetSize();
-		}
-
-		
-
-		
-
-
-	}
-}
-*/

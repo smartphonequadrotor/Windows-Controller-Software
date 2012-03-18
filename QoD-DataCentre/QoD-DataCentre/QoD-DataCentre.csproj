@@ -114,6 +114,7 @@
     <Compile Include="Controls\ConnectionSettings.Designer.cs">
       <DependentUpon>ConnectionSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Domain\Enum\GraphingData.cs" />
     <Compile Include="Domain\JSON\JsonManager.cs" />
     <Compile Include="Domain\JSON\JsonObjects.cs" />
     <Compile Include="MainForm.cs">

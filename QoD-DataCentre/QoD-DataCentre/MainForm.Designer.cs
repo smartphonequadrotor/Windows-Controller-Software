@@ -47,7 +47,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.setupConnectionBtn = new System.Windows.Forms.Button();
             this.connectionText = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.connectionTimerLbl = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -226,9 +226,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(48, 61);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(102, 13);
+            this.label2.Size = new System.Drawing.Size(90, 13);
             this.label2.TabIndex = 4;
-            this.label2.Text = "Elapsed Flight Time:";
+            this.label2.Text = "Connection Time:";
             // 
             // setupConnectionBtn
             // 
@@ -253,21 +253,21 @@
             this.connectionText.Text = "Not Connected.";
             this.connectionText.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // label4
+            // connectionTimerLbl
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(153, 61);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(34, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "00:00";
+            this.connectionTimerLbl.AutoSize = true;
+            this.connectionTimerLbl.Location = new System.Drawing.Point(144, 61);
+            this.connectionTimerLbl.Name = "connectionTimerLbl";
+            this.connectionTimerLbl.Size = new System.Drawing.Size(49, 13);
+            this.connectionTimerLbl.TabIndex = 7;
+            this.connectionTimerLbl.Text = "00:00:00";
             // 
             // QoDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(806, 478);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.connectionTimerLbl);
             this.Controls.Add(this.connectionText);
             this.Controls.Add(this.setupConnectionBtn);
             this.Controls.Add(this.label2);
@@ -306,7 +306,7 @@
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.Button setupConnectionBtn;
         private System.Windows.Forms.Label connectionText;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label connectionTimerLbl;
         private Modules.Welcome welcome1;
         private Controls.Location location1;
         private Controls.Statistics statistics1;

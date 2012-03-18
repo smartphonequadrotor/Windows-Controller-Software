@@ -8,18 +8,13 @@ namespace QoD_DataCentre.Domain.JSON
 {
     public class JsonManager
     {
-        
-
         public JsonManager()
-        {
-            
+        {       
         }
 
         public JsonObjects.Envelope DeserializeEnvelope(string json)
         {
             return JsonConvert.DeserializeObject<JsonObjects.Envelope>(json);
         }
-        
-
     }
 }

@@ -8,40 +8,37 @@ namespace QoD_DataCentre.Domain.JSON
 {
     public static class JsonObjects
     {
-        
-
         public class MovementCommand
         {
-            
             private float xVector;
+            private float yVector;
+            private float zVector;
+            private int speed;
+            private uint duration;
 
             public float XVector
             {
                 get { return xVector; }
                 set { xVector = value; }
             }
-            private float yVector;
 
             public float YVector
             {
                 get { return yVector; }
                 set { yVector = value; }
             }
-            private float zVector;
 
             public float ZVector
             {
                 get { return zVector; }
                 set { zVector = value; }
             }
-            private int speed;
 
             public int Speed
             {
                 get { return speed; }
                 set { speed = value; }
             }
-            private uint duration;
 
             public uint Duration
             {
@@ -51,7 +48,6 @@ namespace QoD_DataCentre.Domain.JSON
 
             public MovementCommand()
             {
-
             }
 
             public MovementCommand(float xVector, float yVector, float zVector, int speed, uint duration)
@@ -63,13 +59,10 @@ namespace QoD_DataCentre.Domain.JSON
                 this.Duration = duration;
             }
 
-            override
-            public string ToString()
+            override public string ToString()
             {
                 return "X: " + XVector + ", Y: " + YVector + ", Z: " + ZVector + ", Speed: " + Speed + ", Duration: " + Duration;
-
             }
-
 
             public string ToJSON()
             {
@@ -77,9 +70,6 @@ namespace QoD_DataCentre.Domain.JSON
                 JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                 return JsonConvert.SerializeObject(this, Formatting.Indented, JsonSettings);
             }
-
-            
-
         }
 
         public class Commands{
@@ -95,19 +85,18 @@ namespace QoD_DataCentre.Domain.JSON
 
             public Commands()
             {
-
             }
 
-            override
-            public string ToString(){
+            override public string ToString()
+            {
                 string returnString = "Commands:\r\n";
                 foreach (MovementCommand m in move)
+                {
                     returnString += "\r\nMove:\r\n\t" + m.ToString();
-
+                }
 
                 return returnString;
             }
-
         }
 
         public class Request
@@ -129,7 +118,6 @@ namespace QoD_DataCentre.Domain.JSON
 
             public Request()
             {
-
             }
 
             public Request(String resource, int period)
@@ -147,7 +135,6 @@ namespace QoD_DataCentre.Domain.JSON
 
         public abstract class Response
         {
-
             private long timestamp;
 
             public long Timestamp
@@ -158,36 +145,31 @@ namespace QoD_DataCentre.Domain.JSON
 
             public Response()
             {
-
             }
 
             public Response(long timestamp)
             {
                 this.Timestamp = timestamp;
-
             }
-
-
         }
 
-        public class TriAxisSensorData
+        public class TriAxisSensorData : Response
         {
-
             private float x;
+            private float y;
+            private float z;
 
             public float X
             {
                 get { return x; }
                 set { x = value; }
             }
-            private float y;
 
             public float Y
             {
                 get { return y; }
                 set { y = value; }
             }
-            private float z;
 
             public float Z
             {
@@ -206,32 +188,20 @@ namespace QoD_DataCentre.Domain.JSON
                 this.Y = y;
                 this.Z = z;
             }
-
         }
 
-        public class TriAxisResponse : Response
+        public class TriAxisResponse : TriAxisSensorData
         {
-            private TriAxisSensorData data;
-
-            public TriAxisSensorData Data
-            {
-                get { return data; }
-                set { data = value; }
-            }
-
             public TriAxisResponse()
             {
-                Data = new TriAxisSensorData();
-
             }
 
-            override
-            public string ToString()
+            override public string ToString()
             {
                 DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                 string time = origin.AddSeconds(this.Timestamp).ToString("{0:d/M/yyyy HH:mm:ss}");
                 string response = "Timestamp: "+time+"\r\n";
-                response += "X: " + this.data.X + ", Y: " + this.data.Y + ", Z: " + this.data.Z;
+                response += "X: " + this.X + ", Y: " + this.Y + ", Z: " + this.Z;
 
                 return response;
             }
@@ -260,8 +230,7 @@ namespace QoD_DataCentre.Domain.JSON
                 accel = null;
             }
 
-            override
-            public string ToString()
+            override public string ToString()
             {
                 string responses = "Responses:";
 
@@ -273,20 +242,16 @@ namespace QoD_DataCentre.Domain.JSON
                     {
                         responses += "\r\n\t" + gyro.ToString().Replace("\r\n","\r\n\t");
                     }
-
-
                 }
 
                 if (Accel != null && Accel.Length > 0)
                 {
-                    responses += "\r\n\r\nAccelarometer:\r\n";
+                    responses += "\r\n\r\nAccelerometer:\r\n";
 
                     foreach (QoD_DataCentre.Domain.JSON.JsonObjects.TriAxisResponse accel in Accel)
                     {
                         responses += "\r\n\t" + accel.ToString().Replace("\r\n", "\r\n\t");
                     }
-
-
                 }
 
 
@@ -302,23 +267,23 @@ namespace QoD_DataCentre.Domain.JSON
 
         }
 
-        public class Envelope{
-
+        public class Envelope
+        {
             Commands commands;
+            Request[] requests;
+            Responses responses;
 
             public Commands Commands
             {
                 get { return commands; }
                 set { commands = value; }
             }
-            Request[] requests;
 
             public Request[] Requests
             {
                 get { return requests; }
                 set { requests = value; }
             }
-            Responses responses;
 
             public Responses Responses
             {
@@ -337,8 +302,7 @@ namespace QoD_DataCentre.Domain.JSON
                 this.responses = responses;
             }
 
-            override
-            public string ToString()
+            override public string ToString()
             {
                 string returnString = "\r\nEnvelope: \r\n";
                 if(commands != null)
@@ -363,7 +327,5 @@ namespace QoD_DataCentre.Domain.JSON
             }
 
         }
-        
-
     }
 }

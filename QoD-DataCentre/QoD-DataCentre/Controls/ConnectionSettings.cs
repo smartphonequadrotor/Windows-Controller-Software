@@ -93,6 +93,8 @@ namespace QoD_DataCentre.Src.UI
                 qoDForm.reset_text_control();
             });
 
+            qoDForm.startTimer();
+
             this.Hide();
         }
 
@@ -113,6 +115,7 @@ namespace QoD_DataCentre.Src.UI
         private void xmppConnect_Click(object sender, EventArgs e)
         {
             QoDMain.networkCommunicationManager.Disconnect();
+            qoDForm.stopTimer();
             connectBtn.Enabled = false;
             xmppUsers.Items.Clear();
 
@@ -121,7 +124,6 @@ namespace QoD_DataCentre.Src.UI
                 // Start the asynchronous operation.
                 xmpp_async_connect.RunWorkerAsync();
             }
-
         }
 
         // This event handler is where the time-consuming work is done.

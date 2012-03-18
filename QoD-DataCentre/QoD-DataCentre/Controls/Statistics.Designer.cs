@@ -31,6 +31,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.orientationVsTime = new ZedGraph.ZedGraphControl();
             this.accelerationVsTime = new ZedGraph.ZedGraphControl();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -53,6 +54,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.AutoScroll = true;
+            this.splitContainer1.Panel2.Controls.Add(this.orientationVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.accelerationVsTime);
             this.splitContainer1.Size = new System.Drawing.Size(448, 253);
             this.splitContainer1.SplitterDistance = 91;
@@ -62,7 +65,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.DarkKhaki;
-            this.label2.Location = new System.Drawing.Point(86, 11);
+            this.label2.Location = new System.Drawing.Point(63, 11);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 1;
@@ -74,9 +77,23 @@
             this.label1.BackColor = System.Drawing.Color.DarkKhaki;
             this.label1.Location = new System.Drawing.Point(3, 11);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 13);
+            this.label1.Size = new System.Drawing.Size(61, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Running Time:";
+            this.label1.Text = "Flight Time:";
+            // 
+            // orientationVsTime
+            // 
+            this.orientationVsTime.Location = new System.Drawing.Point(3, 159);
+            this.orientationVsTime.Name = "orientationVsTime";
+            this.orientationVsTime.ScrollGrace = 0D;
+            this.orientationVsTime.ScrollMaxX = 0D;
+            this.orientationVsTime.ScrollMaxY = 0D;
+            this.orientationVsTime.ScrollMaxY2 = 0D;
+            this.orientationVsTime.ScrollMinX = 0D;
+            this.orientationVsTime.ScrollMinY = 0D;
+            this.orientationVsTime.ScrollMinY2 = 0D;
+            this.orientationVsTime.Size = new System.Drawing.Size(150, 150);
+            this.orientationVsTime.TabIndex = 1;
             // 
             // accelerationVsTime
             // 
@@ -115,6 +132,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private ZedGraph.ZedGraphControl accelerationVsTime;
+        private ZedGraph.ZedGraphControl orientationVsTime;
 
     }
 }

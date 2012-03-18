@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Timers;
 using QoD_DataCentre.Src.UI;
 using System.Text.RegularExpressions;
 using QoD_DataCentre.Domain.JSON;
@@ -26,7 +27,12 @@ namespace QoD_DataCentre
 {
     public partial class QoDForm : Form
     {
+        delegate void UpdateTimerCallback();
+
         private ConnectionSettings connectionSettings;
+        private JsonObjects.Envelope jsonEnvelope;
+        private System.Timers.Timer timer;
+        private long time;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -42,7 +48,176 @@ namespace QoD_DataCentre
             QoDMain.networkCommunicationManager.onConnect += new NetworkCommunicationManager.connectEvent(networkCommunicationManager_onConnect);
             QoDMain.networkCommunicationManager.onDisconnect += new NetworkCommunicationManager.disconnectEvent(networkCommunicationManager_onDisconnect);
             QoDMain.networkCommunicationManager.onStatusChanged += new NetworkCommunicationManager.statusEvent(networkCommunicationManager_onStatusChanged);
+
+            timer = new System.Timers.Timer(1000);
+
+            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            timer.Enabled = true;
+
+            timer.Stop();
+
+            // If the timer is declared in a long-running method, use
+            // KeepAlive to prevent garbage collection from occurring
+            // before the method ends.
+            //GC.KeepAlive(timer); 
+   
             InitializeComponent();
+        }
+
+        // Specify what you want to happen when the Elapsed event is 
+        // raised.
+        void OnTimedEvent(object source, ElapsedEventArgs e)
+        {   
+            time++;
+            updateTime();
+		}
+
+        public void updateTime()
+        {
+            if (connectionTimerLbl.InvokeRequired)
+            {
+                UpdateTimerCallback d = new UpdateTimerCallback(updateTime);
+                this.Invoke(d, new object[] { });
+            }
+            else
+            {
+                connectionTimerLbl.Text = convertToTimeString(time);
+            }
+        }
+
+        public string convertToTimeString(long time)
+        {
+            //if less than a minute, can parse out directly
+            if (time < 60)
+            {
+                if (time < 10)
+                {
+                    if (time == 0)
+                    {
+                        return "00:00:00";
+                    }
+                    else
+                    {
+                        return "00:00:0" + time;
+                    }
+                }
+                else
+                {
+                    return "00:00:" + time;
+                }
+            }
+            else
+            {
+                //divide by 60 to get minutes
+                decimal minutes = time / 60;
+                if (minutes < 60)
+                {
+                    //create time string
+                    int fullMinutes = (int)minutes;
+                    decimal seconds = minutes - (decimal)fullMinutes;
+                    if (fullMinutes < 10)
+                    {
+                        long secs = time - (long)(minutes * 60);
+                        if (secs < 10)
+                        {
+                            if (secs == 0)
+                            {
+                                return "00:0" + minutes + ":00";
+                            }
+                            else
+                            {
+                                return "00:0" + minutes + ":0" + secs;
+                            }
+                        }
+                        else
+                        {
+                            return "00:0" + minutes + ":" + secs;
+                        }
+                    }
+                    else
+                    {
+                        int secs = (int)seconds * 60;
+                        if (secs < 10)
+                        {
+                            if (secs == 0)
+                            {
+                                return "00:" + minutes + ":00";
+                            }
+                            else
+                            {
+                                return "00:" + minutes + ":0" + secs;
+                            }
+                        }
+                        else
+                        {
+                            return "00:" + minutes + ":" + secs;
+                        }
+                    }
+                }
+                else
+                {
+                    //divide by 3600 to get hours
+                    decimal hours = time / 3600;
+
+                    int hrs = (int)hours;
+
+                    long mins_s = time - hrs * 3600;
+
+                    decimal mins = mins_s / 60;
+                    int m = (int)mins;
+
+                    long s = time - (long)(hrs * 3600) - (long)(mins * 60);
+
+                    if (m < 10)
+                    {
+                        if (s < 10)
+                        {
+                            if (s == 0)
+                            {
+                                return hrs + ":0" + m + ":00";
+                            }
+                            else
+                            {
+                                return hrs + ":0" + m + ":0" + s;
+                            }
+                        }
+                        else
+                        {
+                            return hrs + ":0" + m + ":" + s;
+                        }
+                    }
+                    else
+                    {
+                        if (s < 10)
+                        {
+                            if (s == 0)
+                            {
+                                return hrs + ":" + m + ":00";
+                            }
+                            else
+                            {
+                                return hrs + ":" + m + ":0" + s;
+                            }
+                        }
+                        else
+                        {
+                            return hrs + ":" + m + ":" + s;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void startTimer()
+        {
+            timer.Start();
+        }
+
+        public void stopTimer()
+        {
+            timer.Stop();
+            time = 0;
+            updateTime();
         }
 
         //when the status changes... we may want to update the status.
@@ -55,7 +230,7 @@ namespace QoD_DataCentre
             });
         }
 
-        //on disconnect... do things here
+        //on disconnect...
         void networkCommunicationManager_onDisconnect(object sender, EventArgs data)
         {
             this.Invoke((MethodInvoker)delegate
@@ -64,7 +239,7 @@ namespace QoD_DataCentre
             });
         }
 
-        //on sucessful connect... do stuff here.
+        //on sucessful connect... 
         void networkCommunicationManager_onConnect(object sender, EventArgs data)
         {
             this.Invoke((MethodInvoker)delegate
@@ -73,30 +248,34 @@ namespace QoD_DataCentre
             });
         }
 
-
-
         //recieved message callback. Currently just adds data to command window... 
         public void networkCommunicationManager_msgRecieved(object sender,  NetworkCommunicationManager.MsgRecievedEventArgs data)
         {
             this.Invoke((MethodInvoker)delegate
             {
-                string recievedText = data.Message;
+                string receivedText = data.Message;
 
                 try
                 {
                     JsonManager commandConvert = new JsonManager();
-                    JsonObjects.Envelope response = commandConvert.DeserializeEnvelope(recievedText);
-                
-                    if(response != null)
-                        recievedText = response.ToString();
+                    jsonEnvelope = commandConvert.DeserializeEnvelope(receivedText);
 
+                    if (jsonEnvelope != null)
+                    {
+                        receivedText = jsonEnvelope.ToString();
+                    }
+
+                    if (statistics1 != null)
+                    {
+                        statistics1.updateGraph(ref jsonEnvelope);
+                    }
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
                 }
 
-                insert_write_to_text_control(recievedText);
+                insert_write_to_text_control(receivedText);
             });
         }
 
@@ -114,7 +293,6 @@ namespace QoD_DataCentre
         {
             connectionText.Text = text;
         }
-
 
         internal void enable_text_control()
         {
@@ -139,12 +317,13 @@ namespace QoD_DataCentre
             textControlTerminal.Text = textControlTerminal.Text.Insert(line_count, text);
 
             if (carat >= line_length)
+            {
                 carat += text.Length;
+            }
 
             carat_pos += text.Length;
             line_count += text.Length;
             line_length += text.Length;
-
 
             textControlTerminal.SelectionStart = carat;
             textControlTerminal.ScrollToCaret();
@@ -169,7 +348,6 @@ namespace QoD_DataCentre
             }
             return text;
         }
-
 
         int line_length;
         int carat_pos;
@@ -367,7 +545,7 @@ namespace QoD_DataCentre
 
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Statistics)))
+            if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Statistics)) && !statistics1.initialized)
             {
                 statistics1.InitializeControl();
             }

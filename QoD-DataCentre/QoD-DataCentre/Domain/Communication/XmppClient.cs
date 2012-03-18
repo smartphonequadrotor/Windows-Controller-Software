@@ -15,9 +15,6 @@ namespace QoD_DataCentre.Src.Communication
 {
     class XmppClient// : INetworkConnection
     {
-
-        
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -136,15 +133,9 @@ namespace QoD_DataCentre.Src.Communication
             return true;
         }
 
-        
-
-        
-
-        
-
-        public void send_precence()
+        public void send_presence()
         {
-            Console.WriteLine("Sending Precence");
+            Console.WriteLine("Sending Presence");
             Presence p = new Presence(ShowType.chat, "Online");
             p.Type = PresenceType.available;
             xmpp.Send(p);
@@ -158,14 +149,12 @@ namespace QoD_DataCentre.Src.Communication
             Console.WriteLine("xmpp Connection State {0}", xmpp.XmppConnectionState);
             Console.WriteLine("xmpp Authenticated? {0}", xmpp.Authenticated);
             Console.WriteLine();
-            send_precence();
+            send_presence();
 
             /*
-            * 
             * get the roster (see who's online)
             */
             xmpp.OnPresence += new PresenceHandler(xmpp_OnPresence);
-            
 
             //wait until we received the list of available contacts            
             Console.WriteLine();
@@ -173,7 +162,6 @@ namespace QoD_DataCentre.Src.Communication
 
             networkCommunicationManager.stop_progress();
             networkCommunicationManager.ConnectionStatus = "Connected to XMPP server.";
-
         }
 
         // Is called, if the precence of a roster contact changed        
@@ -196,14 +184,14 @@ namespace QoD_DataCentre.Src.Communication
             {
                 xmpp.MessageGrabber.Remove(new Jid(pres.From.User + '@' + pres.From.Server));
                 contact_dictionary.Remove(pres.From.User + '@' + pres.From.Server);
-                if (Partner_Jabber_ID != null && Partner_Jabber_ID == pres.From.User + '@' + pres.From.Server){
+                if (Partner_Jabber_ID != null && Partner_Jabber_ID == pres.From.User + '@' + pres.From.Server)
+                {
                     disconnect();
                     networkCommunicationManager.disconnectCallback();
                 }
             }
 
             networkCommunicationManager.updateContacts();
-            
         }
 
         public void connect(string partnerID)
@@ -217,13 +205,15 @@ namespace QoD_DataCentre.Src.Communication
             }
 
             Partner_Jabber_ID = partnerID;
-            
-            foreach (KeyValuePair<string, int> pair in contact_dictionary)
-                if(pair.Key != Partner_Jabber_ID)
-                    xmpp.MessageGrabber.Remove(new Jid(pair.Key));          
-        }
 
-        
+            foreach (KeyValuePair<string, int> pair in contact_dictionary)
+            {
+                if (pair.Key != Partner_Jabber_ID)
+                {
+                    xmpp.MessageGrabber.Remove(new Jid(pair.Key));
+                }
+            }
+        }
 
         //Handles incoming messages
         void MessageCallBack(object sender, agsXMPP.protocol.client.Message msg, object data)
