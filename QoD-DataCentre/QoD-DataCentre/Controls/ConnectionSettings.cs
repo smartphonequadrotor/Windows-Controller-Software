@@ -93,8 +93,6 @@ namespace QoD_DataCentre.Src.UI
                 qoDForm.reset_text_control();
             });
 
-            qoDForm.startTimer();
-
             this.Hide();
         }
 
@@ -115,7 +113,6 @@ namespace QoD_DataCentre.Src.UI
         private void xmppConnect_Click(object sender, EventArgs e)
         {
             QoDMain.networkCommunicationManager.Disconnect();
-            qoDForm.stopTimer();
             connectBtn.Enabled = false;
             xmppUsers.Items.Clear();
 

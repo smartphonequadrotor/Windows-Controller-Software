@@ -40,7 +40,6 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.textControlTerminal = new System.Windows.Forms.TextBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.plugins1 = new QoD_DataCentre.Controls.Plugins();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -48,6 +47,7 @@
             this.setupConnectionBtn = new System.Windows.Forms.Button();
             this.connectionText = new System.Windows.Forms.Label();
             this.connectionTimerLbl = new System.Windows.Forms.Label();
+            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -169,29 +169,13 @@
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.textControlTerminal);
+            this.tabPage5.Controls.Add(this.textControl1);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(774, 360);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Text Control";
             this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // textControlTerminal
-            // 
-            this.textControlTerminal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textControlTerminal.Enabled = false;
-            this.textControlTerminal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textControlTerminal.Location = new System.Drawing.Point(3, 3);
-            this.textControlTerminal.Multiline = true;
-            this.textControlTerminal.Name = "textControlTerminal";
-            this.textControlTerminal.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textControlTerminal.Size = new System.Drawing.Size(768, 354);
-            this.textControlTerminal.TabIndex = 0;
-            this.textControlTerminal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textControlTerminal_KeyDown);
-            this.textControlTerminal.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textControlTerminal_KeyPress);
             // 
             // tabPage6
             // 
@@ -262,6 +246,14 @@
             this.connectionTimerLbl.TabIndex = 7;
             this.connectionTimerLbl.Text = "00:00:00";
             // 
+            // textControl1
+            // 
+            this.textControl1.BackColor = System.Drawing.Color.Goldenrod;
+            this.textControl1.Location = new System.Drawing.Point(3, 3);
+            this.textControl1.Name = "textControl1";
+            this.textControl1.Size = new System.Drawing.Size(768, 361);
+            this.textControl1.TabIndex = 0;
+            // 
             // QoDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -284,7 +276,6 @@
             this.tabPage3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
-            this.tabPage5.PerformLayout();
             this.tabPage6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
@@ -312,7 +303,7 @@
         private Controls.Statistics statistics1;
         private Controls.LiveFeed liveFeed1;
         private Controls.Plugins plugins1;
-        private System.Windows.Forms.TextBox textControlTerminal;
+        private Controls.TextControl textControl1;
     }
 }
 

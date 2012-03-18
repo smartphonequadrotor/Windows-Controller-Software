@@ -25,8 +25,6 @@ namespace QoD_DataCentre.Controls
         private string[] labelArrayLatLong = new string[] { "latitude", "longitude", "height" };
         private string[] labelArrayMotors = new string[] { "Motor 1", "Motor 2", "Motor 3", "Motor 4" };
 
-        private long time = 0;
-
         long maxAccelTimeStamp;
         long maxGyroTimeStamp;
 
@@ -214,16 +212,6 @@ namespace QoD_DataCentre.Controls
                     maxGyroTimeStamp = j.Responses.Gyro[i].Timestamp;
                 }
             }
-            //todo lisa
-            /*for (int i = 0; i < j.Responses.Gyro.Length; i++)
-            {
-                if (j.Responses.Accel[i].Timestamp == maxAccelTimeStamp)
-                {
-                    updateGraph(GraphingData.accelerometerX, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].X);
-                    updateGraph(GraphingData.accelerometerY, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Y);
-                    updateGraph(GraphingData.accelerometerZ, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Z);
-                }
-            }*/
         }
 
         public void updateGraph(ref ZedGraphControl graph, ref List<RollingPointPairList> dataSets, GraphData valueToChange, long time, float data)
