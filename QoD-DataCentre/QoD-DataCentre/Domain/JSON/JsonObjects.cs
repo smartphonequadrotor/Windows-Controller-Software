@@ -74,7 +74,17 @@ namespace QoD_DataCentre.Domain.JSON
 
         public class Commands{
 
+            public enum SystemStates { ARMED, DISARMED, CALIBRATING, CALIBRATED}
+
             private MovementCommand[] move;
+
+            private string systemState;
+
+            public string SystemState
+            {
+                get { return systemState; }
+                set { systemState = value; }
+            }
 
             public MovementCommand[] Move
             {
@@ -94,6 +104,7 @@ namespace QoD_DataCentre.Domain.JSON
                 {
                     returnString += "\r\nMove:\r\n\t" + m.ToString();
                 }
+                returnString += "\r\nSystem State: " + systemState+"\r\n";
 
                 return returnString;
             }
@@ -205,6 +216,20 @@ namespace QoD_DataCentre.Domain.JSON
 
                 return response;
             }
+        }
+
+        public class CameraResponse : Response
+        {
+
+
+
+            public CameraResponse()
+            {
+
+            }
+
+
+
         }
 
         public class Responses

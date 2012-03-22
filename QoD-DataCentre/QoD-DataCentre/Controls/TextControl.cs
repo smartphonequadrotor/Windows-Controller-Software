@@ -233,6 +233,16 @@ namespace QoD_DataCentre.Controls
                         test.Commands.Move = new JsonObjects.MovementCommand[1];
                         test.Commands.Move[0] = new JsonObjects.MovementCommand(float.Parse(words[2]), float.Parse(words[3]), float.Parse(words[4]), int.Parse(words[5]), uint.Parse(words[6]));
                     }
+                    else if (words[1] == "arm")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.SystemState = JsonObjects.Commands.SystemStates.ARMED.ToString();
+                    }
+                    else if (words[1] == "disarm")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.SystemState = JsonObjects.Commands.SystemStates.DISARMED.ToString();
+                    }
                     else
                         throw new Exception();
 
