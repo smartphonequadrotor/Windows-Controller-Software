@@ -237,6 +237,14 @@ namespace QoD_DataCentre.Domain.JSON
             private TriAxisResponse[] gyro;
             private TriAxisResponse[] accel;
 
+            private string systemState;
+
+            public string SystemState
+            {
+                get { return systemState; }
+                set { systemState = value; }
+            }
+
             public TriAxisResponse[] Gyro
             {
                 get { return gyro; }
@@ -279,6 +287,11 @@ namespace QoD_DataCentre.Domain.JSON
                     }
                 }
 
+                if (SystemState != null)
+                {
+                    responses += "\r\n\r\nSystemState: ";
+                    responses += SystemState + "\r\n";
+                }
 
                 return responses;
             }
