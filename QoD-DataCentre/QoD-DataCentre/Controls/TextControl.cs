@@ -243,6 +243,11 @@ namespace QoD_DataCentre.Controls
                         test.Commands = new JsonObjects.Commands();
                         test.Commands.SystemState = JsonObjects.Commands.SystemStates.DISARMED.ToString();
                     }
+                    else if (words[1] == "calibrate")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.SystemState = JsonObjects.Commands.SystemStates.CALIBRATING.ToString();
+                    }
                     else
                         throw new Exception();
 
