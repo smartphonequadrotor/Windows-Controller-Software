@@ -80,6 +80,14 @@ namespace QoD_DataCentre.Domain.JSON
 
             private string systemState;
 
+            private string debug;
+
+            public string Debug
+            {
+                get { return debug; }
+                set { debug = value; }
+            }
+
             public string SystemState
             {
                 get { return systemState; }
@@ -100,12 +108,21 @@ namespace QoD_DataCentre.Domain.JSON
             override public string ToString()
             {
                 string returnString = "Commands:\r\n";
-                foreach (MovementCommand m in move)
+                if(move != null)
                 {
-                    returnString += "\r\nMove:\r\n\t" + m.ToString();
+                    foreach (MovementCommand m in move)
+                    {
+                        returnString += "\r\nMove:\r\n\t" + m.ToString();
+                    }
                 }
-                returnString += "\r\nSystem State: " + systemState+"\r\n";
-
+                if (systemState != null)
+                {
+                    returnString += "\r\nSystem State: " + systemState + "\r\n";
+                }
+                if (debug != null)
+                {
+                    returnString += "\r\nDebug: " + debug + "\r\n";
+                }
                 return returnString;
             }
         }
@@ -238,6 +255,13 @@ namespace QoD_DataCentre.Domain.JSON
             private TriAxisResponse[] accel;
 
             private string systemState;
+            private string debug;
+
+            public string Debug
+            {
+                get { return debug; }
+                set { debug = value; }
+            }
 
             public string SystemState
             {
@@ -291,6 +315,12 @@ namespace QoD_DataCentre.Domain.JSON
                 {
                     responses += "\r\n\r\nSystemState: ";
                     responses += SystemState + "\r\n";
+                }
+
+                if (Debug != null)
+                {
+                    responses += "\r\nDebug: ";
+                    responses += Debug + "\r\n";
                 }
 
                 return responses;

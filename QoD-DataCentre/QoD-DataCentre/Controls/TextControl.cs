@@ -220,7 +220,8 @@ namespace QoD_DataCentre.Controls
         private void CommandParser(string message)
         {
             JsonObjects.Envelope test = new JsonObjects.Envelope();
-            string[] words = message.Split(' ');
+            char[] delimiter = {' '};
+            string[] words = message.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
 
             if (words[0] == "cmd")
             {
@@ -247,6 +248,13 @@ namespace QoD_DataCentre.Controls
                     {
                         test.Commands = new JsonObjects.Commands();
                         test.Commands.SystemState = JsonObjects.Commands.SystemStates.CALIBRATING.ToString();
+                    }
+                    else if (words[1] == "debug")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        string[] delimiterS = {"cmd debug"};
+                        string[] split = message.Split(delimiterS,StringSplitOptions.RemoveEmptyEntries);
+                        test.Commands.Debug = split[0];
                     }
                     else
                         throw new Exception();
