@@ -181,6 +181,48 @@ namespace QoD_DataCentre.Domain.JSON
             }
         }
 
+        public class OrientationResponse : Response
+        {
+            private float yaw, pitch, roll;
+
+            public float Roll
+            {
+                get { return roll; }
+                set { roll = value; }
+            }
+
+            public float Pitch
+            {
+                get { return pitch; }
+                set { pitch = value; }
+            }
+
+            public float Yaw
+            {
+                get { return yaw; }
+                set { yaw = value; }
+            }
+
+            public OrientationResponse(){
+
+            }
+
+            override
+            public string ToString(){
+                
+
+                DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                string time = origin.AddSeconds(this.Timestamp).ToString("{0:d/M/yyyy HH:mm:ss}");
+                string response = "Timestamp: "+time+"\r\n";
+
+                response += "Yaw: " + yaw.ToString() + "\r\n";
+                response += "Pitch: " + pitch.ToString() + "\r\n";
+                response += "Roll: " + roll.ToString() + "\r\n";
+
+                return response;
+            }
+        }
+
         public class TriAxisSensorData : Response
         {
             private float x;
@@ -235,6 +277,7 @@ namespace QoD_DataCentre.Domain.JSON
             }
         }
 
+
         public class CameraResponse : Response
         {
 
@@ -251,11 +294,28 @@ namespace QoD_DataCentre.Domain.JSON
 
         public class Responses
         {
+            private OrientationResponse[] orientation;
+            private TriAxisResponse[] orientationTAR;
+
+            
             private TriAxisResponse[] gyro;
             private TriAxisResponse[] accel;
 
+
             private string systemState;
             private string debug;
+
+            public TriAxisResponse[] OrientationTAR
+            {
+                get { return orientationTAR; }
+                set { orientationTAR = value; }
+            }
+
+            public OrientationResponse[] Orientation
+            {
+                get { return orientation; }
+                set { orientation = value; }
+            }
 
             public string Debug
             {
@@ -290,6 +350,26 @@ namespace QoD_DataCentre.Domain.JSON
             override public string ToString()
             {
                 string responses = "Responses:";
+
+                if (Orientation != null && Orientation.Length > 0)
+                {
+                    responses += "\r\n\r\nOrientation:\r\n";
+
+                    foreach (QoD_DataCentre.Domain.JSON.JsonObjects.OrientationResponse orient in Orientation)
+                    {
+                        responses += "\r\n\t" + orient.ToString().Replace("\r\n", "\r\n\t");
+                    }
+                }
+
+                if (OrientationTAR != null && OrientationTAR.Length > 0)
+                {
+                    responses += "\r\n\r\nOrientation:\r\n";
+
+                    foreach (QoD_DataCentre.Domain.JSON.JsonObjects.TriAxisResponse orient in OrientationTAR)
+                    {
+                        responses += "\r\n\t" + orient.ToString().Replace("\r\n", "\r\n\t");
+                    }
+                }
 
                 if (Gyro != null && Gyro.Length > 0)
                 {
