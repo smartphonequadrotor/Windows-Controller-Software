@@ -67,12 +67,12 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(218, 9);
+            this.label1.Font = new System.Drawing.Font("SF New Republic", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(419, 42);
+            this.label1.Size = new System.Drawing.Size(440, 38);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Smartphone Quadrotor";
+            this.label1.Text = "smartphone quadrotor";
             // 
             // tabControl1
             // 
@@ -136,6 +136,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.tabPage3.Controls.Add(this.statistics1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
@@ -143,14 +144,13 @@
             this.tabPage3.Size = new System.Drawing.Size(774, 337);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Statistics";
-            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // statistics1
             // 
             this.statistics1.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.statistics1.Location = new System.Drawing.Point(6, 6);
+            this.statistics1.Location = new System.Drawing.Point(3, 3);
             this.statistics1.Name = "statistics1";
-            this.statistics1.Size = new System.Drawing.Size(762, 348);
+            this.statistics1.Size = new System.Drawing.Size(768, 331);
             this.statistics1.TabIndex = 0;
             // 
             // tabPage4
@@ -173,13 +173,13 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.tabPage5.Controls.Add(this.textControl1);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(774, 337);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Text Control";
-            this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // textControl1
             // 
@@ -309,7 +309,7 @@
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "QoDForm";
-            this.Text = "Quadrotor of Doom";
+            this.Text = "Smartphone Quadrotor";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.QoDForm_KeyDown);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -342,13 +342,13 @@
         private System.Windows.Forms.Label connectionTimerLbl;
         private Modules.Welcome welcome1;
         private Controls.Location location1;
-        private Controls.Statistics statistics1;
         private Controls.LiveFeed liveFeed1;
         private Controls.Plugins plugins1;
         private Controls.TextControl textControl1;
         private System.Windows.Forms.Button flyPrep;
         private System.Windows.Forms.Button userInput;
         private System.Windows.Forms.PictureBox userControlStatusPictureBox;
+        private Controls.Statistics statistics1;
     }
 }
 
