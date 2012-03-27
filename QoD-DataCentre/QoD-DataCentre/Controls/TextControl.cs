@@ -220,7 +220,8 @@ namespace QoD_DataCentre.Controls
         private void CommandParser(string message)
         {
             JsonObjects.Envelope test = new JsonObjects.Envelope();
-            string[] words = message.Split(' ');
+            char[] delimiter = {' '};
+            string[] words = message.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
 
             if (words[0] == "cmd")
             {
@@ -232,6 +233,28 @@ namespace QoD_DataCentre.Controls
                         test.Commands = new JsonObjects.Commands();
                         test.Commands.Move = new JsonObjects.MovementCommand[1];
                         test.Commands.Move[0] = new JsonObjects.MovementCommand(float.Parse(words[2]), float.Parse(words[3]), float.Parse(words[4]), int.Parse(words[5]), uint.Parse(words[6]));
+                    }
+                    else if (words[1] == "arm")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.SystemState = JsonObjects.Commands.SystemStates.ARMED.ToString();
+                    }
+                    else if (words[1] == "disarm")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.SystemState = JsonObjects.Commands.SystemStates.DISARMED.ToString();
+                    }
+                    else if (words[1] == "calibrate")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.SystemState = JsonObjects.Commands.SystemStates.CALIBRATING.ToString();
+                    }
+                    else if (words[1] == "debug")
+                    {
+                        test.Commands = new JsonObjects.Commands();
+                        string[] delimiterS = {"cmd debug"};
+                        string[] split = message.Split(delimiterS,StringSplitOptions.RemoveEmptyEntries);
+                        test.Commands.Debug = split[0];
                     }
                     else
                         throw new Exception();

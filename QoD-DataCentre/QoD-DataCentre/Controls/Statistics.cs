@@ -174,42 +174,48 @@ namespace QoD_DataCentre.Controls
         public void updateGraph(ref JsonObjects.Envelope j)
         {
             //update acceleration vs time graph as needed
-            for (int i = 0; i < j.Responses.Accel.Length; i++)
+            if (j.Responses != null && j.Responses.Accel != null)
             {
-                if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                for (int i = 0; i < j.Responses.Accel.Length; i++)
                 {
-                    updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.X, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].X);
-                    updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Y, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Y);
-                    updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Z, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Z);
+                    if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                    {
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.X, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].X);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Y, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Y);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Z, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Z);
+                    }
+                }
+
+                //find max acceleration time stamp
+                for (int i = 0; i < j.Responses.Accel.Length; i++)
+                {
+                    if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                    {
+                        maxAccelTimeStamp = j.Responses.Accel[i].Timestamp;
+                    }
                 }
             }
 
-            //find max acceleration time stamp
-            for (int i = 0; i < j.Responses.Accel.Length; i++)
+                //update orientation vs time graph as needed
+            if (j.Responses != null && j.Responses.Gyro != null)
             {
-                if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                for (int i = 0; i < j.Responses.Gyro.Length; i++)
                 {
-                    maxAccelTimeStamp = j.Responses.Accel[i].Timestamp;
+                    if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
+                    {
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].X);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Y);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Z);
+                    }
                 }
-            }
 
-            //update orientation vs time graph as needed
-            for (int i = 0; i < j.Responses.Gyro.Length; i++)
-            {
-                if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
+                //find max orientation time stamp
+                for (int i = 0; i < j.Responses.Gyro.Length; i++)
                 {
-                    updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].X);
-                    updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Y);
-                    updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Z);
-                }
-            }
-
-            //find max orientation time stamp
-            for (int i = 0; i < j.Responses.Gyro.Length; i++)
-            {
-                if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
-                {
-                    maxGyroTimeStamp = j.Responses.Gyro[i].Timestamp;
+                    if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
+                    {
+                        maxGyroTimeStamp = j.Responses.Gyro[i].Timestamp;
+                    }
                 }
             }
         }
