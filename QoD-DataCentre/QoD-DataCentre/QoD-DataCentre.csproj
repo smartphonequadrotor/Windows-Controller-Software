@@ -234,6 +234,10 @@
     <Content Include="lib\Newtonsoft.Json.dll" />
     <Content Include="lib\Newtonsoft.Json.pdb" />
     <Content Include="lib\Newtonsoft.Json.xml" />
+    <Content Include="Resources\userControlIndicatorDisabled.png" />
+    <None Include="Resources\userControlIndicatorEnabled1.png" />
+    <None Include="Resources\userControlIndicatorDisabled1.png" />
+    <Content Include="Resources\userControlIndicatorEnabled.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

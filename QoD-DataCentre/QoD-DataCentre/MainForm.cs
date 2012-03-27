@@ -11,7 +11,6 @@ using QoD_DataCentre.Src.UI;
 using QoD_DataCentre.Domain.JSON;
 using QoD_DataCentre.Src.Communication;
 
-
 enum TabName
 {
     Welcome = 1,
@@ -31,7 +30,11 @@ namespace QoD_DataCentre
         private ConnectionSettings connectionSettings;
         private JsonObjects.Envelope jsonEnvelope;
         private System.Timers.Timer timer;
-        private long time;
+        private long connectionTime;
+        private long flightTime;
+        private bool connected;
+        private bool flying;
+        private bool userControlsEnabled = false;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -53,6 +56,12 @@ namespace QoD_DataCentre
 
             timer.Stop();
 
+            connectionTime = 0;
+            flightTime = 0;
+
+            connected = false;
+            flying = false;
+
             // If the timer is declared in a long-running method, use
             // KeepAlive to prevent garbage collection from occurring
             // before the method ends.
@@ -65,20 +74,45 @@ namespace QoD_DataCentre
         // raised.
         void OnTimedEvent(object source, ElapsedEventArgs e)
         {   
-            time++;
+            if (connected)
+            {
+                connectionTime++;
+            }
+
+            if (flying)
+            {
+                flightTime++;
+            }
+
             updateTime();
 		}
 
         public void updateTime()
         {
-            if (connectionTimerLbl.InvokeRequired)
+            if (connected)
             {
-                UpdateTimerCallback d = new UpdateTimerCallback(updateTime);
-                this.Invoke(d, new object[] { });
+                if (connectionTimerLbl.InvokeRequired)
+                {
+                    UpdateTimerCallback d = new UpdateTimerCallback(updateTime);
+                    this.Invoke(d, new object[] { });
+                }
+                else
+                {
+                    connectionTimerLbl.Text = convertToTimeString(connectionTime);
+                }
             }
-            else
+
+            if (flying)
             {
-                connectionTimerLbl.Text = convertToTimeString(time);
+                if (statistics1.flightTimeValue.InvokeRequired)
+                {
+                    UpdateTimerCallback d = new UpdateTimerCallback(updateTime);
+                    this.Invoke(d, new object[] { });
+                }
+                else
+                {
+                    statistics1.flightTimeValue.Text = convertToTimeString(flightTime);
+                }
             }
         }
 
@@ -205,16 +239,22 @@ namespace QoD_DataCentre
             }
         }
 
-        public void startTimer()
+        public void startTimer(ref System.Timers.Timer timer)
         {
             timer.Start();
+            
+            connected = true;
         }
 
-        public void stopTimer()
+        public void stopTimer(ref System.Timers.Timer timer)
         {
             timer.Stop();
-            time = 0;
+            
+            connectionTime = 0;
+            
             updateTime();
+
+            connected = false;
         }
 
         //when the status changes... we may want to update the status.
@@ -222,7 +262,7 @@ namespace QoD_DataCentre
         {
             this.Invoke((MethodInvoker)delegate
             {
-                textControl1.enableTerminal(false);
+                enableControls(false);
                 this.connectionText.Text = data.Status;
             });
         }
@@ -232,8 +272,8 @@ namespace QoD_DataCentre
         {
             this.Invoke((MethodInvoker)delegate
             {
-                textControl1.enableTerminal(false);
-                stopTimer();
+                enableControls(false);
+                stopTimer(ref timer);
             });
         }
 
@@ -242,8 +282,8 @@ namespace QoD_DataCentre
         {
             this.Invoke((MethodInvoker)delegate
             {
-                textControl1.enableTerminal(true);
-                startTimer();
+                startTimer(ref timer);
+                enableControls(true);
             });
         }
 
@@ -334,6 +374,97 @@ namespace QoD_DataCentre
                     return "Plugins";
                 default:
                     return "";
+            }
+        }
+
+        private void userInput_Click(object sender, EventArgs e)
+        {
+            if (userInput.Text == "Enable Keys")
+            {
+                userControlStatusPictureBox.Image = Properties.Resources.userControlIndicatorEnabled;
+                userInput.Text = "Disable Keys";
+                userControlsEnabled = true;
+                KeyPreview = true;
+            }
+            else
+            {
+                userControlStatusPictureBox.Image = Properties.Resources.userControlIndicatorDisabled;
+                userInput.Text = "Enable Keys";
+                userControlsEnabled = false;
+                KeyPreview = false;
+            }
+        }
+
+        private void fly_Click(object sender, EventArgs e)
+        {
+            if (flyPrep.Text == "Arm Motors")
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to start the quadrotor?", "Starting Quadrotor", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    flying = true;
+                    flyPrep.Text = "Stop";
+                }
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to stop the quadrotor?", "Stopping Quadrotor", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    flightTime = 0;
+                    updateTime();
+                    flying = false;
+                    flyPrep.Text = "Arm Motors";
+                }
+            }
+        }
+
+        public void enableControls(bool enable)
+        {
+            textControl1.enableTerminal(enable);
+            userControlStatusPictureBox.Visible = enable;
+            userInput.Visible = enable;
+            flyPrep.Visible = enable;
+        }
+
+        private void QoDForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (userControlsEnabled)
+            {
+                //KEY -> ACTION
+                //A -> Left
+                //S -> Back
+                //D -> Right
+                //W -> Forward
+                //arrow up -> gain altitude
+                //arrow down -> lose altitude
+                //arrow left -> rotate to the left
+                //arrow right -> rotate to the right
+                if (e.KeyCode == Keys.A)
+                {
+                    //todo lisa send commands via json
+                }
+                else if (e.KeyCode == Keys.S)
+                {
+                }
+                else if (e.KeyCode == Keys.D)
+                {
+                }
+                else if (e.KeyCode == Keys.W)
+                {
+                }
+                else if (e.KeyCode == Keys.Up)
+                {
+                }
+                else if (e.KeyCode == Keys.Down)
+                {
+                }
+                else if (e.KeyCode == Keys.Left)
+                {
+                }
+                else if (e.KeyCode == Keys.Right)
+                {
+                }
             }
         }
     }

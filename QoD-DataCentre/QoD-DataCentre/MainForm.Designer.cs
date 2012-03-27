@@ -40,14 +40,17 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.plugins1 = new QoD_DataCentre.Controls.Plugins();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.setupConnectionBtn = new System.Windows.Forms.Button();
             this.connectionText = new System.Windows.Forms.Label();
             this.connectionTimerLbl = new System.Windows.Forms.Label();
-            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
+            this.flyPrep = new System.Windows.Forms.Button();
+            this.userInput = new System.Windows.Forms.Button();
+            this.userControlStatusPictureBox = new System.Windows.Forms.PictureBox();
+            this.batteryLevelPictureBox = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -55,7 +58,8 @@
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.tabPage6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.userControlStatusPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.batteryLevelPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -84,7 +88,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 80);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(782, 386);
+            this.tabControl1.Size = new System.Drawing.Size(782, 363);
             this.tabControl1.TabIndex = 2;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
@@ -94,7 +98,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(774, 360);
+            this.tabPage1.Size = new System.Drawing.Size(774, 337);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Welcome";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -108,7 +112,7 @@
             this.welcome1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.welcome1.Location = new System.Drawing.Point(6, 6);
             this.welcome1.Name = "welcome1";
-            this.welcome1.Size = new System.Drawing.Size(762, 348);
+            this.welcome1.Size = new System.Drawing.Size(762, 325);
             this.welcome1.TabIndex = 0;
             // 
             // tabPage2
@@ -117,7 +121,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(774, 360);
+            this.tabPage2.Size = new System.Drawing.Size(774, 337);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Location";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -136,14 +140,14 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(774, 360);
+            this.tabPage3.Size = new System.Drawing.Size(774, 337);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Statistics";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // statistics1
             // 
-            this.statistics1.BackColor = System.Drawing.Color.Pink;
+            this.statistics1.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.statistics1.Location = new System.Drawing.Point(6, 6);
             this.statistics1.Name = "statistics1";
             this.statistics1.Size = new System.Drawing.Size(762, 348);
@@ -154,7 +158,7 @@
             this.tabPage4.Controls.Add(this.liveFeed1);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(774, 360);
+            this.tabPage4.Size = new System.Drawing.Size(774, 337);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Live Feed";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -172,17 +176,25 @@
             this.tabPage5.Controls.Add(this.textControl1);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(774, 360);
+            this.tabPage5.Size = new System.Drawing.Size(774, 337);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Text Control";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // textControl1
+            // 
+            this.textControl1.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.textControl1.Location = new System.Drawing.Point(3, 3);
+            this.textControl1.Name = "textControl1";
+            this.textControl1.Size = new System.Drawing.Size(768, 361);
+            this.textControl1.TabIndex = 0;
             // 
             // tabPage6
             // 
             this.tabPage6.Controls.Add(this.plugins1);
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Size = new System.Drawing.Size(774, 360);
+            this.tabPage6.Size = new System.Drawing.Size(774, 337);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Plugins";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -194,16 +206,6 @@
             this.plugins1.Name = "plugins1";
             this.plugins1.Size = new System.Drawing.Size(768, 354);
             this.plugins1.TabIndex = 0;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(12, 54);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(30, 20);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 3;
-            this.pictureBox1.TabStop = false;
             // 
             // label2
             // 
@@ -246,30 +248,69 @@
             this.connectionTimerLbl.TabIndex = 7;
             this.connectionTimerLbl.Text = "00:00:00";
             // 
-            // textControl1
+            // flyPrep
             // 
-            this.textControl1.BackColor = System.Drawing.Color.Goldenrod;
-            this.textControl1.Location = new System.Drawing.Point(3, 3);
-            this.textControl1.Name = "textControl1";
-            this.textControl1.Size = new System.Drawing.Size(768, 361);
-            this.textControl1.TabIndex = 0;
+            this.flyPrep.Location = new System.Drawing.Point(12, 445);
+            this.flyPrep.Name = "flyPrep";
+            this.flyPrep.Size = new System.Drawing.Size(115, 23);
+            this.flyPrep.TabIndex = 8;
+            this.flyPrep.Text = "Arm Motors";
+            this.flyPrep.UseVisualStyleBackColor = true;
+            this.flyPrep.Visible = false;
+            this.flyPrep.Click += new System.EventHandler(this.fly_Click);
+            // 
+            // userInput
+            // 
+            this.userInput.Location = new System.Drawing.Point(664, 445);
+            this.userInput.Name = "userInput";
+            this.userInput.Size = new System.Drawing.Size(101, 23);
+            this.userInput.TabIndex = 9;
+            this.userInput.Text = "Enable Keys";
+            this.userInput.UseVisualStyleBackColor = true;
+            this.userInput.Visible = false;
+            this.userInput.Click += new System.EventHandler(this.userInput_Click);
+            // 
+            // userControlStatusPictureBox
+            // 
+            this.userControlStatusPictureBox.Image = global::QoD_DataCentre.Properties.Resources.userControlIndicatorDisabled;
+            this.userControlStatusPictureBox.Location = new System.Drawing.Point(769, 445);
+            this.userControlStatusPictureBox.Name = "userControlStatusPictureBox";
+            this.userControlStatusPictureBox.Size = new System.Drawing.Size(23, 23);
+            this.userControlStatusPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.userControlStatusPictureBox.TabIndex = 10;
+            this.userControlStatusPictureBox.TabStop = false;
+            this.userControlStatusPictureBox.Visible = false;
+            // 
+            // batteryLevelPictureBox
+            // 
+            this.batteryLevelPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("batteryLevelPictureBox.Image")));
+            this.batteryLevelPictureBox.Location = new System.Drawing.Point(12, 54);
+            this.batteryLevelPictureBox.Name = "batteryLevelPictureBox";
+            this.batteryLevelPictureBox.Size = new System.Drawing.Size(30, 20);
+            this.batteryLevelPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.batteryLevelPictureBox.TabIndex = 3;
+            this.batteryLevelPictureBox.TabStop = false;
             // 
             // QoDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(806, 478);
+            this.ClientSize = new System.Drawing.Size(806, 472);
+            this.Controls.Add(this.userControlStatusPictureBox);
+            this.Controls.Add(this.userInput);
+            this.Controls.Add(this.flyPrep);
             this.Controls.Add(this.connectionTimerLbl);
             this.Controls.Add(this.connectionText);
             this.Controls.Add(this.setupConnectionBtn);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.batteryLevelPictureBox);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label1);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "QoDForm";
             this.Text = "Quadrotor of Doom";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.QoDForm_KeyDown);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
@@ -277,7 +318,8 @@
             this.tabPage4.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.userControlStatusPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.batteryLevelPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -289,7 +331,7 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox batteryLevelPictureBox;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TabPage tabPage5;
@@ -304,6 +346,9 @@
         private Controls.LiveFeed liveFeed1;
         private Controls.Plugins plugins1;
         private Controls.TextControl textControl1;
+        private System.Windows.Forms.Button flyPrep;
+        private System.Windows.Forms.Button userInput;
+        private System.Windows.Forms.PictureBox userControlStatusPictureBox;
     }
 }
 
