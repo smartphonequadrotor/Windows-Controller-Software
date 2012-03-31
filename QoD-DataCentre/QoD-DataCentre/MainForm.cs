@@ -287,7 +287,7 @@ namespace QoD_DataCentre
             });
         }
 
-        //recieved message callback. Currently just adds data to command window... 
+        //recieved message callback.
         public void networkCommunicationManager_msgRecieved(object sender,  NetworkCommunicationManager.MsgRecievedEventArgs data)
         {
             this.Invoke((MethodInvoker)delegate
@@ -431,40 +431,62 @@ namespace QoD_DataCentre
         {
             if (userControlsEnabled)
             {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                int speed = 50;
+                uint duration = 1000;
                 //KEY -> ACTION
-                //A -> Left
-                //S -> Back
-                //D -> Right
-                //W -> Forward
-                //arrow up -> gain altitude
-                //arrow down -> lose altitude
+                //A -> Left (x = -1)
+                //S -> Back (y = -1)
+                //D -> Right (x = 1)
+                //W -> Forward (y = 1)
+                //arrow up -> gain altitude (z = 1)
+                //arrow down -> lose altitude (z = -1)
                 //arrow left -> rotate to the left
                 //arrow right -> rotate to the right
                 if (e.KeyCode == Keys.A)
                 {
-                    //todo lisa send commands via json
+                    x = -1;
                 }
                 else if (e.KeyCode == Keys.S)
                 {
+                    y = -1;
                 }
                 else if (e.KeyCode == Keys.D)
                 {
+                    x = 1;
                 }
                 else if (e.KeyCode == Keys.W)
                 {
+                    y = 1;
                 }
                 else if (e.KeyCode == Keys.Up)
                 {
+                    z = 1;
                 }
                 else if (e.KeyCode == Keys.Down)
                 {
+                    z = -1;
                 }
                 else if (e.KeyCode == Keys.Left)
                 {
+                    x = -1;
+                    y = 1;
                 }
                 else if (e.KeyCode == Keys.Right)
                 {
+                    x = 1;
+                    y = 1;
                 }
+
+                JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
+
+                jsonToSendEnvelope.Commands = new JsonObjects.Commands();
+                jsonToSendEnvelope.Commands.Move = new JsonObjects.MovementCommand[1];
+                jsonToSendEnvelope.Commands.Move[0] = new JsonObjects.MovementCommand(x, y, z, speed, duration);
+
+                QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
             }
         }
     }
