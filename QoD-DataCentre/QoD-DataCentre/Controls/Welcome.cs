@@ -23,27 +23,34 @@ namespace QoD_DataCentre.Modules
             //based on code from http://www.haiders.net/post/C-RSS-Feed-Fetcher-Display-RSS-Feed-with-2-lines-of-Code.aspx
             string rssXml = "http://smartphone-quadrotor.blogspot.com/feeds/posts/default?alt=rss";
 
-            XDocument doc = null;
 
-            try
-            {
-                doc = XDocument.Load(rssXml);
-            }
-            catch(WebException e)
-            {
-                richTextBox1.Text = "Error getting feed. Check that you are connected to the internet.";
-                error = true;
-            }
+            richTextBox1.Text = "Loading Feed...";
+            rssReader.RunWorkerAsync(rssXml);
+         
+        }
 
-            if (!error)
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://smartphone-quadrotor.blogspot.com/");
+        }
+
+        private void rssReader_DoWork(object sender, DoWorkEventArgs e)
+        {
+                e.Result = XDocument.Load((string)e.Argument);
+        }
+
+        private void rssReader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error == null)
             {
+                XDocument doc = ((XDocument)e.Result);
                 IEnumerable<FeedResult> rssFeed = from el in doc.Elements("rss").Elements("channel").Elements("item")
-                              select new FeedResult
-                              {
-                                  Title = el.Element("title").Value,
-                                  Link = el.Element("link").Value,
-                                  Description = el.Element("description").Value
-                              };
+                                                  select new FeedResult
+                                                  {
+                                                      Title = el.Element("title").Value,
+                                                      Link = el.Element("link").Value,
+                                                      Description = el.Element("description").Value
+                                                  };
 
                 IEnumerator<FeedResult> enumerator = rssFeed.GetEnumerator();
 
@@ -75,11 +82,10 @@ namespace QoD_DataCentre.Modules
                     richTextBox1.Text = stripped;
                 }
             }
-        }
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://smartphone-quadrotor.blogspot.com/");
+            else
+            {
+                richTextBox1.Text = "Error getting feed. Check that you are connected to the internet.";
+            }
         }
     }
 

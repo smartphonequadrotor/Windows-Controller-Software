@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.rssReader = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -42,6 +43,11 @@
             this.richTextBox1.Size = new System.Drawing.Size(413, 222);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
+            // 
+            // rssReader
+            // 
+            this.rssReader.DoWork += new System.ComponentModel.DoWorkEventHandler(this.rssReader_DoWork);
+            this.rssReader.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.rssReader_RunWorkerCompleted);
             // 
             // Welcome
             // 
@@ -58,6 +64,7 @@
         #endregion
 
         private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.ComponentModel.BackgroundWorker rssReader;
 
     }
 }
