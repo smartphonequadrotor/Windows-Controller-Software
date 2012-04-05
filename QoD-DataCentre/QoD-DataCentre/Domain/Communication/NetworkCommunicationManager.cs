@@ -154,6 +154,7 @@ namespace QoD_DataCentre.Src.Communication
 
         public void SendMessage(string message)
         {
+            Console.WriteLine(message);
             if (connectionType == ConnectionType.DirectSocket)
             {
 

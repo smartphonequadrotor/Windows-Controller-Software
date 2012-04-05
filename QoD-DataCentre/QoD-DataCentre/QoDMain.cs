@@ -4,6 +4,8 @@ using System.Linq;
 using System.Windows.Forms;
 using QoD_DataCentre.Src.Communication;
 using QoD_DataCentre.Src.UI;
+using SdlDotNet.Graphics;
+using SdlDotNet.Input;
 
 namespace QoD_DataCentre
 {
@@ -26,7 +28,9 @@ namespace QoD_DataCentre
 
             networkCommunicationManager = new NetworkCommunicationManager();
             QoDForm mainForm = new QoDForm();
-            
+
+            Video.Initialize();
+            Joysticks.Initialize();
             
             Application.Run(mainForm);
             

@@ -10,6 +10,8 @@ using System.Timers;
 using QoD_DataCentre.Src.UI;
 using QoD_DataCentre.Domain.JSON;
 using QoD_DataCentre.Src.Communication;
+using SdlDotNet.Core;
+using SdlDotNet.Input;
 
 enum TabName
 {
@@ -35,6 +37,11 @@ namespace QoD_DataCentre
         private bool connected;
         private bool flying;
         private bool userControlsEnabled = false;
+        private System.Timers.Timer sdlTimer;
+        private static double SDL_POLL_INTERVAL = 500; // in ms
+        private static double JOYSTICK_CENTER = 0.5;
+        private static double JOYSTICK_AXIS_THRESHOLD = 0.25;
+        private Joystick j = null;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -62,12 +69,83 @@ namespace QoD_DataCentre
             connected = false;
             flying = false;
 
+            sdlTimer = new System.Timers.Timer(SDL_POLL_INTERVAL);
+            sdlTimer.Elapsed += new ElapsedEventHandler(sdlTimer_Elapsed);
+            sdlTimer.Enabled = false;
+
             // If the timer is declared in a long-running method, use
             // KeepAlive to prevent garbage collection from occurring
             // before the method ends.
             //GC.KeepAlive(timer); 
    
             InitializeComponent();
+        }
+
+        ~QoDForm()
+        {
+            sdlTimer.Enabled = false;
+            if (j != null)
+            {
+                j.Dispose();
+                j = null;
+            }
+        }
+
+        void sdlTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // if timer is enabled, j should not be null
+            if (j != null)
+            {
+                int x=0, y=0, z=0;
+
+                // Get joystick state
+                SdlDotNet.Core.Events.Poll();
+                if (j.GetAxisPosition(JoystickAxis.Horizontal) > JOYSTICK_CENTER + JOYSTICK_AXIS_THRESHOLD)
+                {
+                    x++;
+                }
+                if (j.GetAxisPosition(JoystickAxis.Vertical) > JOYSTICK_CENTER + JOYSTICK_AXIS_THRESHOLD)
+                {
+                    // DOWN on the stick is a LARGER value
+                    y--;
+                }
+                if (j.GetAxisPosition(JoystickAxis.Horizontal) < JOYSTICK_CENTER - JOYSTICK_AXIS_THRESHOLD)
+                {
+                    x--;
+                }
+                if (j.GetAxisPosition(JoystickAxis.Vertical) < JOYSTICK_CENTER - JOYSTICK_AXIS_THRESHOLD)
+                {
+                    // UP on the stick is SMALLER value
+                    y++;
+                }
+                if(j.GetButtonState(0) == ButtonKeyState.Pressed) // Ascend
+                {
+                    z++;
+                }
+                if (j.GetButtonState(2) == ButtonKeyState.Pressed) // Descend
+                {
+                    z--;
+                }
+                if(j.GetButtonState(1) == ButtonKeyState.Pressed) // Rotate cw
+                {
+                    // TODO
+                }
+                if (j.GetButtonState(3) == ButtonKeyState.Pressed) // Rotate ccw
+                {
+                    // TODO
+                }
+
+                if (x != 0 || y != 0 || z != 0)
+                {
+                    JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
+
+                    jsonToSendEnvelope.Commands = new JsonObjects.Commands();
+                    jsonToSendEnvelope.Commands.Move = new JsonObjects.MovementCommand[1];
+                    jsonToSendEnvelope.Commands.Move[0] = new JsonObjects.MovementCommand(x, y, z, 50, 1000);
+
+                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
+                }
+            }
         }
 
         // Specify what you want to happen when the Elapsed event is 
@@ -407,6 +485,16 @@ namespace QoD_DataCentre
                 userInput.Text = "Disable Keys";
                 userControlsEnabled = true;
                 KeyPreview = true;
+                try
+                {
+                    j = Joysticks.OpenJoystick(0);
+                    sdlTimer.Enabled = true;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Failed to open a joystick.");
+                    Console.WriteLine(ex.Message);
+                }
             }
             else
             {
@@ -414,6 +502,13 @@ namespace QoD_DataCentre
                 userInput.Text = "Enable Keys";
                 userControlsEnabled = false;
                 KeyPreview = false;
+
+                sdlTimer.Enabled = false;
+                if (j != null)
+                {
+                    j.Dispose();
+                    j = null;
+                }
             }
         }
 
@@ -469,37 +564,35 @@ namespace QoD_DataCentre
                 //arrow right -> rotate to the right
                 if (e.KeyCode == Keys.A)
                 {
-                    x = -1;
+                    x--;
                 }
-                else if (e.KeyCode == Keys.S)
+                if (e.KeyCode == Keys.S)
                 {
-                    y = -1;
+                    y--;
                 }
-                else if (e.KeyCode == Keys.D)
+                if (e.KeyCode == Keys.D)
                 {
-                    x = 1;
+                    x++;
                 }
-                else if (e.KeyCode == Keys.W)
+                if (e.KeyCode == Keys.W)
                 {
-                    y = 1;
+                    y++;
                 }
-                else if (e.KeyCode == Keys.Up)
+                if (e.KeyCode == Keys.Up)
                 {
-                    z = 1;
+                    z++;
                 }
-                else if (e.KeyCode == Keys.Down)
+                if (e.KeyCode == Keys.Down)
                 {
-                    z = -1;
+                    z--;
                 }
-                else if (e.KeyCode == Keys.Left)
+                if (e.KeyCode == Keys.Left)
                 {
-                    x = -1;
-                    y = 1;
+                    // TODO: Rotate ccw
                 }
-                else if (e.KeyCode == Keys.Right)
+                if (e.KeyCode == Keys.Right)
                 {
-                    x = 1;
-                    y = 1;
+                    // TODOL Rotate cw
                 }
 
                 JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
