@@ -224,6 +224,8 @@ namespace QoD_DataCentre
             {
                 textControl1.enableTerminal(false);
                 this.connectionText.Text = data.Status;
+                statistics1.InitializeControl();
+                location1.InitializeControl();
             });
         }
 
@@ -254,8 +256,8 @@ namespace QoD_DataCentre
             {
                 string receivedText = data.Message;
 
-                try
-                {
+              /*  try
+                {*/
                     JsonManager commandConvert = new JsonManager();
                     jsonEnvelope = commandConvert.DeserializeEnvelope(receivedText);
 
@@ -264,16 +266,21 @@ namespace QoD_DataCentre
                         receivedText = jsonEnvelope.ToString();
                     }
 
-                    if (statistics1 != null)
+                    if (jsonEnvelope != null && jsonEnvelope.Responses.Orientation != null)
+                    {
+                        location1.UpdateOrientation(jsonEnvelope.Responses.Orientation);
+                    }
+                    
+                    if (jsonEnvelope != null && statistics1 != null)
                     {
                         statistics1.updateGraph(ref jsonEnvelope);
                     }
-                }
+               /* }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
                 }
-
+                */
                 textControl1.insertWriteToTextControl(receivedText);
             });
         }
@@ -334,6 +341,20 @@ namespace QoD_DataCentre
                     return "Plugins";
                 default:
                     return "";
+            }
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+
+            if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Statistics)) && !statistics1.initialized)
+            {
+                statistics1.InitializeControl();
+            }
+            else if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Statistics)) && !location1.initialized)
+            {
+                location1.InitializeControl();
             }
         }
     }

@@ -40,6 +40,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.plugins1 = new QoD_DataCentre.Controls.Plugins();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -47,7 +48,6 @@
             this.setupConnectionBtn = new System.Windows.Forms.Button();
             this.connectionText = new System.Windows.Forms.Label();
             this.connectionTimerLbl = new System.Windows.Forms.Label();
-            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -86,6 +86,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(782, 386);
             this.tabControl1.TabIndex = 2;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
             // tabPage1
@@ -124,6 +125,9 @@
             // 
             // location1
             // 
+            this.location1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.location1.BackColor = System.Drawing.Color.Orange;
             this.location1.Location = new System.Drawing.Point(6, 6);
             this.location1.Name = "location1";
@@ -143,6 +147,9 @@
             // 
             // statistics1
             // 
+            this.statistics1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.statistics1.BackColor = System.Drawing.Color.Pink;
             this.statistics1.Location = new System.Drawing.Point(6, 6);
             this.statistics1.Name = "statistics1";
@@ -161,6 +168,9 @@
             // 
             // liveFeed1
             // 
+            this.liveFeed1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.liveFeed1.BackColor = System.Drawing.Color.Green;
             this.liveFeed1.Location = new System.Drawing.Point(3, 3);
             this.liveFeed1.Name = "liveFeed1";
@@ -177,6 +187,17 @@
             this.tabPage5.Text = "Text Control";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // textControl1
+            // 
+            this.textControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textControl1.BackColor = System.Drawing.Color.Goldenrod;
+            this.textControl1.Location = new System.Drawing.Point(3, 3);
+            this.textControl1.Name = "textControl1";
+            this.textControl1.Size = new System.Drawing.Size(768, 361);
+            this.textControl1.TabIndex = 0;
+            // 
             // tabPage6
             // 
             this.tabPage6.Controls.Add(this.plugins1);
@@ -189,6 +210,9 @@
             // 
             // plugins1
             // 
+            this.plugins1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.plugins1.BackColor = System.Drawing.Color.Blue;
             this.plugins1.Location = new System.Drawing.Point(3, 3);
             this.plugins1.Name = "plugins1";
@@ -245,14 +269,6 @@
             this.connectionTimerLbl.Size = new System.Drawing.Size(49, 13);
             this.connectionTimerLbl.TabIndex = 7;
             this.connectionTimerLbl.Text = "00:00:00";
-            // 
-            // textControl1
-            // 
-            this.textControl1.BackColor = System.Drawing.Color.Goldenrod;
-            this.textControl1.Location = new System.Drawing.Point(3, 3);
-            this.textControl1.Name = "textControl1";
-            this.textControl1.Size = new System.Drawing.Size(768, 361);
-            this.textControl1.TabIndex = 0;
             // 
             // QoDForm
             // 

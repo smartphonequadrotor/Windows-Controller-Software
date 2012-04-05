@@ -94,6 +94,7 @@
             this.orientationVsTime.ScrollMinY2 = 0D;
             this.orientationVsTime.Size = new System.Drawing.Size(150, 150);
             this.orientationVsTime.TabIndex = 1;
+            this.orientationVsTime.Load += new System.EventHandler(this.orientationVsTime_Load);
             // 
             // accelerationVsTime
             // 

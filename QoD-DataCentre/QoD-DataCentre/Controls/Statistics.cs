@@ -63,11 +63,12 @@ namespace QoD_DataCentre.Controls
                 accelerometerZ.Add(x, y3);
                 list4.Add(x, y4);*/
             }
-
+            accelerometerDataSets.Clear();
             accelerometerDataSets.Add(accelerometerX);
             accelerometerDataSets.Add(accelerometerY);
             accelerometerDataSets.Add(accelerometerZ);
 
+            orientationDataSets.Clear();
             orientationDataSets.Add(orientationX);
             orientationDataSets.Add(orientationY);
             orientationDataSets.Add(orientationZ);
@@ -75,9 +76,15 @@ namespace QoD_DataCentre.Controls
             maxAccelTimeStamp = 0;
             maxGyroTimeStamp = 0;
 
+            for (int i = accelerationVsTime.GraphPane.CurveList.Count - 1; i > -1; i-- )
+                accelerationVsTime.GraphPane.CurveList.Remove(accelerationVsTime.GraphPane.CurveList[i]);
+            
             initializeGraph(accelerationVsTime, "Acceleration vs Time", "Acceleration", "Time", accelerometerDataSets, labelArrayXYZ);
             // Size the control to fit the window
             SetSize(ref accelerationVsTime, 10);
+
+            for (int i = orientationVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
+                orientationVsTime.GraphPane.CurveList.Remove(orientationVsTime.GraphPane.CurveList[i]);
 
             initializeGraph(orientationVsTime, "Orientation vs Time", "Orientation", "Time", orientationDataSets, labelArrayXYZ);
             SetSize(ref orientationVsTime, 320);
@@ -120,9 +127,11 @@ namespace QoD_DataCentre.Controls
             // Align the Y axis labels so they are flush to the axis
             //gp.YAxis.Scale.Align = AlignP.Inside;
             // Manually set the axis range
-            gp.YAxis.Scale.Min = -30;
-            gp.YAxis.Scale.Max = 30;
+            gp.YAxis.Scale.Min = -4;
+            gp.YAxis.Scale.Max = 4;
 
+            gp.XAxis.Scale.Min = 0;
+            gp.XAxis.Scale.Max = 5;
             // Enable the Y2 axis display
             /*gp.Y2Axis.IsVisible = true;
             // Make the Y2 axis scale blue
@@ -180,9 +189,9 @@ namespace QoD_DataCentre.Controls
                 {
                     if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
                     {
-                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.X, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].X);
-                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Y, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Y);
-                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Z, j.Responses.Accel[i].Timestamp, j.Responses.Accel[i].Z);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.X, j.Responses.Accel[i].Timestamp / 1000.0, j.Responses.Accel[i].X);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Y, j.Responses.Accel[i].Timestamp / 1000.0, j.Responses.Accel[i].Y);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Z, j.Responses.Accel[i].Timestamp /1000.0, j.Responses.Accel[i].Z);
                     }
                 }
 
@@ -197,30 +206,30 @@ namespace QoD_DataCentre.Controls
             }
 
                 //update orientation vs time graph as needed
-            if (j.Responses != null && j.Responses.Gyro != null)
+            if (j.Responses != null && j.Responses.Orientation != null)
             {
-                for (int i = 0; i < j.Responses.Gyro.Length; i++)
+                for (int i = 0; i < j.Responses.Orientation.Length; i++)
                 {
-                    if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
+                    if (j.Responses.Orientation[i].Timestamp > maxGyroTimeStamp)
                     {
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].X);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Y);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, j.Responses.Gyro[i].Timestamp, j.Responses.Gyro[i].Z);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, j.Responses.Orientation[i].Timestamp / 1000.0, j.Responses.Orientation[i].X);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, j.Responses.Orientation[i].Timestamp / 1000.0, j.Responses.Orientation[i].Y);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, j.Responses.Orientation[i].Timestamp /1000.0, j.Responses.Orientation[i].Z);
                     }
                 }
 
                 //find max orientation time stamp
-                for (int i = 0; i < j.Responses.Gyro.Length; i++)
+                for (int i = 0; i < j.Responses.Orientation.Length; i++)
                 {
-                    if (j.Responses.Gyro[i].Timestamp > maxGyroTimeStamp)
+                    if (j.Responses.Orientation[i].Timestamp > maxGyroTimeStamp)
                     {
-                        maxGyroTimeStamp = j.Responses.Gyro[i].Timestamp;
+                        maxGyroTimeStamp = j.Responses.Orientation[i].Timestamp;
                     }
                 }
             }
         }
 
-        public void updateGraph(ref ZedGraphControl graph, ref List<RollingPointPairList> dataSets, GraphData valueToChange, long time, float data)
+        public void updateGraph(ref ZedGraphControl graph, ref List<RollingPointPairList> dataSets, GraphData valueToChange, double time, float data)
         {
             //change the x axis values shown to user
             double incomingTimeVal = (double)time;
@@ -297,6 +306,11 @@ namespace QoD_DataCentre.Controls
                     ZoomState newState)
         {
             // Here we get notification everytime the user zooms
+        }
+
+        private void orientationVsTime_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
