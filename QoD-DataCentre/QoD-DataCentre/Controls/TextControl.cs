@@ -36,6 +36,8 @@ namespace QoD_DataCentre.Controls
 
         public void insertWriteToTextControl(string text)
         {
+            if (textControlTerminal.Text.Length > 10000)
+                resetTextControl();
             text = convert_line_endings(text);
             text = QoDMain.networkCommunicationManager.phone_id + ">" + text + "\r\n";
             int carat = textControlTerminal.SelectionStart;

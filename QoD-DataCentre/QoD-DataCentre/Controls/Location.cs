@@ -46,8 +46,8 @@ namespace QoD_DataCentre.Controls
             flightOrientation.Image = null;
             flightOrientation.Refresh();
             flightOrientation.BackColor = Color.LightBlue;
-            int wid = flightOrientation.ClientSize.Width;
-            int hgt = flightOrientation.ClientSize.Height;
+            int wid = flightOrientation.Width;
+            int hgt = flightOrientation.Height;
 
             // Draw with double-buffering.
             Bitmap bm = new Bitmap(wid, hgt);
@@ -79,9 +79,18 @@ namespace QoD_DataCentre.Controls
             Pen level = new Pen(System.Drawing.Color.Black, 2);
             flightGraphics.DrawLine(level, 0, height/2, width, height/2);
             
+            flightOrientation_updateZed(flightGraphics, width, height, z);
+
+
+        }
+
+        private void flightOrientation_updateZed(Graphics flightGraphics, int width, int height, float z){
             
+            string zAxis ="  180  165  150  135  120  105   90   75   60   45   30   15   0  -15  -30  -45  -60  -75  -90 -105 -120 -135 -150 -165";
 
-
+            System.Drawing.Font drawFont = new System.Drawing.Font(FontFamily.GenericMonospace, 9, FontStyle.Regular);
+            Brush drawBrush = new SolidBrush(System.Drawing.Color.Black);
+            flightGraphics.DrawString(zAxis, drawFont, drawBrush, z * 10 - width, (height / 2) - 16);
         }
 
         private float RadianToDegree(float angle)
@@ -95,6 +104,11 @@ namespace QoD_DataCentre.Controls
         {
             flightOrientation_update(0, 0, 0);
             initialized = true;
+        }
+
+        private void flightOrientation_Resize(object sender, EventArgs e)
+        {
+            InitializeControl();
         }
 
         

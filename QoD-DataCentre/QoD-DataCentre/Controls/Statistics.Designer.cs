@@ -58,8 +58,8 @@
             this.splitContainer1.Panel2.BackColor = System.Drawing.Color.DimGray;
             this.splitContainer1.Panel2.Controls.Add(this.orientationVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.accelerationVsTime);
-            this.splitContainer1.Size = new System.Drawing.Size(448, 253);
-            this.splitContainer1.SplitterDistance = 91;
+            this.splitContainer1.Size = new System.Drawing.Size(444, 249);
+            this.splitContainer1.SplitterDistance = 90;
             this.splitContainer1.TabIndex = 0;
             // 
             // flightTimeValue
@@ -116,9 +116,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.Controls.Add(this.splitContainer1);
             this.Name = "Statistics";
-            this.Size = new System.Drawing.Size(448, 253);
+            this.Size = new System.Drawing.Size(444, 249);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);

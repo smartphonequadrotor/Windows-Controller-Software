@@ -393,7 +393,7 @@ namespace QoD_DataCentre
             {
                 statistics1.InitializeControl();
             }
-            else if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Statistics)) && !location1.initialized)
+            else if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Location)) && !location1.initialized)
             {
                 location1.InitializeControl();
             }

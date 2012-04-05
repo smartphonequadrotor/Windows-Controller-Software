@@ -35,7 +35,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Blue;
+            this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.Name = "Plugins";
+            this.Size = new System.Drawing.Size(146, 146);
             this.ResumeLayout(false);
 
         }
