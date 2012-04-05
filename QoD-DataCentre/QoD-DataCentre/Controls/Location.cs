@@ -79,6 +79,8 @@ namespace QoD_DataCentre.Controls
             Pen level = new Pen(System.Drawing.Color.Black, 2);
             flightGraphics.DrawLine(level, 0, height/2, width, height/2);
             
+            
+
 
         }
 

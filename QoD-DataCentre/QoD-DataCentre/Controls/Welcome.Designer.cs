@@ -28,33 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
-            // label1
+            // richTextBox1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 23);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(175, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Welcome to the Quadrotor of Doom";
+            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox1.BackColor = System.Drawing.Color.Silver;
+            this.richTextBox1.Location = new System.Drawing.Point(4, 4);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(413, 222);
+            this.richTextBox1.TabIndex = 0;
+            this.richTextBox1.Text = "";
             // 
             // Welcome
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.Controls.Add(this.label1);
+            this.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.Controls.Add(this.richTextBox1);
             this.Name = "Welcome";
-            this.Size = new System.Drawing.Size(217, 154);
+            this.Size = new System.Drawing.Size(420, 229);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RichTextBox richTextBox1;
+
     }
 }

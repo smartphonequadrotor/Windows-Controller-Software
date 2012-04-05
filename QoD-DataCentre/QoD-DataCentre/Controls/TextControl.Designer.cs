@@ -51,7 +51,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Goldenrod;
+            this.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.Controls.Add(this.textControlTerminal);
             this.Name = "TextControl";
             this.Size = new System.Drawing.Size(900, 460);

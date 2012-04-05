@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.label2 = new System.Windows.Forms.Label();
+            this.flightTimeValue = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.orientationVsTime = new ZedGraph.ZedGraphControl();
             this.accelerationVsTime = new ZedGraph.ZedGraphControl();
@@ -41,40 +41,41 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.BackColor = System.Drawing.Color.SandyBrown;
+            this.splitContainer1.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.BackColor = System.Drawing.Color.DarkKhaki;
-            this.splitContainer1.Panel1.Controls.Add(this.label2);
+            this.splitContainer1.Panel1.BackColor = System.Drawing.Color.Silver;
+            this.splitContainer1.Panel1.Controls.Add(this.flightTimeValue);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.AutoScroll = true;
+            this.splitContainer1.Panel2.BackColor = System.Drawing.Color.DimGray;
             this.splitContainer1.Panel2.Controls.Add(this.orientationVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.accelerationVsTime);
             this.splitContainer1.Size = new System.Drawing.Size(448, 253);
             this.splitContainer1.SplitterDistance = 91;
             this.splitContainer1.TabIndex = 0;
             // 
-            // label2
+            // flightTimeValue
             // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.DarkKhaki;
-            this.label2.Location = new System.Drawing.Point(63, 11);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "label2";
+            this.flightTimeValue.AutoSize = true;
+            this.flightTimeValue.BackColor = System.Drawing.Color.Silver;
+            this.flightTimeValue.Location = new System.Drawing.Point(63, 11);
+            this.flightTimeValue.Name = "flightTimeValue";
+            this.flightTimeValue.Size = new System.Drawing.Size(49, 13);
+            this.flightTimeValue.TabIndex = 1;
+            this.flightTimeValue.Text = "00:00:00";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.DarkKhaki;
+            this.label1.BackColor = System.Drawing.Color.Silver;
             this.label1.Location = new System.Drawing.Point(3, 11);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(61, 13);
@@ -114,7 +115,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Pink;
+            this.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.Controls.Add(this.splitContainer1);
             this.Name = "Statistics";
             this.Size = new System.Drawing.Size(448, 253);
@@ -130,7 +131,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Label flightTimeValue;
         private System.Windows.Forms.Label label1;
         private ZedGraph.ZedGraphControl accelerationVsTime;
         private ZedGraph.ZedGraphControl orientationVsTime;
