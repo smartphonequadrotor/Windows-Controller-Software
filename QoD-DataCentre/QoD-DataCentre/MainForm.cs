@@ -374,8 +374,8 @@ namespace QoD_DataCentre
             {
                 string receivedText = data.Message;
 
-              /*  try
-                {*/
+                try
+                {
                     JsonManager commandConvert = new JsonManager();
                     jsonEnvelope = commandConvert.DeserializeEnvelope(receivedText);
 
@@ -393,12 +393,12 @@ namespace QoD_DataCentre
                     {
                         statistics1.updateGraph(ref jsonEnvelope);
                     }
-               /* }
+                }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
                 }
-                */
+                
                 textControl1.insertWriteToTextControl(receivedText);
             });
         }
