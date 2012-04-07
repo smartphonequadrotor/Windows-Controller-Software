@@ -19,6 +19,8 @@ namespace QoD_DataCentre.Controls
 
         private int xMaxRange = 5; //range of x axis in ms
         List<RollingPointPairList> accelerometerDataSets = new List<RollingPointPairList>();
+        List<RollingPointPairList> gyroDataSets = new List<RollingPointPairList>();
+        List<RollingPointPairList> magDataSets = new List<RollingPointPairList>();
         List<RollingPointPairList> orientationDataSets = new List<RollingPointPairList>();
 
         private string[] labelArrayXYZ = new string[] { "x", "y", "z" };
@@ -26,7 +28,9 @@ namespace QoD_DataCentre.Controls
         private string[] labelArrayMotors = new string[] { "Motor 1", "Motor 2", "Motor 3", "Motor 4" };
 
         long maxAccelTimeStamp;
+        long maxOrientationTimeStamp;
         long maxGyroTimeStamp;
+        long maxMagTimeStamp;
 
         public Statistics()
         {
@@ -44,6 +48,14 @@ namespace QoD_DataCentre.Controls
             RollingPointPairList orientationY = new RollingPointPairList(30000);
             RollingPointPairList orientationZ = new RollingPointPairList(30000);
 
+            RollingPointPairList gyroX = new RollingPointPairList(30000);
+            RollingPointPairList gyroY = new RollingPointPairList(30000);
+            RollingPointPairList gyroZ = new RollingPointPairList(30000);
+
+            RollingPointPairList magX = new RollingPointPairList(30000);
+            RollingPointPairList magY = new RollingPointPairList(30000);
+            RollingPointPairList magZ = new RollingPointPairList(30000);
+
             //initialize point pair lists
             for (int i = 0; i < 30000; i++)
             {
@@ -53,15 +65,13 @@ namespace QoD_DataCentre.Controls
                 orientationX.Add(0, 0);
                 orientationY.Add(0, 0);
                 orientationZ.Add(0, 0);
-                /*double x = (double)i * 0.2;
-                double y = Math.Sin((double)i * Math.PI / 15.0) * 16.0;
-                double y2 = y / 2;
-                double y3 = y / 4;
-                double y4 = Math.Cos((double)i * Math.PI / 15.0) * 16.0;
-                accelerometerX.Add(x, y);
-                accelerometerY.Add(x, y2);
-                accelerometerZ.Add(x, y3);
-                list4.Add(x, y4);*/
+                gyroX.Add(0, 0);
+                gyroY.Add(0, 0);
+                gyroZ.Add(0, 0);
+                magX.Add(0, 0);
+                magY.Add(0, 0);
+                magZ.Add(0, 0);
+
             }
             accelerometerDataSets.Clear();
             accelerometerDataSets.Add(accelerometerX);
@@ -73,26 +83,50 @@ namespace QoD_DataCentre.Controls
             orientationDataSets.Add(orientationY);
             orientationDataSets.Add(orientationZ);
 
-            maxAccelTimeStamp = 0;
-            maxGyroTimeStamp = 0;
+            gyroDataSets.Clear();
+            gyroDataSets.Add(gyroX);
+            gyroDataSets.Add(gyroY);
+            gyroDataSets.Add(gyroZ);
 
-            for (int i = accelerationVsTime.GraphPane.CurveList.Count - 1; i > -1; i-- )
-                accelerationVsTime.GraphPane.CurveList.Remove(accelerationVsTime.GraphPane.CurveList[i]);
-            
-            initializeGraph(accelerationVsTime, "Acceleration vs Time", "Acceleration", "Time", accelerometerDataSets, labelArrayXYZ);
-            // Size the control to fit the window
-            SetSize(ref accelerationVsTime, 10);
+            magDataSets.Clear();
+            magDataSets.Add(magX);
+            magDataSets.Add(magY);
+            magDataSets.Add(magZ);
+
+            maxAccelTimeStamp = 0;
+            maxOrientationTimeStamp = 0;
+            maxGyroTimeStamp = 0;
+            maxMagTimeStamp = 0;
 
             for (int i = orientationVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
                 orientationVsTime.GraphPane.CurveList.Remove(orientationVsTime.GraphPane.CurveList[i]);
 
-            initializeGraph(orientationVsTime, "Orientation vs Time", "Orientation", "Time", orientationDataSets, labelArrayXYZ);
-            SetSize(ref orientationVsTime, 320);
+            initializeGraph(orientationVsTime, "Orientation vs Time", "Orientation", "Time", orientationDataSets, labelArrayXYZ, 180);
+            SetSize(ref orientationVsTime, 10);
+
+            for (int i = accelerationVsTime.GraphPane.CurveList.Count - 1; i > -1; i-- )
+                accelerationVsTime.GraphPane.CurveList.Remove(accelerationVsTime.GraphPane.CurveList[i]);
+            
+            initializeGraph(accelerationVsTime, "Acceleration vs Time", "Acceleration", "Time", accelerometerDataSets, labelArrayXYZ, 10);
+            // Size the control to fit the window
+            SetSize(ref accelerationVsTime, 320);
+
+            for (int i = gyroVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
+                gyroVsTime.GraphPane.CurveList.Remove(gyroVsTime.GraphPane.CurveList[i]);
+
+            initializeGraph(gyroVsTime, "Gyroscope Values vs Time", "Gs", "Time", gyroDataSets, labelArrayXYZ, 10);
+            SetSize(ref gyroVsTime, 630);
+
+            for (int i = magVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
+                magVsTime.GraphPane.CurveList.Remove(magVsTime.GraphPane.CurveList[i]);
+
+            initializeGraph(magVsTime, "Magnetometer Values vs Time", "Magnetometer Value", "Time", magDataSets, labelArrayXYZ, 10);
+            SetSize(ref magVsTime, 940);
 
             initialized = true;
         }
 
-        private void initializeGraph(ZedGraphControl graph, string title, string yTitle, string xTitle, List<RollingPointPairList> dataSets, string[] labelArray)
+        private void initializeGraph(ZedGraphControl graph, string title, string yTitle, string xTitle, List<RollingPointPairList> dataSets, string[] labelArray, int range)
         {
             GraphPane gp = graph.GraphPane;
             // Set the titles and axis labels
@@ -127,11 +161,19 @@ namespace QoD_DataCentre.Controls
             // Align the Y axis labels so they are flush to the axis
             //gp.YAxis.Scale.Align = AlignP.Inside;
             // Manually set the axis range
-            gp.YAxis.Scale.Min = -4;
-            gp.YAxis.Scale.Max = 4;
+            if (range > 0)
+            {
+                gp.YAxis.Scale.Min = -range;
+                gp.YAxis.Scale.Max = range;
+            }
+            else
+            {
+                gp.YAxis.Scale.MaxAuto = true;
+                gp.YAxis.Scale.MinAuto = true;
+            }
 
-            gp.XAxis.Scale.Min = 0;
-            gp.XAxis.Scale.Max = 5;
+                gp.XAxis.Scale.Min = 0;
+                gp.XAxis.Scale.Max = 5;
             // Enable the Y2 axis display
             /*gp.Y2Axis.IsVisible = true;
             // Make the Y2 axis scale blue
@@ -185,22 +227,22 @@ namespace QoD_DataCentre.Controls
             //update acceleration vs time graph as needed
             if (j.Responses != null && j.Responses.Accel != null)
             {
-                for (int i = 0; i < j.Responses.Accel.Length; i++)
+                foreach (JsonObjects.TriAxisSensorData sensor in j.Responses.Accel)
                 {
-                    if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                    if (sensor.Timestamp > maxAccelTimeStamp)
                     {
-                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.X, j.Responses.Accel[i].Timestamp / 1000.0, j.Responses.Accel[i].X);
-                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Y, j.Responses.Accel[i].Timestamp / 1000.0, j.Responses.Accel[i].Y);
-                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Z, j.Responses.Accel[i].Timestamp /1000.0, j.Responses.Accel[i].Z);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.X, sensor.Timestamp / 1000.0, sensor.X);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Y, sensor.Timestamp / 1000.0, sensor.Y);
+                        updateGraph(ref accelerationVsTime, ref accelerometerDataSets, GraphData.Z, sensor.Timestamp / 1000.0, sensor.Z);
                     }
                 }
 
                 //find max acceleration time stamp
-                for (int i = 0; i < j.Responses.Accel.Length; i++)
+                foreach (JsonObjects.TriAxisSensorData sensor in j.Responses.Accel)
                 {
-                    if (j.Responses.Accel[i].Timestamp > maxAccelTimeStamp)
+                    if (sensor.Timestamp > maxAccelTimeStamp)
                     {
-                        maxAccelTimeStamp = j.Responses.Accel[i].Timestamp;
+                        maxAccelTimeStamp = sensor.Timestamp;
                     }
                 }
             }
@@ -208,22 +250,68 @@ namespace QoD_DataCentre.Controls
                 //update orientation vs time graph as needed
             if (j.Responses != null && j.Responses.Orientation != null)
             {
-                for (int i = 0; i < j.Responses.Orientation.Length; i++)
+                foreach (JsonObjects.TriAxisSensorData sensor in j.Responses.Orientation)
                 {
-                    if (j.Responses.Orientation[i].Timestamp > maxGyroTimeStamp)
+                    if (sensor.Timestamp > maxOrientationTimeStamp)
                     {
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, j.Responses.Orientation[i].Timestamp / 1000.0, j.Responses.Orientation[i].X);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, j.Responses.Orientation[i].Timestamp / 1000.0, j.Responses.Orientation[i].Y);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, j.Responses.Orientation[i].Timestamp /1000.0, j.Responses.Orientation[i].Z);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.X / (2.0 * Math.PI))));
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.Y / (2.0 * Math.PI))));
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.Z / (2.0 * Math.PI))));
                     }
                 }
 
                 //find max orientation time stamp
-                for (int i = 0; i < j.Responses.Orientation.Length; i++)
+                foreach (JsonObjects.TriAxisSensorData sensor in j.Responses.Orientation)
                 {
-                    if (j.Responses.Orientation[i].Timestamp > maxGyroTimeStamp)
+                    if (sensor.Timestamp > maxOrientationTimeStamp)
                     {
-                        maxGyroTimeStamp = j.Responses.Orientation[i].Timestamp;
+                        maxOrientationTimeStamp = sensor.Timestamp;
+                    }
+                }
+            }
+
+            if (j.Responses != null && j.Responses.Gyro != null)
+            {
+                foreach(JsonObjects.TriAxisSensorData sensor in j.Responses.Gyro)
+                {
+
+                    if (sensor.Timestamp > maxGyroTimeStamp)
+                    {
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, sensor.Timestamp / 1000.0, sensor.X);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, sensor.Timestamp / 1000.0, sensor.Y);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, sensor.Timestamp / 1000.0, sensor.Z);
+                    }
+                }
+
+                //find max orientation time stamp
+                foreach (JsonObjects.TriAxisSensorData sensor in j.Responses.Gyro)
+                {
+                    if (sensor.Timestamp > maxGyroTimeStamp)
+                    {
+                        maxGyroTimeStamp = sensor.Timestamp;
+                    }
+                }
+            }
+
+            if (j.Responses != null && j.Responses.Mag!= null)
+            {
+                foreach (JsonObjects.TriAxisSensorData sensor in j.Responses.Mag)
+                {
+
+                    if (sensor.Timestamp > maxMagTimeStamp)
+                    {
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, sensor.Timestamp / 1000.0, sensor.X);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, sensor.Timestamp / 1000.0, sensor.Y);
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, sensor.Timestamp / 1000.0, sensor.Z);
+                    }
+                }
+
+                //find max orientation time stamp
+                foreach (JsonObjects.TriAxisSensorData sensor in j.Responses.Mag)
+                {
+                    if (sensor.Timestamp > maxMagTimeStamp)
+                    {
+                        maxMagTimeStamp = sensor.Timestamp;
                     }
                 }
             }

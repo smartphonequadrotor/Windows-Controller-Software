@@ -226,9 +226,8 @@ namespace QoD_DataCentre.Domain.JSON
 
             override public string ToString()
             {
-                DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                string time = origin.AddSeconds(this.Timestamp).ToString("{0:d/M/yyyy HH:mm:ss}");
-                string response = "Timestamp: "+time+"\r\n";
+                
+                string response = "Timestamp: "+this.Timestamp+"\r\n";
                 response += "X: " + this.X + ", Y: " + this.Y + ", Z: " + this.Z;
 
                 return response;
@@ -257,7 +256,7 @@ namespace QoD_DataCentre.Domain.JSON
             
             private TriAxisResponse[] gyro;
             private TriAxisResponse[] accel;
-
+            private TriAxisResponse[] mag;
 
             private string systemState;
             private string debug;
@@ -292,6 +291,12 @@ namespace QoD_DataCentre.Domain.JSON
                 set { accel = value; }
             }
 
+            public TriAxisResponse[] Mag
+            {
+                get { return mag; }
+                set { mag = value; }
+            }
+
             public Responses()
             {
                 gyro = null;
@@ -314,20 +319,6 @@ namespace QoD_DataCentre.Domain.JSON
                         }
                     }
                 }
-
-                if (Gyro != null && Gyro.Length > 0)
-                {
-                    responses += "\r\n\r\nGyroscope:\r\n";
-
-                    foreach (QoD_DataCentre.Domain.JSON.JsonObjects.TriAxisResponse gyro in Gyro)
-                    {
-                        if (gyro != null)
-                        {
-                            responses += "\r\n\t" + gyro.ToString().Replace("\r\n", "\r\n\t");
-                        }
-                    }
-                }
-
                 if (Accel != null && Accel.Length > 0)
                 {
                     responses += "\r\n\r\nAccelerometer:\r\n";
@@ -340,6 +331,31 @@ namespace QoD_DataCentre.Domain.JSON
                         }
                     }
                 }
+                if (Gyro != null && Gyro.Length > 0)
+                {
+                    responses += "\r\n\r\nGyroscope:\r\n";
+
+                    foreach (QoD_DataCentre.Domain.JSON.JsonObjects.TriAxisResponse gyro in Gyro)
+                    {
+                        if (gyro != null)
+                        {
+                            responses += "\r\n\t" + gyro.ToString().Replace("\r\n", "\r\n\t");
+                        }
+                    }
+                }
+                if (Mag != null && Mag.Length > 0)
+                {
+                    responses += "\r\n\r\nMagnetometer:\r\n";
+
+                    foreach (QoD_DataCentre.Domain.JSON.JsonObjects.TriAxisResponse mag in Mag)
+                    {
+                        if (mag != null)
+                        {
+                            responses += "\r\n\t" + mag.ToString().Replace("\r\n", "\r\n\t");
+                        }
+                    }
+                }
+                
 
                 if (SystemState != null)
                 {

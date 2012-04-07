@@ -33,6 +33,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.orientationVsTime = new ZedGraph.ZedGraphControl();
             this.accelerationVsTime = new ZedGraph.ZedGraphControl();
+            this.gyroVsTime = new ZedGraph.ZedGraphControl();
+            this.magVsTime = new ZedGraph.ZedGraphControl();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -56,6 +58,8 @@
             // 
             this.splitContainer1.Panel2.AutoScroll = true;
             this.splitContainer1.Panel2.BackColor = System.Drawing.Color.DimGray;
+            this.splitContainer1.Panel2.Controls.Add(this.magVsTime);
+            this.splitContainer1.Panel2.Controls.Add(this.gyroVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.orientationVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.accelerationVsTime);
             this.splitContainer1.Size = new System.Drawing.Size(444, 249);
@@ -84,7 +88,7 @@
             // 
             // orientationVsTime
             // 
-            this.orientationVsTime.Location = new System.Drawing.Point(3, 159);
+            this.orientationVsTime.Location = new System.Drawing.Point(3, 3);
             this.orientationVsTime.Name = "orientationVsTime";
             this.orientationVsTime.ScrollGrace = 0D;
             this.orientationVsTime.ScrollMaxX = 0D;
@@ -99,7 +103,7 @@
             // 
             // accelerationVsTime
             // 
-            this.accelerationVsTime.Location = new System.Drawing.Point(3, 3);
+            this.accelerationVsTime.Location = new System.Drawing.Point(3, 159);
             this.accelerationVsTime.Name = "accelerationVsTime";
             this.accelerationVsTime.ScrollGrace = 0D;
             this.accelerationVsTime.ScrollMaxX = 0D;
@@ -110,6 +114,34 @@
             this.accelerationVsTime.ScrollMinY2 = 0D;
             this.accelerationVsTime.Size = new System.Drawing.Size(150, 150);
             this.accelerationVsTime.TabIndex = 0;
+            // 
+            // gyroVsTime
+            // 
+            this.gyroVsTime.Location = new System.Drawing.Point(3, 315);
+            this.gyroVsTime.Name = "gyroVsTime";
+            this.gyroVsTime.ScrollGrace = 0D;
+            this.gyroVsTime.ScrollMaxX = 0D;
+            this.gyroVsTime.ScrollMaxY = 0D;
+            this.gyroVsTime.ScrollMaxY2 = 0D;
+            this.gyroVsTime.ScrollMinX = 0D;
+            this.gyroVsTime.ScrollMinY = 0D;
+            this.gyroVsTime.ScrollMinY2 = 0D;
+            this.gyroVsTime.Size = new System.Drawing.Size(150, 150);
+            this.gyroVsTime.TabIndex = 2;
+            // 
+            // magVsTime
+            // 
+            this.magVsTime.Location = new System.Drawing.Point(3, 471);
+            this.magVsTime.Name = "magVsTime";
+            this.magVsTime.ScrollGrace = 0D;
+            this.magVsTime.ScrollMaxX = 0D;
+            this.magVsTime.ScrollMaxY = 0D;
+            this.magVsTime.ScrollMaxY2 = 0D;
+            this.magVsTime.ScrollMinX = 0D;
+            this.magVsTime.ScrollMinY = 0D;
+            this.magVsTime.ScrollMinY2 = 0D;
+            this.magVsTime.Size = new System.Drawing.Size(150, 150);
+            this.magVsTime.TabIndex = 3;
             // 
             // Statistics
             // 
@@ -136,6 +168,8 @@
         private System.Windows.Forms.Label label1;
         private ZedGraph.ZedGraphControl accelerationVsTime;
         private ZedGraph.ZedGraphControl orientationVsTime;
+        private ZedGraph.ZedGraphControl magVsTime;
+        private ZedGraph.ZedGraphControl gyroVsTime;
 
     }
 }
