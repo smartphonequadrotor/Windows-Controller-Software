@@ -109,6 +109,13 @@ namespace QoD_DataCentre.Properties {
             }
         }
         
+        internal static byte[] SF_New_Republic_Bold {
+            get {
+                object obj = ResourceManager.GetObject("SF_New_Republic_Bold", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap userControlIndicatorDisabled {
             get {
                 object obj = ResourceManager.GetObject("userControlIndicatorDisabled", resourceCulture);

@@ -219,7 +219,7 @@ namespace QoD_DataCentre.Controls
             }
         }
 
-        private void CommandParser(string message)
+        public void CommandParser(string message)
         {
             JsonObjects.Envelope test = new JsonObjects.Envelope();
             char[] delimiter = {' '};

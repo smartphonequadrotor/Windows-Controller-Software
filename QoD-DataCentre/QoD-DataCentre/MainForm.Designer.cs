@@ -67,10 +67,10 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("SF New Republic", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(405, 42);
+            this.label1.Size = new System.Drawing.Size(402, 49);
             this.label1.TabIndex = 1;
             this.label1.Text = "smartphone quadrotor";
             // 
@@ -278,7 +278,7 @@
             this.flyPrep.Name = "flyPrep";
             this.flyPrep.Size = new System.Drawing.Size(115, 23);
             this.flyPrep.TabIndex = 8;
-            this.flyPrep.Text = "Arm Motors";
+            this.flyPrep.Text = "Calibrate";
             this.flyPrep.UseVisualStyleBackColor = true;
             this.flyPrep.Visible = false;
             this.flyPrep.Click += new System.EventHandler(this.fly_Click);
@@ -336,6 +336,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "QoDForm";
             this.Text = "Smartphone Quadrotor";
+            this.Load += new System.EventHandler(this.QoDForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.QoDForm_KeyDown);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -371,7 +372,7 @@
         private Controls.LiveFeed liveFeed1;
         private Controls.Plugins plugins1;
         private Controls.TextControl textControl1;
-        private System.Windows.Forms.Button flyPrep;
+        public System.Windows.Forms.Button flyPrep;
         private System.Windows.Forms.Button userInput;
         private System.Windows.Forms.PictureBox userControlStatusPictureBox;
         private Controls.Statistics statistics1;

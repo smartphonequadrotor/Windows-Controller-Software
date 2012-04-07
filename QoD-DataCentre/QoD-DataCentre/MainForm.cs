@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Timers;
+using System.IO;
+using System.Drawing.Text;
 using QoD_DataCentre.Src.UI;
 using QoD_DataCentre.Domain.JSON;
 using QoD_DataCentre.Src.Communication;
@@ -42,6 +44,7 @@ namespace QoD_DataCentre
         private static double JOYSTICK_CENTER = 0.5;
         private static double JOYSTICK_AXIS_THRESHOLD = 0.25;
         private Joystick j = null;
+        private PrivateFontCollection fonts;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -514,24 +517,31 @@ namespace QoD_DataCentre
 
         private void fly_Click(object sender, EventArgs e)
         {
-            if (flyPrep.Text == "Arm Motors")
+            if (flyPrep.Text == "Calibrate")
+            {
+                textControl1.CommandParser("cmd calibrate");
+                flyPrep.Text = "Arm Motors";
+            }
+            else if (flyPrep.Text == "Arm Motors")
             {
                 DialogResult result = MessageBox.Show("Are you sure you want to start the quadrotor?", "Starting Quadrotor", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {
+                    textControl1.CommandParser("cmd arm");
                     flying = true;
-                    flyPrep.Text = "Stop";
+                    flyPrep.Text = "Disarm";
                 }
             }
             else
             {
-                DialogResult result = MessageBox.Show("Are you sure you want to stop the quadrotor?", "Stopping Quadrotor", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show("Are you sure you want to disarm the quadrotor?", "Disarming Quadrotor", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {
+                    textControl1.CommandParser("cmd disarm");
                     flightTime = 0;
                     updateTime();
                     flying = false;
-                    flyPrep.Text = "Arm Motors";
+                    flyPrep.Text = "Calibrate";
                 }
             }
         }
@@ -604,6 +614,32 @@ namespace QoD_DataCentre
                 QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
 
             }
+        }
+
+        private void QoDForm_Load(object sender, EventArgs e)
+        {
+            //todo lisa need to install appropriate fon if not on user machine
+            /*fonts = new PrivateFontCollection();
+            var test = Properties.Resources.SF_New_Republic_Bold;
+            string path = "Resources\\SF New Republic Bold.ttf";
+            if (File.Exists(path))
+            {
+                MessageBox.Show("font file exists at path: " + path);
+            }
+            fonts.AddFontFile(path);
+            //label1.Font = fonts.
+            if (!File.Exists("C:\\Windows\\Fonts\\SF New Republic Bold.ttf"))
+            {
+                if (File.Exists("C:\\Windows\\Fonts\\"))
+                {
+                    MessageBox.Show("Holy crap it exists!");
+                }
+                else
+                {
+                    MessageBox.Show("Doesn't exist :'(");
+                }
+                //File.WriteAllBytes("\\\\Windows\\Fonts\\", Properties.Resources.SF_New_Republic_Bold);
+            }*/
         }
     }
 }

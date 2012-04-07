@@ -251,6 +251,7 @@
     <Content Include="lib\SdlDotNet.dll" />
     <Content Include="lib\SdlDotNet.xml" />
     <Content Include="Resources\userControlIndicatorDisabled.png" />
+    <None Include="Resources\SF New Republic Bold.ttf" />
     <None Include="Resources\userControlIndicatorEnabled1.png" />
     <None Include="Resources\userControlIndicatorDisabled1.png" />
     <Content Include="Resources\userControlIndicatorEnabled.png" />

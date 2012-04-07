@@ -113,6 +113,10 @@ namespace QoD_DataCentre.Src.UI
         private void xmppConnect_Click(object sender, EventArgs e)
         {
             QoDMain.networkCommunicationManager.Disconnect();
+            if (xmppConnect.Text.Equals("Change Connection"))
+            {
+                qoDForm.flyPrep.Text = "Calibrate";
+            }
             connectBtn.Enabled = false;
             xmppUsers.Items.Clear();
 
