@@ -33,11 +33,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.welcome1 = new QoD_DataCentre.Modules.Welcome();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.location1 = new QoD_DataCentre.Controls.Location();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.statistics1 = new QoD_DataCentre.Controls.Statistics();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.plugins1 = new QoD_DataCentre.Controls.Plugins();
             this.label2 = new System.Windows.Forms.Label();
             this.setupConnectionBtn = new System.Windows.Forms.Button();
             this.connectionText = new System.Windows.Forms.Label();
@@ -47,12 +53,9 @@
             this.userControlStatusPictureBox = new System.Windows.Forms.PictureBox();
             this.batteryLevelPictureBox = new System.Windows.Forms.PictureBox();
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
-            this.welcome1 = new QoD_DataCentre.Modules.Welcome();
-            this.location1 = new QoD_DataCentre.Controls.Location();
-            this.statistics1 = new QoD_DataCentre.Controls.Statistics();
-            this.liveFeed1 = new QoD_DataCentre.Controls.LiveFeed();
-            this.textControl1 = new QoD_DataCentre.Controls.TextControl();
-            this.plugins1 = new QoD_DataCentre.Controls.Plugins();
+            this.button1 = new System.Windows.Forms.Button();
+            this.throttleBox = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -106,6 +109,18 @@
             this.tabPage1.Text = "Welcome";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // welcome1
+            // 
+            this.welcome1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.welcome1.BackColor = System.Drawing.Color.Transparent;
+            this.welcome1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.welcome1.Location = new System.Drawing.Point(6, 6);
+            this.welcome1.Name = "welcome1";
+            this.welcome1.Size = new System.Drawing.Size(762, 321);
+            this.welcome1.TabIndex = 0;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.location1);
@@ -116,6 +131,18 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Location";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // location1
+            // 
+            this.location1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.location1.BackColor = System.Drawing.Color.Transparent;
+            this.location1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.location1.Location = new System.Drawing.Point(6, 6);
+            this.location1.Name = "location1";
+            this.location1.Size = new System.Drawing.Size(762, 321);
+            this.location1.TabIndex = 0;
             // 
             // tabPage3
             // 
@@ -129,6 +156,18 @@
             this.tabPage3.Text = "Statistics";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // statistics1
+            // 
+            this.statistics1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.statistics1.BackColor = System.Drawing.Color.Pink;
+            this.statistics1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.statistics1.Location = new System.Drawing.Point(6, 6);
+            this.statistics1.Name = "statistics1";
+            this.statistics1.Size = new System.Drawing.Size(762, 321);
+            this.statistics1.TabIndex = 0;
+            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.liveFeed1);
@@ -138,6 +177,18 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Live Feed";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // liveFeed1
+            // 
+            this.liveFeed1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.liveFeed1.BackColor = System.Drawing.Color.Green;
+            this.liveFeed1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.liveFeed1.Location = new System.Drawing.Point(6, 6);
+            this.liveFeed1.Name = "liveFeed1";
+            this.liveFeed1.Size = new System.Drawing.Size(762, 321);
+            this.liveFeed1.TabIndex = 0;
             // 
             // tabPage5
             // 
@@ -150,6 +201,18 @@
             this.tabPage5.Text = "Text Control";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // textControl1
+            // 
+            this.textControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textControl1.BackColor = System.Drawing.Color.White;
+            this.textControl1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.textControl1.Location = new System.Drawing.Point(6, 6);
+            this.textControl1.Name = "textControl1";
+            this.textControl1.Size = new System.Drawing.Size(762, 321);
+            this.textControl1.TabIndex = 0;
+            // 
             // tabPage6
             // 
             this.tabPage6.Controls.Add(this.plugins1);
@@ -159,6 +222,18 @@
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Plugins";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // plugins1
+            // 
+            this.plugins1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.plugins1.BackColor = System.Drawing.Color.Blue;
+            this.plugins1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.plugins1.Location = new System.Drawing.Point(6, 6);
+            this.plugins1.Name = "plugins1";
+            this.plugins1.Size = new System.Drawing.Size(762, 321);
+            this.plugins1.TabIndex = 0;
             // 
             // label2
             // 
@@ -249,86 +324,47 @@
             // 
             // serialPort1
             // 
+            this.serialPort1.BaudRate = 115200;
             this.serialPort1.PortName = "COM6";
             this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
             // 
-            // welcome1
+            // button1
             // 
-            this.welcome1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.welcome1.BackColor = System.Drawing.Color.Transparent;
-            this.welcome1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.welcome1.Location = new System.Drawing.Point(6, 6);
-            this.welcome1.Name = "welcome1";
-            this.welcome1.Size = new System.Drawing.Size(762, 321);
-            this.welcome1.TabIndex = 0;
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button1.Location = new System.Drawing.Point(133, 445);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(115, 23);
+            this.button1.TabIndex = 11;
+            this.button1.Text = "Calibrate";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // location1
+            // throttleBox
             // 
-            this.location1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.location1.BackColor = System.Drawing.Color.Transparent;
-            this.location1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.location1.Location = new System.Drawing.Point(6, 6);
-            this.location1.Name = "location1";
-            this.location1.Size = new System.Drawing.Size(762, 321);
-            this.location1.TabIndex = 0;
+            this.throttleBox.Location = new System.Drawing.Point(254, 447);
+            this.throttleBox.Name = "throttleBox";
+            this.throttleBox.Size = new System.Drawing.Size(100, 20);
+            this.throttleBox.TabIndex = 12;
             // 
-            // statistics1
+            // button2
             // 
-            this.statistics1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.statistics1.BackColor = System.Drawing.Color.Pink;
-            this.statistics1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.statistics1.Location = new System.Drawing.Point(6, 6);
-            this.statistics1.Name = "statistics1";
-            this.statistics1.Size = new System.Drawing.Size(762, 321);
-            this.statistics1.TabIndex = 0;
-            // 
-            // liveFeed1
-            // 
-            this.liveFeed1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.liveFeed1.BackColor = System.Drawing.Color.Green;
-            this.liveFeed1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.liveFeed1.Location = new System.Drawing.Point(6, 6);
-            this.liveFeed1.Name = "liveFeed1";
-            this.liveFeed1.Size = new System.Drawing.Size(762, 321);
-            this.liveFeed1.TabIndex = 0;
-            // 
-            // textControl1
-            // 
-            this.textControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textControl1.BackColor = System.Drawing.Color.White;
-            this.textControl1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.textControl1.Location = new System.Drawing.Point(6, 6);
-            this.textControl1.Name = "textControl1";
-            this.textControl1.Size = new System.Drawing.Size(762, 321);
-            this.textControl1.TabIndex = 0;
-            // 
-            // plugins1
-            // 
-            this.plugins1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.plugins1.BackColor = System.Drawing.Color.Blue;
-            this.plugins1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.plugins1.Location = new System.Drawing.Point(6, 6);
-            this.plugins1.Name = "plugins1";
-            this.plugins1.Size = new System.Drawing.Size(762, 321);
-            this.plugins1.TabIndex = 0;
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button2.Location = new System.Drawing.Point(360, 445);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(115, 23);
+            this.button2.TabIndex = 13;
+            this.button2.Text = "Send Throttle";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // QoDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(806, 472);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.throttleBox);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.userControlStatusPictureBox);
             this.Controls.Add(this.userInput);
             this.Controls.Add(this.flyPrep);
@@ -384,6 +420,9 @@
         private System.Windows.Forms.PictureBox userControlStatusPictureBox;
         private Controls.Statistics statistics1;
         private System.IO.Ports.SerialPort serialPort1;
+        public System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox throttleBox;
+        public System.Windows.Forms.Button button2;
     }
 }
 

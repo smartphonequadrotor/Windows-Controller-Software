@@ -391,8 +391,8 @@ namespace QoD_DataCentre
             {
                 string receivedText = data.Message;
 
-                try
-                {
+                //try
+                //{
                     JsonManager commandConvert = new JsonManager();
                     jsonEnvelope = commandConvert.DeserializeEnvelope(receivedText);
 
@@ -401,7 +401,7 @@ namespace QoD_DataCentre
                         receivedText = jsonEnvelope.ToString();
                     }
 
-                    if (jsonEnvelope != null && jsonEnvelope.Responses.Orientation != null)
+                    if (jsonEnvelope != null && jsonEnvelope.Responses != null && jsonEnvelope.Responses.Orientation != null)
                     {
                         location1.UpdateOrientation(jsonEnvelope.Responses.Orientation);
                     }
@@ -410,11 +410,11 @@ namespace QoD_DataCentre
                     {
                         statistics1.updateGraph(ref jsonEnvelope);
                     }
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
+           //     }
+           //     catch (Exception e)
+           //     {
+           //         MessageBox.Show(e.Message);
+           //     }
                 
                 textControl1.insertWriteToTextControl(receivedText);
             });
@@ -533,13 +533,7 @@ namespace QoD_DataCentre
         {
             if (flyPrep.Text == "Calibrate")
             {
-                if (!serialPort1.IsOpen)
-                {
-                    serialPort1.Open();
-                    qcfpConnection.sendStartStopCalibration(true);
-                }
-                else
-                    qcfpConnection.sendStartStopCalibration(true);
+               
 
 
                 textControl1.CommandParser("cmd calibrate");
@@ -673,7 +667,57 @@ namespace QoD_DataCentre
             //read the data and store it
             serialPort1.Read(comBuffer, 0, bytes);
             qcfpConnection.addData(comBuffer, bytes);
+            
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+
+            if (button1.Text == "Calibrate")
+            {
+                if (!serialPort1.IsOpen)
+                {
+                    serialPort1.Open();
+                    qcfpConnection.sendStartStopCalibration(true);
+                }
+                else
+                    qcfpConnection.sendStartStopCalibration(true);
+
+                button1.Text = "Arm Motors";
+                
+            }
+            else if (button1.Text == "Arm Motors")
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to start the quadrotor?", "Starting Quadrotor", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    qcfpConnection.sendFlightMode(true);
+                    flying = true;
+                    button1.Text = "PID";
+                }
+            }
+            else if (button1.Text == "PID")
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to start PID?", "Starting Quadrotor", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    qcfpConnection.sendPIDStart(true);
+                    
+                    flying = true;
+                    button1.Text = "PID";
+                }
+            }
+
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            qcfpConnection.sendThrottle(Int32.Parse( throttleBox.Text));
+        }
+
+
 
         
     }

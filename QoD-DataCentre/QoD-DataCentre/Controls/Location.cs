@@ -76,10 +76,10 @@ namespace QoD_DataCentre.Controls
 
             if (true)//y <= Math.PI / 2.0 && y >= -Math.PI / 2.0)
             {
-                groundPoints[0].X += (int)(width*(Math.Tan(y)*Math.Sin(x)));
-                groundPoints[0].Y -= (int)(height * (Math.Tan(y) * Math.Cos(x)));
-                groundPoints[1].X += (int)(width * (Math.Tan(y) * Math.Sin(x)));
-                groundPoints[1].Y -= (int)(height * (Math.Tan(y) * Math.Cos(x)));
+                groundPoints[0].X += (int)(width*(Math.Tan(-y)*Math.Sin(x)));
+                groundPoints[0].Y -= (int)(height * (Math.Tan(-y) * Math.Cos(x)));
+                groundPoints[1].X += (int)(width * (Math.Tan(-y) * Math.Sin(x)));
+                groundPoints[1].Y -= (int)(height * (Math.Tan(-y) * Math.Cos(x)));
             }
             if (y > Math.PI / 2.0 || y < -Math.PI / 2.0)
             {

@@ -57,6 +57,10 @@ namespace QoD_DataCentre.Domain.Communication
             public const byte QCFP_FLIGHT_MODE_ENABLE = 0x01;
             public const byte QCFP_FLIGHT_MODE_PENDING = 0x02;
 
+            public const byte QCFP_CONTROL_METHOD_OVERRIDE = 0xF1;
+            public const byte QCFP_CONTROL_MODE_PID  = 2;
+            public const byte QCFP_SET_THROTTLE = 0x24;
+
             public const byte QCFP_RAW_MOTOR_CONTROL = (byte)0xF0; 	// Verify that this
             // cast doesn't
             // change the
@@ -245,32 +249,30 @@ namespace QoD_DataCentre.Domain.Communication
         const byte DATA_SOURCE_KIN = 0x06;
         const byte DATA_SOURCE_HEIGHT = 0x07;
 
-        const byte ACCEL_PAYLOAD_LENGTH = 12;
-        const byte GYRO_PAYLOAD_LENGTH = 12;
-        const byte MAG_PAYLOAD_LENGTH = 12;
+        const byte ACCEL_PAYLOAD_LENGTH = 18;
+        const byte GYRO_PAYLOAD_LENGTH = 18;
+        const byte MAG_PAYLOAD_LENGTH = 18;
         const byte KIN_PAYLOAD_LENGTH = 18;
         const byte HEIGHT_PAYLOAD_LENGTH = 8;
 
         const byte TIMESTAMP_START_INDEX = 2;
 
-        const byte X_INDEX_LSB = 6;
-        const byte X_INDEX_MSB = 7;
-        const byte Y_INDEX_LSB = 8;
-        const byte Y_INDEX_MSB = 9;
-        const byte Z_INDEX_LSB = 10;
-        const byte Z_INDEX_MSB = 11;
         const byte HEIGHT_INDEX_LSB = 6;
         const byte HEIGHT_INDEX_MSB = 7;
 
+        const byte X_START_INDEX = 6;
+        const byte Y_START_INDEX = 10;
+        const byte Z_START_INDEX = 14;
         const byte ROLL_START_INDEX = 6;
         const byte PITCH_START_INDEX = 10;
         const byte YAW_START_INDEX = 14;
+
 
         // Require command id, data source, 4 timestamp, and at least 1 payload
         if (length >= 7)
         {
             // values from tri axis sensors
-            int x, y, z;
+            float x, y, z;
 
             // Timestamp is unsigned
             long timestamp =
@@ -279,35 +281,58 @@ namespace QoD_DataCentre.Domain.Communication
                     ((packet[TIMESTAMP_START_INDEX + 2] << 16) & 0x0000FF0000) |
                     ((packet[TIMESTAMP_START_INDEX + 3] << 24) & 0x00FF000000);
 
+            JsonObjects.Responses newRes = null;
+            JsonObjects.TriAxisResponse newTriAxis= null;
             // sensor data is signed
-            switch (packet[CMD10_DATA_SOURCE_INDEX])
+            byte type = packet[CMD10_DATA_SOURCE_INDEX];
+            switch (type)
             {
                 case DATA_SOURCE_ACCEL:
                     if (length == ACCEL_PAYLOAD_LENGTH)
                     {
-                        x = (packet[X_INDEX_LSB] & 0x00FF) | (packet[X_INDEX_MSB] << 8);
-                        y = (packet[Y_INDEX_LSB] & 0x00FF) | (packet[Y_INDEX_MSB] << 8);
-                        z = (packet[Z_INDEX_LSB] & 0x00FF) | (packet[Z_INDEX_MSB] << 8);
-                        //kinematicsEstimator.registerAccelValues(x, y, z, timestamp);
+                        x = decodeFloat(packet, X_START_INDEX);
+                        y = decodeFloat(packet, Y_START_INDEX);
+                        z = decodeFloat(packet, Z_START_INDEX);
+                        newTriAxis = new JsonObjects.TriAxisResponse();
+                        newTriAxis.Timestamp = timestamp;
+                        newTriAxis.X = x;
+                        newTriAxis.Y = y;
+                        newTriAxis.Z = z;
+                        newRes = new JsonObjects.Responses();
+                        newRes.Accel = new JsonObjects.TriAxisResponse[1];
+                        newRes.Accel[0] = newTriAxis;
                     }
                     break;
                 case DATA_SOURCE_GYRO:
                     if (length == GYRO_PAYLOAD_LENGTH)
                     {
-                        x = (packet[X_INDEX_LSB] & 0x00FF) | (packet[X_INDEX_MSB] << 8);
-                        y = (packet[Y_INDEX_LSB] & 0x00FF) | (packet[Y_INDEX_MSB] << 8);
-                        z = (packet[Z_INDEX_LSB] & 0x00FF) | (packet[Z_INDEX_MSB] << 8);
-                        //kinematicsEstimator.registerGyroValues(x, y, z, timestamp);
+                        x = decodeFloat(packet, X_START_INDEX);
+                        y = decodeFloat(packet, Y_START_INDEX);
+                        z = decodeFloat(packet, Z_START_INDEX);
+                        newTriAxis = new JsonObjects.TriAxisResponse();
+                        newTriAxis.Timestamp = timestamp;
+                        newTriAxis.X = x;
+                        newTriAxis.Y = y;
+                        newTriAxis.Z = z;
+                        newRes = new JsonObjects.Responses();
+                        newRes.Gyro = new JsonObjects.TriAxisResponse[1];
+                        newRes.Gyro[0] = newTriAxis;
                     }
                     break;
                 case DATA_SOURCE_MAG:
                     if (length == MAG_PAYLOAD_LENGTH)
                     {
-                        x = (packet[X_INDEX_LSB] & 0x00FF) | (packet[X_INDEX_MSB] << 8);
-                        y = (packet[Y_INDEX_LSB] & 0x00FF) | (packet[Y_INDEX_MSB] << 8);
-                        z = (packet[Z_INDEX_LSB] & 0x00FF) | (packet[Z_INDEX_MSB] << 8);
-                        //kinematicsEstimator.registerMagValues(x, y, z, timestamp);
-
+                        x = decodeFloat(packet, X_START_INDEX);
+                        y = decodeFloat(packet, Y_START_INDEX);
+                        z = decodeFloat(packet, Z_START_INDEX);
+                        newTriAxis = new JsonObjects.TriAxisResponse();
+                        newTriAxis.Timestamp = timestamp;
+                        newTriAxis.X = x;
+                        newTriAxis.Y = y;
+                        newTriAxis.Z = z;
+                        newRes = new JsonObjects.Responses();
+                        newRes.Mag = new JsonObjects.TriAxisResponse[1];
+                        newRes.Mag[0] = newTriAxis;
                     }
                     break;
                 case DATA_SOURCE_KIN:
@@ -321,17 +346,14 @@ namespace QoD_DataCentre.Domain.Communication
                         pitch = decodeFloat(packet, PITCH_START_INDEX);
                         yaw = decodeFloat(packet, YAW_START_INDEX);
 
-                        JsonObjects.Responses newRes = new JsonObjects.Responses();
+                        newTriAxis = new JsonObjects.TriAxisResponse();
+                        newTriAxis.Timestamp = timestamp;
+                        newTriAxis.X = roll;
+                        newTriAxis.Y = pitch;
+                        newTriAxis.Z = yaw;
+                        newRes = new JsonObjects.Responses();
                         newRes.Orientation = new JsonObjects.TriAxisResponse[1];
-                        newRes.Orientation[0] = new JsonObjects.TriAxisResponse();
-                        newRes.Orientation[0].Timestamp = timestamp;
-                        newRes.Orientation[0].X = roll;
-                        newRes.Orientation[0].Y = pitch;
-                        newRes.Orientation[0].Z = yaw;
-                        JsonObjects.Envelope newEnv = new JsonObjects.Envelope(null, null, newRes);
-                        
-                        this.msgRecieved(this, new ReceiveQCFPEventArgs(newEnv));
-
+                        newRes.Orientation[0] = newTriAxis;
                     }
                     break;
                 case DATA_SOURCE_HEIGHT:
@@ -345,6 +367,8 @@ namespace QoD_DataCentre.Domain.Communication
                 default:
                     break;
             }
+            JsonObjects.Envelope newEnv = new JsonObjects.Envelope(null, null, newRes);
+            this.msgRecieved(this, new ReceiveQCFPEventArgs(newEnv));
         }
     }
 
@@ -359,7 +383,6 @@ namespace QoD_DataCentre.Domain.Communication
 
             public static float decodeFloat(byte[] buffer, int index)
             {
-
                 return System.BitConverter.ToSingle(buffer, index);
             }
 
@@ -514,7 +537,24 @@ namespace QoD_DataCentre.Domain.Communication
                 Array.ConstrainedCopy(encodedData, 0, returnArray, 0, encodedDataIndex);
                 return returnArray;
             }
-        }
+
+            internal void sendPIDStart(bool start)
+            {
+                byte[] buffer = new byte[2];
+                buffer[0] = QcfpCommands.QCFP_CONTROL_METHOD_OVERRIDE;
+                buffer[1] = QcfpCommands.QCFP_CONTROL_MODE_PID;
+                sendCOMMessage(encodeData(buffer, buffer.Length));
+            }
+
+            internal void sendThrottle(int speed)
+            {
+                byte[] buffer = new byte[3];
+                buffer[0] = QcfpCommands.QCFP_SET_THROTTLE;
+                buffer[1] = (byte)( 0x000000FF & speed);
+                buffer[2] = (byte)((0x0000FF00 & speed)>>8);
+                sendCOMMessage(encodeData(buffer, buffer.Length));
+            }
+    }
 
     }
 

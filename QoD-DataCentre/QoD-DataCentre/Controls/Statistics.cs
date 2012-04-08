@@ -227,6 +227,8 @@ namespace QoD_DataCentre.Controls
 
         public void updateGraph(ref JsonObjects.Envelope j)
         {
+            if (!this.initialized)
+                this.InitializeControl();
             //update acceleration vs time graph as needed
             if (j.Responses != null && j.Responses.Accel != null)
             {
@@ -257,9 +259,9 @@ namespace QoD_DataCentre.Controls
                 {
                     if (sensor.Timestamp > maxOrientationTimeStamp)
                     {
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.Z / (2.0 * Math.PI))));
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.X / (2.0 * Math.PI))));
                         updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.Y / (2.0 * Math.PI))));
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.Y / (2.0 * Math.PI))));
+                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, sensor.Timestamp / 1000.0, (float)(360.0 * (sensor.Z / (2.0 * Math.PI))));
                     }
                 }
 
