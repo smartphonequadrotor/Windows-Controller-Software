@@ -29,6 +29,8 @@ namespace QoD_DataCentre
 {
     public partial class QoDForm : Form
     {
+        QoD_DataCentre.Domain.Communication.qcfp qcfpConnection;
+
         delegate void UpdateTimerCallback();
 
         private ConnectionSettings connectionSettings;
@@ -80,8 +82,20 @@ namespace QoD_DataCentre
             // KeepAlive to prevent garbage collection from occurring
             // before the method ends.
             //GC.KeepAlive(timer); 
-   
+            qcfpConnection = new Domain.Communication.qcfp(100);
+            qcfpConnection.msgToSend += new Domain.Communication.qcfp.SendQCFPEvent(qcfpConnection_msgRecieved);
+            qcfpConnection.msgRecieved += new Domain.Communication.qcfp.ReceiveQCFPEvent(qcfpConnection_msgRecieved);
             InitializeComponent();
+        }
+
+        void qcfpConnection_msgRecieved(object sender, Domain.Communication.qcfp.ReceiveQCFPEventArgs data)
+        {
+            networkCommunicationManager_msgRecieved(sender, new NetworkCommunicationManager.MsgRecievedEventArgs(data.Message.ToJSON()));
+        }
+
+        void qcfpConnection_msgRecieved(object sender, Domain.Communication.qcfp.SendQCFPEventArgs data)
+        {
+            serialPort1.Write(data.Message, 0, data.Message.Length);
         }
 
         ~QoDForm()
@@ -519,6 +533,15 @@ namespace QoD_DataCentre
         {
             if (flyPrep.Text == "Calibrate")
             {
+                if (!serialPort1.IsOpen)
+                {
+                    serialPort1.Open();
+                    qcfpConnection.sendStartStopCalibration(true);
+                }
+                else
+                    qcfpConnection.sendStartStopCalibration(true);
+
+
                 textControl1.CommandParser("cmd calibrate");
                 flyPrep.Text = "Arm Motors";
             }
@@ -641,5 +664,17 @@ namespace QoD_DataCentre
                 //File.WriteAllBytes("\\\\Windows\\Fonts\\", Properties.Resources.SF_New_Republic_Bold);
             }*/
         }
+
+        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        {
+            int bytes = serialPort1.BytesToRead;
+            //create a byte array to hold the awaiting data
+            byte[] comBuffer = new byte[bytes];
+            //read the data and store it
+            serialPort1.Read(comBuffer, 0, bytes);
+            qcfpConnection.addData(comBuffer, bytes);
+        }
+
+        
     }
 }
