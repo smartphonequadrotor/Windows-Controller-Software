@@ -277,9 +277,9 @@ namespace QoD_DataCentre.Controls
 
                     if (sensor.Timestamp > maxGyroTimeStamp)
                     {
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, sensor.Timestamp / 1000.0, sensor.X);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, sensor.Timestamp / 1000.0, sensor.Y);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, sensor.Timestamp / 1000.0, sensor.Z);
+                        updateGraph(ref gyroVsTime, ref gyroDataSets, GraphData.X, sensor.Timestamp / 1000.0, sensor.X);
+                        updateGraph(ref gyroVsTime, ref gyroDataSets, GraphData.Y, sensor.Timestamp / 1000.0, sensor.Y);
+                        updateGraph(ref gyroVsTime, ref gyroDataSets, GraphData.Z, sensor.Timestamp / 1000.0, sensor.Z);
                     }
                 }
 
@@ -300,9 +300,9 @@ namespace QoD_DataCentre.Controls
 
                     if (sensor.Timestamp > maxMagTimeStamp)
                     {
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.X, sensor.Timestamp / 1000.0, sensor.X);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Y, sensor.Timestamp / 1000.0, sensor.Y);
-                        updateGraph(ref orientationVsTime, ref orientationDataSets, GraphData.Z, sensor.Timestamp / 1000.0, sensor.Z);
+                        updateGraph(ref magVsTime, ref magDataSets, GraphData.X, sensor.Timestamp / 1000.0, sensor.X);
+                        updateGraph(ref magVsTime, ref magDataSets, GraphData.Y, sensor.Timestamp / 1000.0, sensor.Y);
+                        updateGraph(ref magVsTime, ref magDataSets, GraphData.Z, sensor.Timestamp / 1000.0, sensor.Z);
                     }
                 }
 
