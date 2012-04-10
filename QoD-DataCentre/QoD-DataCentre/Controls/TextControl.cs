@@ -254,9 +254,9 @@ namespace QoD_DataCentre.Controls
                     else if (words[1] == "debug")
                     {
                         test.Commands = new JsonObjects.Commands();
-                        string[] delimiterS = {"cmd debug"};
-                        string[] split = message.Split(delimiterS,StringSplitOptions.RemoveEmptyEntries);
-                        test.Commands.Debug = split[0];
+                        List<string> wordList = words.ToList<String>();
+                        wordList.RemoveRange(0, 2);
+                        test.Commands.Debug = wordList.ToArray<String>();
                     }
                     else
                         throw new Exception();

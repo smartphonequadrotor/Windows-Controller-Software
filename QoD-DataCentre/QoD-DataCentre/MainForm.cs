@@ -41,8 +41,10 @@ namespace QoD_DataCentre
         private bool userControlsEnabled = false;
         private System.Timers.Timer sdlTimer;
         private static double SDL_POLL_INTERVAL = 500; // in ms
-        private static double JOYSTICK_CENTER = 0.5;
-        private static double JOYSTICK_AXIS_THRESHOLD = 0.25;
+        private static float JOYSTICK_CENTER = 0.5f;
+        private static float JOYSTICK_AXIS_THRESHOLD = 0.1f;
+        private static int MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD = 10;
+        private static float YAW_CHANGE_IN_UPDATE_PERIOD = (float)(Math.PI / 12.0f);
         private Joystick j = null;
         private PrivateFontCollection fonts;
 
@@ -99,52 +101,56 @@ namespace QoD_DataCentre
             // if timer is enabled, j should not be null
             if (j != null)
             {
-                int x=0, y=0, z=0;
+                float x = 0, y = 0;
+                int z = 0;
+                float yaw = 0;
 
                 // Get joystick state
                 SdlDotNet.Core.Events.Poll();
-                if (j.GetAxisPosition(JoystickAxis.Horizontal) > JOYSTICK_CENTER + JOYSTICK_AXIS_THRESHOLD)
+                float pos_x = j.GetAxisPosition(JoystickAxis.Horizontal);
+                float pos_y = j.GetAxisPosition(JoystickAxis.Vertical);
+
+                if (Math.Abs(pos_x - JOYSTICK_CENTER) > JOYSTICK_AXIS_THRESHOLD)
                 {
-                    x++;
-                }
-                if (j.GetAxisPosition(JoystickAxis.Vertical) > JOYSTICK_CENTER + JOYSTICK_AXIS_THRESHOLD)
-                {
-                    // DOWN on the stick is a LARGER value
-                    y--;
-                }
-                if (j.GetAxisPosition(JoystickAxis.Horizontal) < JOYSTICK_CENTER - JOYSTICK_AXIS_THRESHOLD)
-                {
-                    x--;
-                }
-                if (j.GetAxisPosition(JoystickAxis.Vertical) < JOYSTICK_CENTER - JOYSTICK_AXIS_THRESHOLD)
-                {
-                    // UP on the stick is SMALLER value
-                    y++;
-                }
-                if(j.GetButtonState(0) == ButtonKeyState.Pressed) // Ascend
-                {
-                    z++;
-                }
-                if (j.GetButtonState(2) == ButtonKeyState.Pressed) // Descend
-                {
-                    z--;
-                }
-                if(j.GetButtonState(1) == ButtonKeyState.Pressed) // Rotate cw
-                {
-                    // TODO
-                }
-                if (j.GetButtonState(3) == ButtonKeyState.Pressed) // Rotate ccw
-                {
-                    // TODO
+                    x = -((float)Math.PI / 12.0f)*(pos_x - JOYSTICK_CENTER);
                 }
 
-                if (x != 0 || y != 0 || z != 0)
+                if (Math.Abs(pos_y - JOYSTICK_CENTER) > JOYSTICK_AXIS_THRESHOLD)
+                {
+                    y = ((float)Math.PI / 12.0f) * (pos_y - JOYSTICK_CENTER);
+                }
+
+                if(j.GetButtonState(7) == ButtonKeyState.Pressed) // Rotate cw
+                {
+                    if (j.GetButtonState(6) != ButtonKeyState.Pressed)
+                    {
+                        yaw = YAW_CHANGE_IN_UPDATE_PERIOD;
+                    }
+                }
+                else if (j.GetButtonState(6) == ButtonKeyState.Pressed)
+                {
+                    yaw = -YAW_CHANGE_IN_UPDATE_PERIOD;
+                }
+
+                if (j.GetButtonState(2) == ButtonKeyState.Pressed) // down if up not pressed
+                {
+                    if (j.GetButtonState(0) != ButtonKeyState.Pressed)
+                    {
+                        z = -MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD;
+                    }
+                }
+                else if (j.GetButtonState(0) == ButtonKeyState.Pressed) // up
+                {
+                    z = MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD;
+                }
+
+                if (x != 0 || y != 0 || z != 0 || yaw != 0)
                 {
                     JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
 
                     jsonToSendEnvelope.Commands = new JsonObjects.Commands();
-                    jsonToSendEnvelope.Commands.Move = new JsonObjects.MovementCommand[1];
-                    jsonToSendEnvelope.Commands.Move[0] = new JsonObjects.MovementCommand(x, y, z, 50, 1000);
+                    jsonToSendEnvelope.Commands.HRPY = new JsonObjects.SetDesiredAngleCommand[1];
+                    jsonToSendEnvelope.Commands.HRPY[0] = new JsonObjects.SetDesiredAngleCommand(z, x, y, yaw);
 
                     QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
                 }

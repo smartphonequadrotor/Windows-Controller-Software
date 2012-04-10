@@ -72,17 +72,74 @@ namespace QoD_DataCentre.Domain.JSON
             }
         }
 
+        public class SetDesiredAngleCommand
+        {
+            private int height;
+            private float roll;
+            private float pitch;
+            private float yaw;
+
+            public SetDesiredAngleCommand()
+            {
+            }
+
+            public SetDesiredAngleCommand(int height, float roll, float pitch, float yaw)
+            {
+                this.height = height;
+                this.roll = roll;
+                this.pitch = pitch;
+                this.yaw = yaw;
+            }
+
+            public int Height
+            {
+                get { return height; }
+                set { height = value; }
+            }
+
+            public float Roll
+            {
+                get { return roll; }
+                set { roll = value; }
+            }
+
+            public float Pitch
+            {
+                get { return pitch; }
+                set { pitch = value; }
+            }
+
+            public float Yaw
+            {
+                get { return yaw; }
+                set { yaw = value; }
+            }
+
+            override public string ToString()
+            {
+                return "Height: " + height + "Roll: " + roll + ", Pitch: " + pitch + ", Yaw: " + yaw;
+            }
+
+            public string ToJSON()
+            {
+                JsonSerializerSettings JsonSettings = new JsonSerializerSettings();
+                JsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+                return JsonConvert.SerializeObject(this, Formatting.Indented, JsonSettings);
+            }
+        }
+
         public class Commands{
 
             public enum SystemStates { ARMED, DISARMED, CALIBRATING, CALIBRATED}
 
             private MovementCommand[] move;
+            private SetDesiredAngleCommand[] hrpy;
 
             private string systemState;
 
-            private string debug;
+            private string[] debug;
 
-            public string Debug
+            public string[] Debug
             {
                 get { return debug; }
                 set { debug = value; }
@@ -100,6 +157,11 @@ namespace QoD_DataCentre.Domain.JSON
                 set { move = value; }
             }
 
+            public SetDesiredAngleCommand[] HRPY
+            {
+                get { return hrpy; }
+                set { hrpy = value; }
+            }
 
             public Commands()
             {
@@ -108,11 +170,18 @@ namespace QoD_DataCentre.Domain.JSON
             override public string ToString()
             {
                 string returnString = "Commands:\r\n";
-                if(move != null)
+                if (move != null)
                 {
                     foreach (MovementCommand m in move)
                     {
                         returnString += "\r\nMove:\r\n\t" + m.ToString();
+                    }
+                }
+                if (hrpy != null)
+                {
+                    foreach (SetDesiredAngleCommand c in hrpy)
+                    {
+                        returnString += "\r\nHrpy:\r\n\t" + c.ToString();
                     }
                 }
                 if (systemState != null)
