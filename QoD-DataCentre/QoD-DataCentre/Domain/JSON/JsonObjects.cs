@@ -250,6 +250,32 @@ namespace QoD_DataCentre.Domain.JSON
             }
         }
 
+        public class HeightResponse : Response
+        {
+            private int height;
+
+            public int Height
+            {
+                get { return height; }
+                set { height = value; }
+            }
+
+            public HeightResponse(int h)
+            {
+                height = h;
+            }
+
+            override
+            public  string  ToString()
+            {
+ 	             string response = "Timestamp: "+this.Timestamp+"\r\n";
+                response += "Height: " + this.height;
+
+                return response;
+            }
+
+        }
+
         public class TriAxisSensorData : Response
         {
             private float x;
@@ -326,6 +352,13 @@ namespace QoD_DataCentre.Domain.JSON
             private TriAxisResponse[] gyro;
             private TriAxisResponse[] accel;
             private TriAxisResponse[] mag;
+            private HeightResponse[] height;
+
+            public HeightResponse[] Height
+            {
+                get { return height; }
+                set { height = value; }
+            }
 
             private string systemState;
             private string debug;
@@ -421,6 +454,18 @@ namespace QoD_DataCentre.Domain.JSON
                         if (mag != null)
                         {
                             responses += "\r\n\t" + mag.ToString().Replace("\r\n", "\r\n\t");
+                        }
+                    }
+                }
+                if (Height != null && Height.Length > 0)
+                {
+                    responses += "\r\n\r\nHeight:\r\n";
+
+                    foreach (QoD_DataCentre.Domain.JSON.JsonObjects.HeightResponse h in Height)
+                    {
+                        if (h != null)
+                        {
+                            responses += "\r\n\t" + h.ToString().Replace("\r\n", "\r\n\t");
                         }
                     }
                 }
