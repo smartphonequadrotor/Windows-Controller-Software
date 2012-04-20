@@ -115,20 +115,20 @@ namespace QoD_DataCentre.Controls
             for (int i = accelerationVsTime.GraphPane.CurveList.Count - 1; i > -1; i-- )
                 accelerationVsTime.GraphPane.CurveList.Remove(accelerationVsTime.GraphPane.CurveList[i]);
             
-            initializeGraph(accelerationVsTime, "Acceleration vs Time", "Acceleration", "Time", accelerometerDataSets, labelArrayXYZ, 10);
+            initializeGraph(accelerationVsTime, "Acceleration vs Time", "Acceleration", "Time", accelerometerDataSets, labelArrayXYZ, 0);
             // Size the control to fit the window
             SetSize(ref accelerationVsTime, 320);
 
             for (int i = gyroVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
                 gyroVsTime.GraphPane.CurveList.Remove(gyroVsTime.GraphPane.CurveList[i]);
 
-            initializeGraph(gyroVsTime, "Gyroscope Values vs Time", "Gs", "Time", gyroDataSets, labelArrayXYZ, 10);
+            initializeGraph(gyroVsTime, "Gyroscope Values vs Time", "Gs", "Time", gyroDataSets, labelArrayXYZ, 0);
             SetSize(ref gyroVsTime, 630);
 
             for (int i = magVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
                 magVsTime.GraphPane.CurveList.Remove(magVsTime.GraphPane.CurveList[i]);
 
-            initializeGraph(magVsTime, "Magnetometer Values vs Time", "Magnetometer Value", "Time", magDataSets, labelArrayXYZ, 10);
+            initializeGraph(magVsTime, "Magnetometer Values vs Time", "Magnetometer Value", "Time", magDataSets, labelArrayXYZ, 0);
             SetSize(ref magVsTime, 940);
 
             for (int i = heightVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
@@ -184,6 +184,9 @@ namespace QoD_DataCentre.Controls
             {
                 gp.YAxis.Scale.MaxAuto = true;
                 gp.YAxis.Scale.MinAuto = true;
+                gp.YAxis.Scale.MajorStepAuto = true;
+                gp.YAxis.Scale.MinorStepAuto = true;
+                gp.YAxis.Scale.MagAuto = true;
             }
 
                 gp.XAxis.Scale.Min = 0;
@@ -238,6 +241,8 @@ namespace QoD_DataCentre.Controls
 
         public void updateGraph(ref JsonObjects.Envelope j)
         {
+            if (!this.initialized)
+                this.InitializeControl();
             //update acceleration vs time graph as needed
             if (j.Responses != null && j.Responses.Accel != null)
             {
@@ -367,7 +372,7 @@ namespace QoD_DataCentre.Controls
             //dataSets[2].Add(time, y);
             //dataSets[3].Add(x, y - 10);
 
-            //accelerationVsTime.GraphPane.AxisChange();
+            graph.GraphPane.AxisChange();
             graph.Invalidate();
         }
 

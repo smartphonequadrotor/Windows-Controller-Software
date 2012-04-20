@@ -16,7 +16,7 @@ namespace NetworkCommunicationTests
 
 
         private TestContext testContextInstance;
-        private XmppClient xmppClient;
+
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -54,7 +54,7 @@ namespace NetworkCommunicationTests
         [TestCleanup()]
         public void MyTestCleanup()
         {
-            xmppClient = null;
+
         }
         
         #endregion

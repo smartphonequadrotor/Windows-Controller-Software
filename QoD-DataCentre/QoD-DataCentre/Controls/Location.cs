@@ -63,8 +63,9 @@ namespace QoD_DataCentre.Controls
         {
             
             Brush ground = new SolidBrush(System.Drawing.Color.SandyBrown);
-            
-             
+
+            x = -x;
+            z = -z;
 
             Point[] groundPoints = new Point[3];
 
@@ -76,10 +77,10 @@ namespace QoD_DataCentre.Controls
 
             if (true)//y <= Math.PI / 2.0 && y >= -Math.PI / 2.0)
             {
-                groundPoints[0].X += (int)(width*(Math.Tan(y)*Math.Sin(x)));
-                groundPoints[0].Y -= (int)(height * (Math.Tan(y) * Math.Cos(x)));
-                groundPoints[1].X += (int)(width * (Math.Tan(y) * Math.Sin(x)));
-                groundPoints[1].Y -= (int)(height * (Math.Tan(y) * Math.Cos(x)));
+                groundPoints[0].X += (int)(width*(Math.Tan(-y)*Math.Sin(x)));
+                groundPoints[0].Y -= (int)(height * (Math.Tan(-y) * Math.Cos(x)));
+                groundPoints[1].X += (int)(width * (Math.Tan(-y) * Math.Sin(x)));
+                groundPoints[1].Y -= (int)(height * (Math.Tan(-y) * Math.Cos(x)));
             }
             if (y > Math.PI / 2.0 || y < -Math.PI / 2.0)
             {
@@ -93,13 +94,18 @@ namespace QoD_DataCentre.Controls
             groundPoints[1].Y += height / 2;
             groundPoints[2].X += width / 2;
             groundPoints[2].Y += height / 2;
+            try
+            {
+                flightGraphics.FillPolygon(ground, groundPoints);
+                Pen level = new Pen(System.Drawing.Color.Black, 2);
+                flightGraphics.DrawLine(level, 0, height / 2, width, height / 2);
 
-            flightGraphics.FillPolygon(ground, groundPoints);
-            Pen level = new Pen(System.Drawing.Color.Black, 2);
-            flightGraphics.DrawLine(level, 0, height/2, width, height/2);
-            
-            flightOrientation_updateZed(flightGraphics, width, height, z);
+                flightOrientation_updateZed(flightGraphics, width, height, z);
+            }
+            catch
+            {
 
+            }
 
         }
 

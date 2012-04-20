@@ -29,10 +29,11 @@ namespace QoD_DataCentre
 {
     public partial class QoDForm : Form
     {
+       
+
         delegate void UpdateTimerCallback();
 
         private ConnectionSettings connectionSettings;
-        private JsonObjects.Envelope jsonEnvelope;
         private System.Timers.Timer timer;
         private long connectionTime;
         private long flightTime;
@@ -46,7 +47,6 @@ namespace QoD_DataCentre
         private static int MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD = 20;
         private static float YAW_CHANGE_IN_UPDATE_PERIOD = (float)(Math.PI / 12.0f);
         private Joystick j = null;
-        private PrivateFontCollection fonts;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -82,7 +82,6 @@ namespace QoD_DataCentre
             // KeepAlive to prevent garbage collection from occurring
             // before the method ends.
             //GC.KeepAlive(timer); 
-   
             InitializeComponent();
         }
 
@@ -152,7 +151,7 @@ namespace QoD_DataCentre
                     jsonToSendEnvelope.Commands.HRPY = new JsonObjects.SetDesiredAngleCommand[1];
                     jsonToSendEnvelope.Commands.HRPY[0] = new JsonObjects.SetDesiredAngleCommand(z, x, y, yaw);
 
-                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
+                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
                 }
             }
         }
@@ -381,19 +380,12 @@ namespace QoD_DataCentre
         {
             this.Invoke((MethodInvoker)delegate
             {
-                string receivedText = data.Message;
 
-                try
-                {
-                    JsonManager commandConvert = new JsonManager();
-                    jsonEnvelope = commandConvert.DeserializeEnvelope(receivedText);
+                //try
+                //{
+                    JsonObjects.Envelope jsonEnvelope = data.JSONMessage;
 
-                    if (jsonEnvelope != null)
-                    {
-                        receivedText = jsonEnvelope.ToString();
-                    }
-
-                    if (jsonEnvelope != null && jsonEnvelope.Responses.Orientation != null)
+                    if (jsonEnvelope != null && jsonEnvelope.Responses != null && jsonEnvelope.Responses.Orientation != null)
                     {
                         location1.UpdateOrientation(jsonEnvelope.Responses.Orientation);
                     }
@@ -402,13 +394,13 @@ namespace QoD_DataCentre
                     {
                         statistics1.updateGraph(ref jsonEnvelope);
                     }
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
-                
-                textControl1.insertWriteToTextControl(receivedText);
+           //     }
+           //     catch (Exception e)
+           //     {
+           //         MessageBox.Show(e.Message);
+           //     }
+
+                    textControl1.insertWriteToTextControl(jsonEnvelope.ToString());
             });
         }
 
@@ -525,6 +517,9 @@ namespace QoD_DataCentre
         {
             if (flyPrep.Text == "Calibrate")
             {
+               
+
+
                 textControl1.CommandParser("cmd calibrate");
                 flyPrep.Text = "Arm Motors";
             }
@@ -633,7 +628,7 @@ namespace QoD_DataCentre
                 jsonToSendEnvelope.Commands.Move = new JsonObjects.MovementCommand[1];
                 jsonToSendEnvelope.Commands.Move[0] = new JsonObjects.MovementCommand(x, y, z, speed, duration);
 
-                QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
+                QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
 
             }
         }
@@ -663,5 +658,7 @@ namespace QoD_DataCentre
                 //File.WriteAllBytes("\\\\Windows\\Fonts\\", Properties.Resources.SF_New_Republic_Bold);
             }*/
         }
+
+        
     }
 }

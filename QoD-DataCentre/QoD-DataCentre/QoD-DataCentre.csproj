@@ -125,6 +125,7 @@
     <Compile Include="Controls\ConnectionSettings.Designer.cs">
       <DependentUpon>ConnectionSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Domain\Communication\qcfp.cs" />
     <Compile Include="Domain\Enum\GraphingData.cs" />
     <Compile Include="Domain\JSON\JsonManager.cs" />
     <Compile Include="Domain\JSON\JsonObjects.cs" />
@@ -144,7 +145,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domain\Communication\DirectSocketServer.cs" />
     <Compile Include="Domain\Communication\NetworkCommunicationManager.cs" />
-    <Compile Include="Domain\Communication\QPhoneMessageEventArgs.cs" />
     <Compile Include="Domain\Communication\XmppClient.cs" />
     <EmbeddedResource Include="Controls\Coordinates.resx">
       <DependentUpon>Coordinates.cs</DependentUpon>
