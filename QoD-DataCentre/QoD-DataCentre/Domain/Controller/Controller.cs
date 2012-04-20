@@ -98,7 +98,7 @@ namespace QoD_DataCentre.Domain.Controller
 
         public float getControlState(Joystick J)
         {
-            if (inputType == Type.AXIS)
+            if (J != null && inputType == Type.AXIS)
             {
                 float axis = J.GetAxisPosition(inputAXIS) - JOYSTICK_CENTER;
                 if (Math.Abs(axis) > JOYSTICK_AXIS_THRESHOLD)
@@ -106,7 +106,7 @@ namespace QoD_DataCentre.Domain.Controller
                 else
                     return 0;
             }
-            else if (inputType == Type.BUTTON)
+            else if (J != null && inputType == Type.BUTTON)
             {
                 float button = 0;
                 if (J.GetButtonState(inputButtonA) == ButtonKeyState.Pressed)
@@ -132,34 +132,37 @@ namespace QoD_DataCentre.Domain.Controller
 
         public void AssignControllerInput(Joystick J)
         {
-            for (int i = 0; i < J.NumberOfAxes; i++)
+            if (J != null)
             {
-                float axis = J.GetAxisPosition((JoystickAxis)i) - JOYSTICK_CENTER;
-                if (Math.Abs(axis) > JOYSTICK_AXIS_THRESHOLD)
+                for (int i = 0; i < J.NumberOfAxes; i++)
                 {
-                    this.inputAXIS = (JoystickAxis)i;
-                    this.inputType = Type.AXIS;
-                    return;
-                }
-            }
-            bool button = false;
-            for (int i = 0; i < J.NumberOfButtons; i++)
-            {
-
-                if (J.GetButtonState(i) == ButtonKeyState.Pressed)
-                {
-                    if (button)
+                    float axis = J.GetAxisPosition((JoystickAxis)i) - JOYSTICK_CENTER;
+                    if (Math.Abs(axis) > JOYSTICK_AXIS_THRESHOLD)
                     {
-                        this.inputType = Type.BUTTON;
-                        this.inputButtonB = i;
+                        this.inputAXIS = (JoystickAxis)i;
+                        this.inputType = Type.AXIS;
                         return;
                     }
-
-                    this.inputButtonA = i;
-                    button = true;
                 }
-            }
+                bool button = false;
+                for (int i = 0; i < J.NumberOfButtons; i++)
+                {
 
+                    if (J.GetButtonState(i) == ButtonKeyState.Pressed)
+                    {
+                        if (button)
+                        {
+                            this.inputType = Type.BUTTON;
+                            this.inputButtonB = i;
+                            return;
+                        }
+
+                        this.inputButtonA = i;
+                        button = true;
+                    }
+                }
+
+            }
             bool key = false;
             Array keys = Enum.GetValues(typeof(Keys));
             for (int i = 0; i < keys.Length; i++)
@@ -190,12 +193,14 @@ namespace QoD_DataCentre.Domain.Controller
 
     class Controller
     {
+        private bool noJoy = false;
 
         private bool userControlsEnabled = false;
         public bool Enabled
         {
             get { return userControlsEnabled; }
         }
+
 
         public enum direction {HEIGHT, ROLL, PITCH, YAW} 
 
@@ -246,11 +251,13 @@ namespace QoD_DataCentre.Domain.Controller
         void sdlTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             // if timer is enabled, j should not be null
-            if (j != null && userControlsEnabled)
+            if ((j != null || noJoy) && userControlsEnabled)
             {
-                
-                // Get joystick state
-                SdlDotNet.Core.Events.Poll();
+                if (!noJoy)
+                {
+                    // Get joystick state
+                    SdlDotNet.Core.Events.Poll();
+                }
 
                 for (int i = 0; i < controllerMapping.Length; i++)
                 {
@@ -295,9 +302,16 @@ namespace QoD_DataCentre.Domain.Controller
             userControlsEnabled = true;
             try
             {
-                if (j == null)
+                if (j == null && !noJoy)
                 {
-                    j = Joysticks.OpenJoystick(0);
+                    try
+                    {
+                        j = Joysticks.OpenJoystick(0);
+                    }
+                    catch
+                    {
+                        noJoy = true;
+                    }
                     sdlTimer.Enabled = true;
                 }
             }
@@ -321,9 +335,16 @@ namespace QoD_DataCentre.Domain.Controller
 
         internal void ReAssignInput(direction index)
         {
-            if (j == null)
+            if (j == null && !noJoy)
             {
-                j = Joysticks.OpenJoystick(0);
+                try
+                {
+                    j = Joysticks.OpenJoystick(0);
+                }
+                catch
+                {
+                    noJoy = true;
+                }
                 sdlTimer.Enabled = true;
             }
             SdlDotNet.Core.Events.Poll();
