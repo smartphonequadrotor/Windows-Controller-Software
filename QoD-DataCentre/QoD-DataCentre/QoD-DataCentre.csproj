@@ -145,7 +145,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domain\Communication\DirectSocketServer.cs" />
     <Compile Include="Domain\Communication\NetworkCommunicationManager.cs" />
-    <Compile Include="Domain\Communication\QPhoneMessageEventArgs.cs" />
     <Compile Include="Domain\Communication\XmppClient.cs" />
     <EmbeddedResource Include="Controls\Coordinates.resx">
       <DependentUpon>Coordinates.cs</DependentUpon>

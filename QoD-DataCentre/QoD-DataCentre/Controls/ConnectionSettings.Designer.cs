@@ -47,6 +47,9 @@
             this.directSocketExternalIp = new System.Windows.Forms.Label();
             this.directSocketInternalPortLbl = new System.Windows.Forms.Label();
             this.directSocketExternalIpLbl = new System.Windows.Forms.Label();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.comPortDescriptor = new System.Windows.Forms.ComboBox();
             this.connectBtn = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStripLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -57,6 +60,7 @@
             this.connectionSettingsTab.SuspendLayout();
             this.xmppTabPage.SuspendLayout();
             this.directSocketTabPage.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,6 +68,7 @@
             // 
             this.connectionSettingsTab.Controls.Add(this.xmppTabPage);
             this.connectionSettingsTab.Controls.Add(this.directSocketTabPage);
+            this.connectionSettingsTab.Controls.Add(this.tabPage1);
             this.connectionSettingsTab.Location = new System.Drawing.Point(16, 12);
             this.connectionSettingsTab.Name = "connectionSettingsTab";
             this.connectionSettingsTab.SelectedIndex = 0;
@@ -255,6 +260,35 @@
             this.directSocketExternalIpLbl.TabIndex = 0;
             this.directSocketExternalIpLbl.Text = "External IP: ";
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.label1);
+            this.tabPage1.Controls.Add(this.comPortDescriptor);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(248, 182);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "COM (NO PHONE)";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(33, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(56, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "COM Port:";
+            // 
+            // comPortDescriptor
+            // 
+            this.comPortDescriptor.FormattingEnabled = true;
+            this.comPortDescriptor.Location = new System.Drawing.Point(95, 6);
+            this.comPortDescriptor.Name = "comPortDescriptor";
+            this.comPortDescriptor.Size = new System.Drawing.Size(113, 21);
+            this.comPortDescriptor.TabIndex = 0;
+            this.comPortDescriptor.SelectedIndexChanged += new System.EventHandler(this.comPortDescriptor_SelectedIndexChanged);
+            // 
             // connectBtn
             // 
             this.connectBtn.Enabled = false;
@@ -327,6 +361,8 @@
             this.xmppTabPage.PerformLayout();
             this.directSocketTabPage.ResumeLayout(false);
             this.directSocketTabPage.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -362,5 +398,8 @@
         private System.Windows.Forms.Button startDirectSocketServerBtn;
         private System.Windows.Forms.Label serverStartedLbl;
         private System.ComponentModel.BackgroundWorker directSocket_async_connect;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comPortDescriptor;
     }
 }

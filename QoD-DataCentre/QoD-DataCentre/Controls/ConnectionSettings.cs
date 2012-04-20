@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.Net;
 using System.Threading;
 using QoD_DataCentre.Src.Communication;
+using System.IO.Ports;
+using System.Collections;
 
 namespace QoD_DataCentre.Src.UI
 {
@@ -16,6 +18,30 @@ namespace QoD_DataCentre.Src.UI
     public partial class ConnectionSettings : Form
     {
         private QoDForm qoDForm;
+
+        public class COMPort{
+            string display;
+
+            public string Display
+            {
+                get { return display; }
+                set { display = value; }
+            }
+            string value;
+
+            public string Value
+            {
+                get { return this.value; }
+                set { this.value = value; }
+            }
+
+            public COMPort(string disp, int val)
+            {
+                this.display = disp;
+                this.value = val.ToString();
+            }
+
+        }
 
         public ConnectionSettings(QoDForm qoDForm)
         {
@@ -26,6 +52,15 @@ namespace QoD_DataCentre.Src.UI
             QoDMain.networkCommunicationManager.onStatusChanged += new Communication.NetworkCommunicationManager.statusEvent(networkCommunicationManager_onStatusChanged);
             InitializeComponent();
             this.qoDForm = qoDForm;
+            string[] ports = SerialPort.GetPortNames();
+            ArrayList ComPorts = new ArrayList();
+            foreach(string s in ports)
+                ComPorts.Add(new COMPort(s, int.Parse(s.Substring(3))));
+
+            comPortDescriptor.DataSource = ComPorts;
+
+            comPortDescriptor.DisplayMember = "Display";
+            comPortDescriptor.ValueMember = "Value";
         }
 
         void networkCommunicationManager_IPsUpdated(object sender, Communication.NetworkCommunicationManager.IPPopulationEventArgs data)
@@ -84,6 +119,11 @@ namespace QoD_DataCentre.Src.UI
             else if (connectionSettingsTab.SelectedIndex == 1)
             {
                 QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.DirectSocket;
+            }
+            else if (connectionSettingsTab.SelectedIndex == 2)
+            {
+                QoDMain.networkCommunicationManager.connectionType = Communication.ConnectionType.COM;
+                QoDMain.networkCommunicationManager.Connect(null, int.Parse((string)comPortDescriptor.SelectedValue));
             }
 
             //invoke start progress...
@@ -222,9 +262,13 @@ namespace QoD_DataCentre.Src.UI
                 else
                     connectBtn.Enabled = false;
             }
-            else
+            else if (connectionSettingsTab.SelectedIndex == 1)
             {
                 connectBtn.Visible = false;
+            }
+            else if (connectionSettingsTab.SelectedIndex == 2)
+            {
+                connectBtn.Visible = true;
             }
         }
 
@@ -287,6 +331,13 @@ namespace QoD_DataCentre.Src.UI
             }
 
         }
+
+        private void comPortDescriptor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(comPortDescriptor.SelectedIndex != -1)
+                connectBtn.Enabled = true;
+        }
+
 
     }
 }

@@ -18,7 +18,7 @@ namespace QoD_DataCentre.Modules
         {
             InitializeComponent();
 
-            bool error = false;
+
 
             //based on code from http://www.haiders.net/post/C-RSS-Feed-Fetcher-Display-RSS-Feed-with-2-lines-of-Code.aspx
             string rssXml = "http://smartphone-quadrotor.blogspot.com/feeds/posts/default?alt=rss";

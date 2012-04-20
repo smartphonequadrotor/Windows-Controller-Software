@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QoD_DataCentre.Domain.JSON;
+using System.IO.Ports;
 
 namespace QoD_DataCentre.Domain.Communication
 {
 
     public class qcfp
     {
+
         public class SendQCFPEventArgs : EventArgs
         {
             private byte[] message;
@@ -86,6 +88,7 @@ namespace QoD_DataCentre.Domain.Communication
             private int packetSize; // Counts packet size
             private int byteCount; // Counts number of encoded bytes
 
+            SerialPort comPort;
             /**
              * Creates a parser object that will not allow a decoded packet greater than
              * size maxPacketSize.
@@ -102,6 +105,20 @@ namespace QoD_DataCentre.Domain.Communication
                 this.packetSize = 0;
                 this.decodeState = cobsState.COBS_SYNC;
                 this.incomingPacket = new byte[this.maxPacketSize + 2];
+                this.comPort = new SerialPort();
+                comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
+            }
+
+            void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+            {
+
+                int bytes = comPort.BytesToRead;
+                //create a byte array to hold the awaiting data
+                byte[] comBuffer = new byte[bytes];
+                //read the data and store it
+                comPort.Read(comBuffer, 0, bytes);
+                addData(comBuffer, bytes);
+        
             }
 
             /**
@@ -553,6 +570,26 @@ namespace QoD_DataCentre.Domain.Communication
                 buffer[1] = (byte)( 0x000000FF & speed);
                 buffer[2] = (byte)((0x0000FF00 & speed)>>8);
                 sendCOMMessage(encodeData(buffer, buffer.Length));
+            }
+
+            internal void writeMessage(JsonObjects.Envelope message)
+            {
+
+            }
+
+            internal void connect(int port)
+            {
+                if(comPort.IsOpen)
+                    comPort.Close();
+                comPort.BaudRate = 115200;
+                comPort.PortName = "COM" + port;
+                comPort.Open();
+            }
+
+            internal void disconnect()
+            {
+                if (comPort.IsOpen)
+                    comPort.Close();
             }
     }
 

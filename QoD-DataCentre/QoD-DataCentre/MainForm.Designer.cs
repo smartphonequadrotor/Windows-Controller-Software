@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QoDForm));
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -52,10 +51,6 @@
             this.userInput = new System.Windows.Forms.Button();
             this.userControlStatusPictureBox = new System.Windows.Forms.PictureBox();
             this.batteryLevelPictureBox = new System.Windows.Forms.PictureBox();
-            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.throttleBox = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -322,49 +317,11 @@
             this.batteryLevelPictureBox.TabIndex = 3;
             this.batteryLevelPictureBox.TabStop = false;
             // 
-            // serialPort1
-            // 
-            this.serialPort1.BaudRate = 115200;
-            this.serialPort1.PortName = "COM6";
-            this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
-            // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(133, 445);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(115, 23);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "Calibrate";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // throttleBox
-            // 
-            this.throttleBox.Location = new System.Drawing.Point(254, 447);
-            this.throttleBox.Name = "throttleBox";
-            this.throttleBox.Size = new System.Drawing.Size(100, 20);
-            this.throttleBox.TabIndex = 12;
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(360, 445);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(115, 23);
-            this.button2.TabIndex = 13;
-            this.button2.Text = "Send Throttle";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // QoDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(806, 472);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.throttleBox);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.userControlStatusPictureBox);
             this.Controls.Add(this.userInput);
             this.Controls.Add(this.flyPrep);
@@ -419,10 +376,6 @@
         private System.Windows.Forms.Button userInput;
         private System.Windows.Forms.PictureBox userControlStatusPictureBox;
         private Controls.Statistics statistics1;
-        private System.IO.Ports.SerialPort serialPort1;
-        public System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox throttleBox;
-        public System.Windows.Forms.Button button2;
     }
 }
 

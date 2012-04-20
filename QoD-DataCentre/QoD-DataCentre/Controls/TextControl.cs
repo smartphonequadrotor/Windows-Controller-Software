@@ -282,7 +282,7 @@ namespace QoD_DataCentre.Controls
                 }
             }
 
-            QoDMain.networkCommunicationManager.SendMessage(test.ToJSON());
+            QoDMain.networkCommunicationManager.SendMessage(test);
         }
     }
 }

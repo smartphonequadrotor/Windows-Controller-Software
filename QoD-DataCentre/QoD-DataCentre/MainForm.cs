@@ -29,12 +29,11 @@ namespace QoD_DataCentre
 {
     public partial class QoDForm : Form
     {
-        QoD_DataCentre.Domain.Communication.qcfp qcfpConnection;
+       
 
         delegate void UpdateTimerCallback();
 
         private ConnectionSettings connectionSettings;
-        private JsonObjects.Envelope jsonEnvelope;
         private System.Timers.Timer timer;
         private long connectionTime;
         private long flightTime;
@@ -46,7 +45,6 @@ namespace QoD_DataCentre
         private static double JOYSTICK_CENTER = 0.5;
         private static double JOYSTICK_AXIS_THRESHOLD = 0.25;
         private Joystick j = null;
-        private PrivateFontCollection fonts;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -82,20 +80,7 @@ namespace QoD_DataCentre
             // KeepAlive to prevent garbage collection from occurring
             // before the method ends.
             //GC.KeepAlive(timer); 
-            qcfpConnection = new Domain.Communication.qcfp(100);
-            qcfpConnection.msgToSend += new Domain.Communication.qcfp.SendQCFPEvent(qcfpConnection_msgRecieved);
-            qcfpConnection.msgRecieved += new Domain.Communication.qcfp.ReceiveQCFPEvent(qcfpConnection_msgRecieved);
             InitializeComponent();
-        }
-
-        void qcfpConnection_msgRecieved(object sender, Domain.Communication.qcfp.ReceiveQCFPEventArgs data)
-        {
-            networkCommunicationManager_msgRecieved(sender, new NetworkCommunicationManager.MsgRecievedEventArgs(data.Message.ToJSON()));
-        }
-
-        void qcfpConnection_msgRecieved(object sender, Domain.Communication.qcfp.SendQCFPEventArgs data)
-        {
-            serialPort1.Write(data.Message, 0, data.Message.Length);
         }
 
         ~QoDForm()
@@ -160,7 +145,7 @@ namespace QoD_DataCentre
                     jsonToSendEnvelope.Commands.Move = new JsonObjects.MovementCommand[1];
                     jsonToSendEnvelope.Commands.Move[0] = new JsonObjects.MovementCommand(x, y, z, 50, 1000);
 
-                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
+                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
                 }
             }
         }
@@ -389,17 +374,10 @@ namespace QoD_DataCentre
         {
             this.Invoke((MethodInvoker)delegate
             {
-                string receivedText = data.Message;
 
                 //try
                 //{
-                    JsonManager commandConvert = new JsonManager();
-                    jsonEnvelope = commandConvert.DeserializeEnvelope(receivedText);
-
-                    if (jsonEnvelope != null)
-                    {
-                        receivedText = jsonEnvelope.ToString();
-                    }
+                    JsonObjects.Envelope jsonEnvelope = data.JSONMessage;
 
                     if (jsonEnvelope != null && jsonEnvelope.Responses != null && jsonEnvelope.Responses.Orientation != null)
                     {
@@ -415,8 +393,8 @@ namespace QoD_DataCentre
            //     {
            //         MessageBox.Show(e.Message);
            //     }
-                
-                textControl1.insertWriteToTextControl(receivedText);
+
+                    textControl1.insertWriteToTextControl(jsonEnvelope.ToString());
             });
         }
 
@@ -628,7 +606,7 @@ namespace QoD_DataCentre
                 jsonToSendEnvelope.Commands.Move = new JsonObjects.MovementCommand[1];
                 jsonToSendEnvelope.Commands.Move[0] = new JsonObjects.MovementCommand(x, y, z, speed, duration);
 
-                QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope.ToJSON());
+                QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
 
             }
         }
@@ -658,66 +636,6 @@ namespace QoD_DataCentre
                 //File.WriteAllBytes("\\\\Windows\\Fonts\\", Properties.Resources.SF_New_Republic_Bold);
             }*/
         }
-
-        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
-        {
-            int bytes = serialPort1.BytesToRead;
-            //create a byte array to hold the awaiting data
-            byte[] comBuffer = new byte[bytes];
-            //read the data and store it
-            serialPort1.Read(comBuffer, 0, bytes);
-            qcfpConnection.addData(comBuffer, bytes);
-            
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-
-            if (button1.Text == "Calibrate")
-            {
-                if (!serialPort1.IsOpen)
-                {
-                    serialPort1.Open();
-                    qcfpConnection.sendStartStopCalibration(true);
-                }
-                else
-                    qcfpConnection.sendStartStopCalibration(true);
-
-                button1.Text = "Arm Motors";
-                
-            }
-            else if (button1.Text == "Arm Motors")
-            {
-                DialogResult result = MessageBox.Show("Are you sure you want to start the quadrotor?", "Starting Quadrotor", MessageBoxButtons.YesNo);
-                if (result == DialogResult.Yes)
-                {
-                    qcfpConnection.sendFlightMode(true);
-                    flying = true;
-                    button1.Text = "PID";
-                }
-            }
-            else if (button1.Text == "PID")
-            {
-                DialogResult result = MessageBox.Show("Are you sure you want to start PID?", "Starting Quadrotor", MessageBoxButtons.YesNo);
-                if (result == DialogResult.Yes)
-                {
-                    qcfpConnection.sendPIDStart(true);
-                    
-                    flying = true;
-                    button1.Text = "PID";
-                }
-            }
-
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            qcfpConnection.sendThrottle(Int32.Parse( throttleBox.Text));
-        }
-
-
 
         
     }

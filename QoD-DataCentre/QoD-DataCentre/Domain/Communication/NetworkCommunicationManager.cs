@@ -7,13 +7,15 @@ using System.Net;
 using System.Threading;
 using System.IO;
 using QoD_DataCentre.Src.UI;
+using QoD_DataCentre.Domain.JSON;
+using QoD_DataCentre.Domain.Communication;
 
 namespace QoD_DataCentre.Src.Communication
 {
     /// <summary>
     /// The two types of connections that can be used.
     /// </summary>
-    public enum ConnectionType { XMPP, DirectSocket };
+    public enum ConnectionType { XMPP, DirectSocket, COM };
 
     
 
@@ -29,10 +31,22 @@ namespace QoD_DataCentre.Src.Communication
         public class MsgRecievedEventArgs : EventArgs
         {
             private string message;
+            private JsonObjects.Envelope JSONmessage;
+
+            public JsonObjects.Envelope JSONMessage
+            {
+                get { return JSONmessage; }
+                set { JSONmessage = value; }
+            }
             public string Message { get { return message; } set { message = value;} }
             public MsgRecievedEventArgs(string message)
             {
                 this.Message = message;
+                this.JSONmessage = (new JsonManager()).DeserializeEnvelope(message);
+            }
+            public MsgRecievedEventArgs(JsonObjects.Envelope message)
+            {
+                this.JSONMessage = message;
             }
         }
 
@@ -81,6 +95,7 @@ namespace QoD_DataCentre.Src.Communication
         //private QoDForm main_GUI;
         //private ConnectionSettings connectionSettings;
         private XmppClient xmppClient;
+        private qcfp comClient;
 
         //msg recieved
         public delegate void msgRecieveEvent(object sender, MsgRecievedEventArgs data);
@@ -147,12 +162,12 @@ namespace QoD_DataCentre.Src.Communication
 
         public NetworkCommunicationManager()
         {
-            //main_GUI = main_Form;
             connectionType = ConnectionType.XMPP;
             xmppClient = new XmppClient(this);
+            comClient = new qcfp(32);
         }
 
-        public void SendMessage(string message)
+        public void SendMessage(JsonObjects.Envelope message)
         {
             Console.WriteLine(message);
             if (connectionType == ConnectionType.DirectSocket)
@@ -161,7 +176,11 @@ namespace QoD_DataCentre.Src.Communication
             }
             else if (connectionType == ConnectionType.XMPP)
             {
-                xmppClient.writeMessage(message);
+                xmppClient.writeMessage(message.ToJSON());
+            }
+            else if (connectionType == ConnectionType.COM)
+            {
+                comClient.writeMessage(message);
             }
         }
 
@@ -177,6 +196,10 @@ namespace QoD_DataCentre.Src.Communication
                 
                 xmppClient.connect(phoneID);
                 ConnectionStatus = "Connected to " + phoneID;
+            }
+            else if (connectionType == ConnectionType.COM)
+            {
+                comClient.connect(port);
             }
 
             if (onConnect != null)
@@ -266,6 +289,10 @@ namespace QoD_DataCentre.Src.Communication
             else if (connectionType == ConnectionType.XMPP)
             {
                 xmppClient.disconnect();
+            }
+            else if (connectionType == ConnectionType.COM)
+            {
+                comClient.disconnect();
             }
             
             disconnectCallback();
