@@ -12,8 +12,8 @@ using System.Drawing.Text;
 using QoD_DataCentre.Src.UI;
 using QoD_DataCentre.Domain.JSON;
 using QoD_DataCentre.Src.Communication;
-using SdlDotNet.Core;
-using SdlDotNet.Input;
+using QoD_DataCentre.Domain.Controller;
+
 
 enum TabName
 {
@@ -39,14 +39,9 @@ namespace QoD_DataCentre
         private long flightTime;
         private bool connected;
         private bool flying;
-        private bool userControlsEnabled = false;
-        private System.Timers.Timer sdlTimer;
-        private static double SDL_POLL_INTERVAL = 500; // in ms
-        private static float JOYSTICK_CENTER = 0.5f;
-        private static float JOYSTICK_AXIS_THRESHOLD = 0.1f;
-        private static int MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD = 20;
-        private static float YAW_CHANGE_IN_UPDATE_PERIOD = (float)(Math.PI / 12.0f);
-        private Joystick j = null;
+
+
+        private Controller controller;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -74,9 +69,8 @@ namespace QoD_DataCentre
             connected = false;
             flying = false;
 
-            sdlTimer = new System.Timers.Timer(SDL_POLL_INTERVAL);
-            sdlTimer.Elapsed += new ElapsedEventHandler(sdlTimer_Elapsed);
-            sdlTimer.Enabled = false;
+
+            controller = new Controller();
 
             // If the timer is declared in a long-running method, use
             // KeepAlive to prevent garbage collection from occurring
@@ -87,73 +81,7 @@ namespace QoD_DataCentre
 
         ~QoDForm()
         {
-            sdlTimer.Enabled = false;
-            if (j != null)
-            {
-                j.Dispose();
-                j = null;
-            }
-        }
-
-        void sdlTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            // if timer is enabled, j should not be null
-            if (j != null)
-            {
-                float x = 0, y = 0;
-                int z = 0;
-                float yaw = 0;
-
-                // Get joystick state
-                SdlDotNet.Core.Events.Poll();
-                float pos_x = j.GetAxisPosition(JoystickAxis.Horizontal);
-                float pos_y = j.GetAxisPosition(JoystickAxis.Vertical);
-
-                if (Math.Abs(pos_x - JOYSTICK_CENTER) > JOYSTICK_AXIS_THRESHOLD)
-                {
-                    x = -((float)Math.PI / 12.0f)*(pos_x - JOYSTICK_CENTER);
-                }
-
-                if (Math.Abs(pos_y - JOYSTICK_CENTER) > JOYSTICK_AXIS_THRESHOLD)
-                {
-                    y = ((float)Math.PI / 12.0f) * (pos_y - JOYSTICK_CENTER);
-                }
-
-                if(j.GetButtonState(7) == ButtonKeyState.Pressed) // Rotate cw
-                {
-                    if (j.GetButtonState(6) != ButtonKeyState.Pressed)
-                    {
-                        yaw = YAW_CHANGE_IN_UPDATE_PERIOD;
-                    }
-                }
-                else if (j.GetButtonState(6) == ButtonKeyState.Pressed)
-                {
-                    yaw = -YAW_CHANGE_IN_UPDATE_PERIOD;
-                }
-
-                if (j.GetButtonState(2) == ButtonKeyState.Pressed) // down if up not pressed
-                {
-                    if (j.GetButtonState(0) != ButtonKeyState.Pressed)
-                    {
-                        z = -MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD;
-                    }
-                }
-                else if (j.GetButtonState(0) == ButtonKeyState.Pressed) // up
-                {
-                    z = MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD;
-                }
-
-                if (x != 0 || y != 0 || z != 0 || yaw != 0)
-                {
-                    JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
-
-                    jsonToSendEnvelope.Commands = new JsonObjects.Commands();
-                    jsonToSendEnvelope.Commands.HRPY = new JsonObjects.SetDesiredAngleCommand[1];
-                    jsonToSendEnvelope.Commands.HRPY[0] = new JsonObjects.SetDesiredAngleCommand(z, x, y, yaw);
-
-                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
-                }
-            }
+            controller.Dispose();
         }
 
         // Specify what you want to happen when the Elapsed event is 
@@ -484,32 +412,15 @@ namespace QoD_DataCentre
             {
                 userControlStatusPictureBox.Image = Properties.Resources.userControlIndicatorEnabled;
                 userInput.Text = "Disable Keys";
-                userControlsEnabled = true;
                 KeyPreview = true;
-                try
-                {
-                    j = Joysticks.OpenJoystick(0);
-                    sdlTimer.Enabled = true;
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine("Failed to open a joystick.");
-                    Console.WriteLine(ex.Message);
-                }
+                controller.Enable();
             }
             else
             {
                 userControlStatusPictureBox.Image = Properties.Resources.userControlIndicatorDisabled;
                 userInput.Text = "Enable Keys";
-                userControlsEnabled = false;
                 KeyPreview = false;
-
-                sdlTimer.Enabled = false;
-                if (j != null)
-                {
-                    j.Dispose();
-                    j = null;
-                }
+                controller.Disable();
             }
         }
 
@@ -518,8 +429,6 @@ namespace QoD_DataCentre
             if (flyPrep.Text == "Calibrate")
             {
                
-
-
                 textControl1.CommandParser("cmd calibrate");
                 flyPrep.Text = "Arm Motors";
             }
@@ -542,8 +451,7 @@ namespace QoD_DataCentre
                         test.Commands = new JsonObjects.Commands();
                         test.Commands.Debug = new string[1];
                         test.Commands.Debug[0] = "f102";
-                        QoDMain.networkCommunicationManager.SendMessage(test.ToJSON());
-                    textControl1.CommandParser("cmd arm");
+                        QoDMain.networkCommunicationManager.SendMessage(test);
                     flying = true;
                     flyPrep.Text = "Disarm";
             }
@@ -573,64 +481,8 @@ namespace QoD_DataCentre
 
         private void QoDForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (userControlsEnabled)
-            {
-                float x = 0;
-                float y = 0;
-                float z = 0;
-                int speed = 50;
-                uint duration = 1000;
-                //KEY -> ACTION
-                //A -> Left (x = -1)
-                //S -> Back (y = -1)
-                //D -> Right (x = 1)
-                //W -> Forward (y = 1)
-                //arrow up -> gain altitude (z = 1)
-                //arrow down -> lose altitude (z = -1)
-                //arrow left -> rotate to the left
-                //arrow right -> rotate to the right
-                if (e.KeyCode == Keys.A)
-                {
-                    x--;
-                }
-                if (e.KeyCode == Keys.S)
-                {
-                    y--;
-                }
-                if (e.KeyCode == Keys.D)
-                {
-                    x++;
-                }
-                if (e.KeyCode == Keys.W)
-                {
-                    y++;
-                }
-                if (e.KeyCode == Keys.Up)
-                {
-                    z++;
-                }
-                if (e.KeyCode == Keys.Down)
-                {
-                    z--;
-                }
-                if (e.KeyCode == Keys.Left)
-                {
-                    // TODO: Rotate ccw
-                }
-                if (e.KeyCode == Keys.Right)
-                {
-                    // TODOL Rotate cw
-                }
-
-                JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
-
-                jsonToSendEnvelope.Commands = new JsonObjects.Commands();
-                jsonToSendEnvelope.Commands.Move = new JsonObjects.MovementCommand[1];
-                jsonToSendEnvelope.Commands.Move[0] = new JsonObjects.MovementCommand(x, y, z, speed, duration);
-
-                QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
-
-            }
+            if(controller.Enabled)
+                e.SuppressKeyPress = true;
         }
 
         private void QoDForm_Load(object sender, EventArgs e)

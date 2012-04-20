@@ -61,6 +61,7 @@ namespace QoD_DataCentre.Src.UI
 
             comPortDescriptor.DisplayMember = "Display";
             comPortDescriptor.ValueMember = "Value";
+            comPortDescriptor.SelectedIndex = -1;
         }
 
         void networkCommunicationManager_IPsUpdated(object sender, Communication.NetworkCommunicationManager.IPPopulationEventArgs data)

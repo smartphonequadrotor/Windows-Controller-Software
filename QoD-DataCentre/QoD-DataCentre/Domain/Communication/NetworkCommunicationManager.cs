@@ -172,7 +172,7 @@ namespace QoD_DataCentre.Src.Communication
             Console.WriteLine(message);
             if (connectionType == ConnectionType.DirectSocket)
             {
-                httpServer.WritePOSTRequest(message);
+                httpServer.WritePOSTRequest(message.ToJSON());
             }
             else if (connectionType == ConnectionType.XMPP)
             {

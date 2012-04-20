@@ -126,6 +126,7 @@
       <DependentUpon>ConnectionSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Domain\Communication\qcfp.cs" />
+    <Compile Include="Domain\Controller\Controller.cs" />
     <Compile Include="Domain\Enum\GraphingData.cs" />
     <Compile Include="Domain\JSON\JsonManager.cs" />
     <Compile Include="Domain\JSON\JsonObjects.cs" />

@@ -574,7 +574,18 @@ namespace QoD_DataCentre.Domain.Communication
 
             internal void writeMessage(JsonObjects.Envelope message)
             {
-
+                if (message.Commands.Debug != null)
+                {
+                    foreach (string dbg in message.Commands.Debug)
+                    {
+                        byte[] buffer = new byte[dbg.Length / 2];
+                        for (int i = 0; i < buffer.Length; i++ )
+                        {
+                            buffer[i] = Convert.ToByte(dbg.Substring(i*2,2), 16);
+                        }
+                        sendCOMMessage(encodeData(buffer, buffer.Length));
+                    }
+                }
             }
 
             internal void connect(int port)
