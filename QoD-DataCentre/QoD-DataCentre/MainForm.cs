@@ -447,14 +447,15 @@ namespace QoD_DataCentre
             else if (flyPrep.Text == "PID")
             {
                 
-
+                /*
                 JsonObjects.Envelope test = new JsonObjects.Envelope();
                 
                         test.Commands = new JsonObjects.Commands();
                         test.Commands.Debug = new string[1];
                         test.Commands.Debug[0] = "f102";
                         QoDMain.networkCommunicationManager.SendMessage(test);
-                    flying = true;
+                */
+                textControl1.CommandParser("cmd debug f102");
                     flyPrep.Text = "Disarm";
             }
             else

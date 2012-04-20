@@ -49,6 +49,9 @@ namespace QoD_DataCentre.Domain.Communication
             public const byte QCFP_CALIBRATE_QUADROTOR_STOP = 0x00;
             public const byte QCFP_CALIBRATE_QUADROTOR_START = 0x01;
 
+            public const byte QCFP_SET_DESIRED_ANGLES = 0x25;
+            public const byte QCFP_SET_DESIRED_HEIGHT = 0x26;
+
             public const byte QCFP_CALIBRATE_QUADROTOR_UNCALIBRATED = 0x00;
             public const byte QCFP_CALIBRATE_QUADROTOR_CALIBRATED = 0x01;
             public const byte QCFP_CALIBRATE_QUADROTOR_CALIBRATING = 0x02;
@@ -391,13 +394,6 @@ namespace QoD_DataCentre.Domain.Communication
 
 
 
-
-
-
-
-
-
-
             public static float decodeFloat(byte[] buffer, int index)
             {
                 return System.BitConverter.ToSingle(buffer, index);
@@ -494,6 +490,23 @@ namespace QoD_DataCentre.Domain.Communication
                 sendCOMMessage(encodeData(buffer, buffer.Length));
             }
 
+            public void sendDesiredHrpy(int height, float[] rpy){
+		        		
+		        Byte[] rpyBuffer = new Byte[13];
+		        Byte[] heightBuffer = new Byte[3];
+		
+		        rpyBuffer[0] = QcfpCommands.QCFP_SET_DESIRED_ANGLES;
+		        heightBuffer[0] = QcfpCommands.QCFP_SET_DESIRED_HEIGHT;
+		
+		        Buffer.BlockCopy(rpy, 0, rpyBuffer, 1, 3 * 4);
+
+                heightBuffer[1] = (byte)( 0x000000FF & height);
+                heightBuffer[2] = (byte)((0x0000FF00 & height) >> 8);
+
+                sendCOMMessage(encodeData(rpyBuffer, rpyBuffer.Length));
+                sendCOMMessage(encodeData(heightBuffer, heightBuffer.Length));
+	        }
+
             /**
              * This uses the {@link BluetoothManager} to send a message to the QCB
              * over bluetooth.
@@ -555,6 +568,7 @@ namespace QoD_DataCentre.Domain.Communication
                 return returnArray;
             }
 
+
             internal void sendPIDStart(bool start)
             {
                 byte[] buffer = new byte[2];
@@ -574,16 +588,35 @@ namespace QoD_DataCentre.Domain.Communication
 
             internal void writeMessage(JsonObjects.Envelope message)
             {
-                if (message.Commands.Debug != null)
+                if (message != null)
                 {
-                    foreach (string dbg in message.Commands.Debug)
+                    if (message.Commands.Debug != null)
                     {
-                        byte[] buffer = new byte[dbg.Length / 2];
-                        for (int i = 0; i < buffer.Length; i++ )
+                        foreach (string dbg in message.Commands.Debug)
                         {
-                            buffer[i] = Convert.ToByte(dbg.Substring(i*2,2), 16);
+                            byte[] buffer = new byte[dbg.Length / 2];
+                            for (int i = 0; i < buffer.Length; i++)
+                            {
+                                buffer[i] = Convert.ToByte(dbg.Substring(i * 2, 2), 16);
+                            }
+                            sendCOMMessage(encodeData(buffer, buffer.Length));
                         }
-                        sendCOMMessage(encodeData(buffer, buffer.Length));
+                    }
+                    if (message.Commands.HRPY != null)
+                    {
+                        foreach (QoD_DataCentre.Domain.JSON.JsonObjects.SetDesiredAngleCommand hrpy in message.Commands.HRPY)
+                        {
+                            sendDesiredHrpy(hrpy.Height, new float[] { hrpy.Roll, hrpy.Pitch, hrpy.Yaw });
+                        }
+                    }
+                    if (message.Commands.SystemState != null)
+                    {
+                        if (message.Commands.SystemState == JsonObjects.Commands.SystemStates.CALIBRATING.ToString())
+                            sendStartStopCalibration(true);
+                        if (message.Commands.SystemState == JsonObjects.Commands.SystemStates.ARMED.ToString())
+                            sendFlightMode(true);
+                        if (message.Commands.SystemState == JsonObjects.Commands.SystemStates.DISARMED.ToString())
+                            sendFlightMode(false);
                     }
                 }
             }
