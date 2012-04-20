@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 namespace QoD_DataCentre.Domain.Controller
 {
 
-    public class controllerInput
+    public class ControllerInput
     {
 
         [DllImport("user32.dll")]
@@ -37,8 +37,8 @@ namespace QoD_DataCentre.Domain.Controller
 
         public JoystickAxis InputAXIS
         {
-            get { return InputAXIS; }
-            set { InputAXIS = value; }
+            get { return inputAXIS; }
+            set { inputAXIS = value; }
         }
 
         public int InputButtonA
@@ -71,27 +71,27 @@ namespace QoD_DataCentre.Domain.Controller
             set { inputType = value; }
         }
 
-        public controllerInput( JoystickAxis input)
+        public ControllerInput( JoystickAxis input)
         {
             inputType = Type.AXIS;
             inputAXIS = input;
         }
 
-        public controllerInput( int a, int b)
+        public ControllerInput( int a, int b)
         {
             inputType = Type.AXIS;
             inputButtonA = a;
             inputButtonB = b;
         }
 
-        public controllerInput(Keys a, Keys b)
+        public ControllerInput(Keys a, Keys b)
         {
             inputType = Type.KEYPRESS;
             inputKeyA = a;
             inputKeyB = b;
         }
 
-        public controllerInput()
+        public ControllerInput()
         {
 
         }
@@ -130,6 +130,62 @@ namespace QoD_DataCentre.Domain.Controller
                 return 0;
         }
 
+        public void AssignControllerInput(Joystick J)
+        {
+            for (int i = 0; i < J.NumberOfAxes; i++)
+            {
+                float axis = J.GetAxisPosition((JoystickAxis)i) - JOYSTICK_CENTER;
+                if (Math.Abs(axis) > JOYSTICK_AXIS_THRESHOLD)
+                {
+                    this.inputAXIS = (JoystickAxis)i;
+                    this.inputType = Type.AXIS;
+                    return;
+                }
+            }
+            bool button = false;
+            for (int i = 0; i < J.NumberOfButtons; i++)
+            {
+
+                if (J.GetButtonState(i) == ButtonKeyState.Pressed)
+                {
+                    if (button)
+                    {
+                        this.inputType = Type.BUTTON;
+                        this.inputButtonB = i;
+                        return;
+                    }
+
+                    this.inputButtonA = i;
+                    button = true;
+                }
+            }
+
+            bool key = false;
+            Array keys = Enum.GetValues(typeof(Keys));
+            for (int i = 0; i < keys.Length; i++)
+            {
+                while (i < keys.Length && (((Keys)(keys.GetValue(i))).ToString().Contains("LButton")))
+                    i++;
+
+                if (i == keys.Length)
+                    break;
+
+                ushort state = GetAsyncKeyState((Keys)keys.GetValue(i));
+                if ( state != 0)
+                {
+                    if (key)
+                    {
+                        this.inputType = Type.KEYPRESS;
+                        this.inputKeyB = (Keys)keys.GetValue(i);
+                        return;
+                    }
+
+                    this.inputKeyA = (Keys)keys.GetValue(i);
+                    key = true;
+                }
+            }
+
+        }
     }
 
     class Controller
@@ -141,9 +197,9 @@ namespace QoD_DataCentre.Domain.Controller
             get { return userControlsEnabled; }
         }
 
-        private enum direction {HEIGHT, ROLL, PITCH, YAW} 
+        public enum direction {HEIGHT, ROLL, PITCH, YAW} 
 
-        private controllerInput[] controllerMapping;
+        private ControllerInput[] controllerMapping;
         private float[] controllerValues;
 
         private static double SDL_POLL_INTERVAL = 500; // in ms
@@ -167,13 +223,13 @@ namespace QoD_DataCentre.Domain.Controller
             sdlTimer.Enabled = false;
 
             //we have 4 direction indexes... Height, Roll, Pitch, and Yaw
-            controllerMapping = new controllerInput[4];
+            controllerMapping = new ControllerInput[4];
             controllerValues = new float[4];
 
-            controllerMapping[(int)direction.HEIGHT] = new controllerInput(JoystickAxis.Axis4);
-            controllerMapping[(int)direction.ROLL] = new controllerInput(JoystickAxis.Horizontal);
-            controllerMapping[(int)direction.PITCH] = new controllerInput(JoystickAxis.Vertical);
-            controllerMapping[(int)direction.YAW] = new controllerInput(JoystickAxis.Axis3);
+            controllerMapping[(int)direction.HEIGHT] = new ControllerInput(JoystickAxis.Axis4);
+            controllerMapping[(int)direction.ROLL] = new ControllerInput(JoystickAxis.Horizontal);
+            controllerMapping[(int)direction.PITCH] = new ControllerInput(JoystickAxis.Vertical);
+            controllerMapping[(int)direction.YAW] = new ControllerInput(JoystickAxis.Axis3);
         }
 
         void keyTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -234,14 +290,16 @@ namespace QoD_DataCentre.Domain.Controller
             }
         }
 
-
         internal void Enable()
         {
             userControlsEnabled = true;
             try
             {
-                j = Joysticks.OpenJoystick(0);
-                sdlTimer.Enabled = true;
+                if (j == null)
+                {
+                    j = Joysticks.OpenJoystick(0);
+                    sdlTimer.Enabled = true;
+                }
             }
             catch (Exception ex)
             {
@@ -261,6 +319,21 @@ namespace QoD_DataCentre.Domain.Controller
             }
         }
 
+        internal void ReAssignInput(direction index)
+        {
+            if (j == null)
+            {
+                j = Joysticks.OpenJoystick(0);
+                sdlTimer.Enabled = true;
+            }
+            SdlDotNet.Core.Events.Poll();
+            controllerMapping[(int)index].AssignControllerInput(j);
+        }
 
+
+        internal ControllerInput FetchControl(direction index)
+        {
+            return controllerMapping[(int)index];
+        }
     }
 }

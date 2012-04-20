@@ -51,6 +51,7 @@
             this.userInput = new System.Windows.Forms.Button();
             this.userControlStatusPictureBox = new System.Windows.Forms.PictureBox();
             this.batteryLevelPictureBox = new System.Windows.Forms.PictureBox();
+            this.configureControls = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -317,11 +318,24 @@
             this.batteryLevelPictureBox.TabIndex = 3;
             this.batteryLevelPictureBox.TabStop = false;
             // 
+            // configureControls
+            // 
+            this.configureControls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.configureControls.Location = new System.Drawing.Point(557, 445);
+            this.configureControls.Name = "configureControls";
+            this.configureControls.Size = new System.Drawing.Size(101, 23);
+            this.configureControls.TabIndex = 11;
+            this.configureControls.Text = "Configure Controls";
+            this.configureControls.UseVisualStyleBackColor = true;
+            this.configureControls.Visible = false;
+            this.configureControls.Click += new System.EventHandler(this.cofigureControls_Click);
+            // 
             // QoDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(806, 472);
+            this.Controls.Add(this.configureControls);
             this.Controls.Add(this.userControlStatusPictureBox);
             this.Controls.Add(this.userInput);
             this.Controls.Add(this.flyPrep);
@@ -376,6 +390,7 @@
         private System.Windows.Forms.Button userInput;
         private System.Windows.Forms.PictureBox userControlStatusPictureBox;
         private Controls.Statistics statistics1;
+        private System.Windows.Forms.Button configureControls;
     }
 }
 

@@ -13,6 +13,7 @@ using QoD_DataCentre.Src.UI;
 using QoD_DataCentre.Domain.JSON;
 using QoD_DataCentre.Src.Communication;
 using QoD_DataCentre.Domain.Controller;
+using QoD_DataCentre.Controls;
 
 
 enum TabName
@@ -40,7 +41,7 @@ namespace QoD_DataCentre
         private bool connected;
         private bool flying;
 
-
+        private ControlManager controlManager;
         private Controller controller;
 
         public ConnectionSettings ConnectionSettings
@@ -51,6 +52,7 @@ namespace QoD_DataCentre
         public QoDForm()
         {
             connectionSettings = new ConnectionSettings(this);
+            
             QoDMain.networkCommunicationManager.msgRecieved += new Src.Communication.NetworkCommunicationManager.msgRecieveEvent(this.networkCommunicationManager_msgRecieved);
             QoDMain.networkCommunicationManager.onConnect += new NetworkCommunicationManager.connectEvent(networkCommunicationManager_onConnect);
             QoDMain.networkCommunicationManager.onDisconnect += new NetworkCommunicationManager.disconnectEvent(networkCommunicationManager_onDisconnect);
@@ -71,7 +73,7 @@ namespace QoD_DataCentre
 
 
             controller = new Controller();
-
+            controlManager = new ControlManager(this);
             // If the timer is declared in a long-running method, use
             // KeepAlive to prevent garbage collection from occurring
             // before the method ends.
@@ -476,6 +478,7 @@ namespace QoD_DataCentre
             textControl1.enableTerminal(enable);
             userControlStatusPictureBox.Visible = enable;
             userInput.Visible = enable;
+            configureControls.Visible = enable;
             flyPrep.Visible = enable;
         }
 
@@ -511,6 +514,35 @@ namespace QoD_DataCentre
             }*/
         }
 
+        private void cofigureControls_Click(object sender, EventArgs e)
+        {
+            controlManager.ShowDialog(this);
+        }
+
+        internal ControllerInput getControl(Controller.direction index)
+        {
+            return controller.FetchControl(index);
+        }
+
+        internal void configureHeightControl()
+        {
+            controller.ReAssignInput(Controller.direction.HEIGHT);
+        }
+
+        internal void configureRollControl()
+        {
+            controller.ReAssignInput(Controller.direction.ROLL);
+        }
+
+        internal void configurePitchControl()
+        {
+            controller.ReAssignInput(Controller.direction.PITCH);
+        }
+
+        internal void configureYawControl()
+        {
+            controller.ReAssignInput(Controller.direction.YAW);
+        }
         
     }
 }

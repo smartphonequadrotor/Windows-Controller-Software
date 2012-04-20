@@ -83,6 +83,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\controlManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\controlManager.Designer.cs">
+      <DependentUpon>controlManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Coordinates.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -147,6 +153,9 @@
     <Compile Include="Domain\Communication\DirectSocketServer.cs" />
     <Compile Include="Domain\Communication\NetworkCommunicationManager.cs" />
     <Compile Include="Domain\Communication\XmppClient.cs" />
+    <EmbeddedResource Include="Controls\controlManager.resx">
+      <DependentUpon>controlManager.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\Coordinates.resx">
       <DependentUpon>Coordinates.cs</DependentUpon>
     </EmbeddedResource>
