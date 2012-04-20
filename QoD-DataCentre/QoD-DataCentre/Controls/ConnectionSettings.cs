@@ -190,9 +190,12 @@ namespace QoD_DataCentre.Src.UI
 
         public void populateDirectSocketIps(string externalIp, string internalIp, int port)
         {
-            directSocketExternalIp.Text = externalIp;
-            directSocketInternalIp.Text = internalIp;
-            directSocketPortTxt.Text = port.ToString();
+            qoDForm.Invoke((MethodInvoker)delegate
+            {
+                directSocketExternalIp.Text = externalIp;
+                directSocketInternalIp.Text = internalIp;
+                directSocketPortTxt.Text = port.ToString();
+            });
         }
 
         private void xmppUsers_SelectedIndexChanged(object sender, EventArgs e)
@@ -265,6 +268,7 @@ namespace QoD_DataCentre.Src.UI
         private void directSocket_async_connect_DoWork(object sender, DoWorkEventArgs e)
         {
             //BackgroundWorker worker = sender as BackgroundWorker;
+            QoDMain.networkCommunicationManager.ConnectionStatus = "Starting Server...";
             e.Result = QoDMain.networkCommunicationManager.directSocketServerConnect((int)e.Argument);
         }
 

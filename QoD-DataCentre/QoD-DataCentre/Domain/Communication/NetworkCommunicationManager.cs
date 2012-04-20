@@ -129,7 +129,7 @@ namespace QoD_DataCentre.Src.Communication
         internal bool isConnected;
         internal string client_id;
         internal string phone_id;
-        internal HttpServer httpServer;
+        internal MyHttpServer httpServer;
 
         private string connectionStatus = "";
         public string ConnectionStatus
@@ -157,7 +157,7 @@ namespace QoD_DataCentre.Src.Communication
             Console.WriteLine(message);
             if (connectionType == ConnectionType.DirectSocket)
             {
-
+                httpServer.WritePOSTRequest(message);
             }
             else if (connectionType == ConnectionType.XMPP)
             {
@@ -220,7 +220,7 @@ namespace QoD_DataCentre.Src.Communication
             {
                 //get server's ip (external)
                 string externalIp = getServerIp();
-
+                
                 //get server's ip (internal)/port
                 IPAddress[] ips = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
                 String internalIp = "";
@@ -232,16 +232,15 @@ namespace QoD_DataCentre.Src.Communication
                         break;
                     }
                 }
-                IPAddress ipAddress = Dns.GetHostAddresses("localhost")[1];
-                httpServer = new Src.Communication.MyHttpServer(ipAddress, port);
+                populateDirectSocketIps(externalIp, internalIp, port);
+
+                IPAddress[] ipAddresses = Dns.GetHostAddresses("localhost");
+                httpServer = new Src.Communication.MyHttpServer(this, ipAddresses[0], port);
 
                 //print interna/external ips and port
-                //populateDirectSocketIps(externalIp, internalIp, port);
-
                 
-
                 return httpServer;
-                
+               
             }
             catch
             {

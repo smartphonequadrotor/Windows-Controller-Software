@@ -31,10 +31,11 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.flightTimeValue = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.magVsTime = new ZedGraph.ZedGraphControl();
+            this.gyroVsTime = new ZedGraph.ZedGraphControl();
             this.orientationVsTime = new ZedGraph.ZedGraphControl();
             this.accelerationVsTime = new ZedGraph.ZedGraphControl();
-            this.gyroVsTime = new ZedGraph.ZedGraphControl();
-            this.magVsTime = new ZedGraph.ZedGraphControl();
+            this.heightVsTime = new ZedGraph.ZedGraphControl();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -58,6 +59,7 @@
             // 
             this.splitContainer1.Panel2.AutoScroll = true;
             this.splitContainer1.Panel2.BackColor = System.Drawing.Color.DimGray;
+            this.splitContainer1.Panel2.Controls.Add(this.heightVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.magVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.gyroVsTime);
             this.splitContainer1.Panel2.Controls.Add(this.orientationVsTime);
@@ -85,6 +87,34 @@
             this.label1.Size = new System.Drawing.Size(61, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Flight Time:";
+            // 
+            // magVsTime
+            // 
+            this.magVsTime.Location = new System.Drawing.Point(3, 471);
+            this.magVsTime.Name = "magVsTime";
+            this.magVsTime.ScrollGrace = 0D;
+            this.magVsTime.ScrollMaxX = 0D;
+            this.magVsTime.ScrollMaxY = 0D;
+            this.magVsTime.ScrollMaxY2 = 0D;
+            this.magVsTime.ScrollMinX = 0D;
+            this.magVsTime.ScrollMinY = 0D;
+            this.magVsTime.ScrollMinY2 = 0D;
+            this.magVsTime.Size = new System.Drawing.Size(150, 150);
+            this.magVsTime.TabIndex = 3;
+            // 
+            // gyroVsTime
+            // 
+            this.gyroVsTime.Location = new System.Drawing.Point(3, 315);
+            this.gyroVsTime.Name = "gyroVsTime";
+            this.gyroVsTime.ScrollGrace = 0D;
+            this.gyroVsTime.ScrollMaxX = 0D;
+            this.gyroVsTime.ScrollMaxY = 0D;
+            this.gyroVsTime.ScrollMaxY2 = 0D;
+            this.gyroVsTime.ScrollMinX = 0D;
+            this.gyroVsTime.ScrollMinY = 0D;
+            this.gyroVsTime.ScrollMinY2 = 0D;
+            this.gyroVsTime.Size = new System.Drawing.Size(150, 150);
+            this.gyroVsTime.TabIndex = 2;
             // 
             // orientationVsTime
             // 
@@ -115,33 +145,19 @@
             this.accelerationVsTime.Size = new System.Drawing.Size(150, 150);
             this.accelerationVsTime.TabIndex = 0;
             // 
-            // gyroVsTime
+            // heightVsTime
             // 
-            this.gyroVsTime.Location = new System.Drawing.Point(3, 315);
-            this.gyroVsTime.Name = "gyroVsTime";
-            this.gyroVsTime.ScrollGrace = 0D;
-            this.gyroVsTime.ScrollMaxX = 0D;
-            this.gyroVsTime.ScrollMaxY = 0D;
-            this.gyroVsTime.ScrollMaxY2 = 0D;
-            this.gyroVsTime.ScrollMinX = 0D;
-            this.gyroVsTime.ScrollMinY = 0D;
-            this.gyroVsTime.ScrollMinY2 = 0D;
-            this.gyroVsTime.Size = new System.Drawing.Size(150, 150);
-            this.gyroVsTime.TabIndex = 2;
-            // 
-            // magVsTime
-            // 
-            this.magVsTime.Location = new System.Drawing.Point(3, 471);
-            this.magVsTime.Name = "magVsTime";
-            this.magVsTime.ScrollGrace = 0D;
-            this.magVsTime.ScrollMaxX = 0D;
-            this.magVsTime.ScrollMaxY = 0D;
-            this.magVsTime.ScrollMaxY2 = 0D;
-            this.magVsTime.ScrollMinX = 0D;
-            this.magVsTime.ScrollMinY = 0D;
-            this.magVsTime.ScrollMinY2 = 0D;
-            this.magVsTime.Size = new System.Drawing.Size(150, 150);
-            this.magVsTime.TabIndex = 3;
+            this.heightVsTime.Location = new System.Drawing.Point(3, 627);
+            this.heightVsTime.Name = "heightVsTime";
+            this.heightVsTime.ScrollGrace = 0D;
+            this.heightVsTime.ScrollMaxX = 0D;
+            this.heightVsTime.ScrollMaxY = 0D;
+            this.heightVsTime.ScrollMaxY2 = 0D;
+            this.heightVsTime.ScrollMinX = 0D;
+            this.heightVsTime.ScrollMinY = 0D;
+            this.heightVsTime.ScrollMinY2 = 0D;
+            this.heightVsTime.Size = new System.Drawing.Size(150, 150);
+            this.heightVsTime.TabIndex = 4;
             // 
             // Statistics
             // 
@@ -170,6 +186,7 @@
         private ZedGraph.ZedGraphControl orientationVsTime;
         private ZedGraph.ZedGraphControl magVsTime;
         private ZedGraph.ZedGraphControl gyroVsTime;
+        private ZedGraph.ZedGraphControl heightVsTime;
 
     }
 }

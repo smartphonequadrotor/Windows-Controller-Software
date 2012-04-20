@@ -43,7 +43,7 @@ namespace QoD_DataCentre
         private static double SDL_POLL_INTERVAL = 500; // in ms
         private static float JOYSTICK_CENTER = 0.5f;
         private static float JOYSTICK_AXIS_THRESHOLD = 0.1f;
-        private static int MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD = 10;
+        private static int MAX_HEIGHT_CHANGE_IN_UPDATE_PERIOD = 20;
         private static float YAW_CHANGE_IN_UPDATE_PERIOD = (float)(Math.PI / 12.0f);
         private Joystick j = null;
         private PrivateFontCollection fonts;
@@ -535,8 +535,22 @@ namespace QoD_DataCentre
                 {
                     textControl1.CommandParser("cmd arm");
                     flying = true;
-                    flyPrep.Text = "Disarm";
+                    flyPrep.Text = "PID";
                 }
+            }
+            else if (flyPrep.Text == "PID")
+            {
+                
+
+                JsonObjects.Envelope test = new JsonObjects.Envelope();
+                
+                        test.Commands = new JsonObjects.Commands();
+                        test.Commands.Debug = new string[1];
+                        test.Commands.Debug[0] = "f102";
+                        QoDMain.networkCommunicationManager.SendMessage(test.ToJSON());
+                    textControl1.CommandParser("cmd arm");
+                    flying = true;
+                    flyPrep.Text = "Disarm";
             }
             else
             {
@@ -550,6 +564,8 @@ namespace QoD_DataCentre
                     flyPrep.Text = "Calibrate";
                 }
             }
+
+
         }
 
         public void enableControls(bool enable)

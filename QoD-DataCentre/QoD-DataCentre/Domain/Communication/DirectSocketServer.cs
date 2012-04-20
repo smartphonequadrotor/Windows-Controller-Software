@@ -35,10 +35,11 @@ namespace QoD_DataCentre.Src.Communication
         private NetworkCommunicationManager networkCommunicationManager;
         #endregion
 
-        public DirectSocketServer(TcpClient c, HttpServer h)
+        public DirectSocketServer(NetworkCommunicationManager networkCM, TcpClient c, HttpServer h)
         {
             this.socket = c;
             this.httpServer = h;
+            this.networkCommunicationManager = networkCM;
         }
 
         private string streamReadLine(Stream inputStream)
@@ -226,19 +227,35 @@ namespace QoD_DataCentre.Src.Communication
             outputStream.Write("Connection: close\r\n");
             outputStream.Write("\r\n");
         }
+
+        public void writePOST(string content)
+        {
+            outputStream.Write("POST "+http_url+" HTTP/1.1\r\n");
+            outputStream.Write("Content-length: "+content.Length+"\r\n");
+            outputStream.Write("\r\n");
+            outputStream.Write(content);
+        }
+
+        public void writeGET()
+        {
+
+        }
     }
 
     public abstract class HttpServer
     {
+        protected DirectSocketServer processor;
         protected int port;
         IPAddress localAddress;
         TcpListener listener;
         bool is_active = true;
+        protected NetworkCommunicationManager networkCommunicationManager;
 
-        public HttpServer(IPAddress localAddress, int port)
+        public HttpServer(NetworkCommunicationManager networkCM, IPAddress localAddress, int port)
         {
             this.port = port;
             this.localAddress = localAddress;
+            this.networkCommunicationManager = networkCM;
         }
 
         public void listen()
@@ -274,7 +291,7 @@ namespace QoD_DataCentre.Src.Communication
                 DialogResult result = MessageBox.Show("Accept incoming connection " + s.Client.RemoteEndPoint.ToString().Substring(0, s.Client.RemoteEndPoint.ToString().IndexOf(':')) + " ?", "Incoming Connection", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {
-                    DirectSocketServer processor = new DirectSocketServer(s, this);
+                    processor = new DirectSocketServer(networkCommunicationManager, s, this);
                     Thread thread = new Thread(new ThreadStart(processor.process));
                     thread.Start();
                     QoDMain.networkCommunicationManager.ConnectionStatus = "Connected to " + s.Client.RemoteEndPoint.ToString().Substring(0, s.Client.RemoteEndPoint.ToString().IndexOf(':'));
@@ -295,21 +312,35 @@ namespace QoD_DataCentre.Src.Communication
 
     public class MyHttpServer : HttpServer
     {
-        public MyHttpServer(IPAddress localAddress, int port)
-            : base(localAddress, port)
+        public MyHttpServer(NetworkCommunicationManager networkCM, IPAddress localAddress, int port)
+            : base(networkCM, localAddress, port)
         {
         }
 
         public override void handleGETRequest(DirectSocketServer p)
         {
+            //DON'T need to implement. ONly handling POSTS!
             Console.WriteLine("TODO: HANDLE GET REQUEST BODY:\n" + p.httpBody);
             p.writeSuccess();
         }
 
         public override void handlePOSTRequest(DirectSocketServer p, StreamReader inputData)
         {
-            Console.WriteLine("TODO: HANDLE POST REQUEST BODY:\n" + p.httpBody);
+            networkCommunicationManager.RecieveMessage( inputData.ReadToEnd());
             p.writeSuccess();
+        }
+
+        public void WriteGETRequest()
+        {
+            //DON'T need to implement. ONly handling POSTS!
+            processor.writeGET();
+            processor.writeSuccess();
+        }
+
+        public void WritePOSTRequest(string content)
+        {
+            processor.writePOST(content);
+            processor.writeSuccess();
         }
 
     }

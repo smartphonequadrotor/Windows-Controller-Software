@@ -22,6 +22,7 @@ namespace QoD_DataCentre.Controls
         List<RollingPointPairList> gyroDataSets = new List<RollingPointPairList>();
         List<RollingPointPairList> magDataSets = new List<RollingPointPairList>();
         List<RollingPointPairList> orientationDataSets = new List<RollingPointPairList>();
+        List<RollingPointPairList> heightDataSet = new List<RollingPointPairList>();
 
         private string[] labelArrayXYZ = new string[] { "x", "y", "z" };
         private string[] labelArrayLatLong = new string[] { "latitude", "longitude", "height" };
@@ -31,6 +32,7 @@ namespace QoD_DataCentre.Controls
         long maxOrientationTimeStamp;
         long maxGyroTimeStamp;
         long maxMagTimeStamp;
+        long maxHeightTimeStamp;
 
         public Statistics()
         {
@@ -56,6 +58,8 @@ namespace QoD_DataCentre.Controls
             RollingPointPairList magY = new RollingPointPairList(30000);
             RollingPointPairList magZ = new RollingPointPairList(30000);
 
+            RollingPointPairList height = new RollingPointPairList(30000);
+
             //initialize point pair lists
             for (int i = 0; i < 30000; i++)
             {
@@ -71,7 +75,7 @@ namespace QoD_DataCentre.Controls
                 magX.Add(0, 0);
                 magY.Add(0, 0);
                 magZ.Add(0, 0);
-
+                height.Add(0, 0);
             }
             accelerometerDataSets.Clear();
             accelerometerDataSets.Add(accelerometerX);
@@ -93,10 +97,14 @@ namespace QoD_DataCentre.Controls
             magDataSets.Add(magY);
             magDataSets.Add(magZ);
 
+            heightDataSet.Clear();
+            heightDataSet.Add(height);
+
             maxAccelTimeStamp = 0;
             maxOrientationTimeStamp = 0;
             maxGyroTimeStamp = 0;
             maxMagTimeStamp = 0;
+            maxHeightTimeStamp = 0;
 
             for (int i = orientationVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
                 orientationVsTime.GraphPane.CurveList.Remove(orientationVsTime.GraphPane.CurveList[i]);
@@ -122,6 +130,12 @@ namespace QoD_DataCentre.Controls
 
             initializeGraph(magVsTime, "Magnetometer Values vs Time", "Magnetometer Value", "Time", magDataSets, labelArrayXYZ, 10);
             SetSize(ref magVsTime, 940);
+
+            for (int i = heightVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
+                heightVsTime.GraphPane.CurveList.Remove(heightVsTime.GraphPane.CurveList[i]);
+
+            initializeGraph(heightVsTime, "Height Values vs Time", "Height Value", "Time", heightDataSet, labelArrayXYZ, 500);
+            SetSize(ref heightVsTime, 1250);
 
             initialized = true;
         }
@@ -315,6 +329,27 @@ namespace QoD_DataCentre.Controls
                     }
                 }
             }
+            if (j.Responses != null && j.Responses.Height != null)
+            {
+                foreach (JsonObjects.HeightResponse sensor in j.Responses.Height)
+                {
+
+                    if (sensor.Timestamp > maxHeightTimeStamp)
+                    {
+                        updateGraph(ref heightVsTime, ref heightDataSet, GraphData.X, sensor.Timestamp / 1000.0, sensor.Height);
+                    }
+                }
+
+                //find max orientation time stamp
+                foreach (JsonObjects.HeightResponse sensor in j.Responses.Height)
+                {
+                    if (sensor.Timestamp > maxMagTimeStamp)
+                    {
+                        maxMagTimeStamp = sensor.Timestamp;
+                    }
+                }
+            }
+
         }
 
         public void updateGraph(ref ZedGraphControl graph, ref List<RollingPointPairList> dataSets, GraphData valueToChange, double time, float data)
