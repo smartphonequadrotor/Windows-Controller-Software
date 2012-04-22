@@ -95,6 +95,12 @@
     <Compile Include="Controls\Coordinates.Designer.cs">
       <DependentUpon>Coordinates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\flightOrientation.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\flightOrientation.Designer.cs">
+      <DependentUpon>flightOrientation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LiveFeed.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -158,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Coordinates.resx">
       <DependentUpon>Coordinates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\flightOrientation.resx">
+      <DependentUpon>flightOrientation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\LiveFeed.resx">
       <DependentUpon>LiveFeed.cs</DependentUpon>

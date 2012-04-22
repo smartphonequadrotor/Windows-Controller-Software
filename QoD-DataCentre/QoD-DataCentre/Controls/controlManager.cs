@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using QoD_DataCentre.Domain.Controller;
+using QoD_DataCentre.Domain.JSON;
 
 namespace QoD_DataCentre.Controls
 {
@@ -21,6 +22,7 @@ namespace QoD_DataCentre.Controls
             updateText(rollSource, rollControl, Controller.direction.ROLL);
             updateText(pitchSource, pitchControl, Controller.direction.PITCH);
             updateText(yawSource, yawControl, Controller.direction.YAW);
+            flightOrientation1.InitializeControl();
         }
 
         private void setHeight_Click(object sender, EventArgs e)
@@ -72,5 +74,15 @@ namespace QoD_DataCentre.Controls
                 control.Text += parent.getControl(direction).InputKeyB.ToString();
             }
         }
+
+        public void updatePreview(JsonObjects.SetDesiredAngleCommand controller){
+            JsonObjects.TriAxisResponse[] controllerInput = new JsonObjects.TriAxisResponse[1];
+            controllerInput[0] = new JsonObjects.TriAxisResponse();
+            controllerInput[0].X = controller.Roll;
+            controllerInput[0].Y = controller.Pitch;
+            controllerInput[0].Z = controller.Yaw;
+            flightOrientation1.UpdateOrientation(controllerInput);
+        }
+
     }
 }

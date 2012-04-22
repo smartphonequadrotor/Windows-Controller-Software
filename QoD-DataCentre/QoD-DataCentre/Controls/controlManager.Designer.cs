@@ -43,6 +43,7 @@
             this.pitchControl = new System.Windows.Forms.Label();
             this.yawSource = new System.Windows.Forms.Label();
             this.yawControl = new System.Windows.Forms.Label();
+            this.flightOrientation1 = new QoD_DataCentre.Controls.flightOrientation();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -122,6 +123,7 @@
             this.tableLayoutPanel1.Controls.Add(this.pitchControl, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.yawSource, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.yawControl, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.flightOrientation1, 2, 5);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
@@ -131,7 +133,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(310, 272);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(403, 348);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // label2
@@ -142,7 +144,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(131, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(176, 13);
+            this.label2.Size = new System.Drawing.Size(272, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Control";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -194,7 +196,7 @@
             this.heightControl.AutoSize = true;
             this.heightControl.Location = new System.Drawing.Point(131, 13);
             this.heightControl.Name = "heightControl";
-            this.heightControl.Size = new System.Drawing.Size(176, 29);
+            this.heightControl.Size = new System.Drawing.Size(272, 29);
             this.heightControl.TabIndex = 9;
             this.heightControl.Text = "Source";
             this.heightControl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -207,7 +209,7 @@
             this.rollControl.AutoSize = true;
             this.rollControl.Location = new System.Drawing.Point(131, 42);
             this.rollControl.Name = "rollControl";
-            this.rollControl.Size = new System.Drawing.Size(176, 29);
+            this.rollControl.Size = new System.Drawing.Size(272, 29);
             this.rollControl.TabIndex = 10;
             this.rollControl.Text = "Source";
             this.rollControl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -220,7 +222,7 @@
             this.pitchControl.AutoSize = true;
             this.pitchControl.Location = new System.Drawing.Point(131, 71);
             this.pitchControl.Name = "pitchControl";
-            this.pitchControl.Size = new System.Drawing.Size(176, 29);
+            this.pitchControl.Size = new System.Drawing.Size(272, 29);
             this.pitchControl.TabIndex = 11;
             this.pitchControl.Text = "Source";
             this.pitchControl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -246,17 +248,25 @@
             this.yawControl.AutoSize = true;
             this.yawControl.Location = new System.Drawing.Point(131, 100);
             this.yawControl.Name = "yawControl";
-            this.yawControl.Size = new System.Drawing.Size(176, 29);
+            this.yawControl.Size = new System.Drawing.Size(272, 29);
             this.yawControl.TabIndex = 13;
             this.yawControl.Text = "Source";
             this.yawControl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // flightOrientation1
+            // 
+            this.flightOrientation1.Location = new System.Drawing.Point(131, 132);
+            this.flightOrientation1.Name = "flightOrientation1";
+            this.flightOrientation1.Size = new System.Drawing.Size(272, 213);
+            this.flightOrientation1.TabIndex = 14;
             // 
             // ControlManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 296);
+            this.ClientSize = new System.Drawing.Size(427, 372);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "ControlManager";
             this.Text = "controlManager";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ControlManager_KeyDown);
@@ -283,5 +293,6 @@
         private System.Windows.Forms.Label pitchControl;
         private System.Windows.Forms.Label yawSource;
         private System.Windows.Forms.Label yawControl;
+        private flightOrientation flightOrientation1;
     }
 }

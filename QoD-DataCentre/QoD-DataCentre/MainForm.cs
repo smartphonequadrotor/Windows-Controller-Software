@@ -74,11 +74,20 @@ namespace QoD_DataCentre
 
             controller = new Controller();
             controlManager = new ControlManager(this);
+            controller.controllerCallback += new Controller.ControllerEvent(controller_controllerCallback);
             // If the timer is declared in a long-running method, use
             // KeepAlive to prevent garbage collection from occurring
             // before the method ends.
             //GC.KeepAlive(timer); 
             InitializeComponent();
+        }
+
+        void controller_controllerCallback(object sender, Controller.ControlelrEventArgs data)
+        {
+            this.Invoke((MethodInvoker)delegate
+                {
+            controlManager.updatePreview(data.Message);
+                });
         }
 
         ~QoDForm()
@@ -285,6 +294,7 @@ namespace QoD_DataCentre
             });
         }
 
+
         //on disconnect...
         void networkCommunicationManager_onDisconnect(object sender, EventArgs data)
         {
@@ -402,7 +412,7 @@ namespace QoD_DataCentre
             {
                 statistics1.InitializeControl();
             }
-            else if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Location)) && !location1.initialized)
+            else if (tabControl1.SelectedTab.Text.Equals(tabPagesEnumToString((int)TabName.Location)) && !location1.isInitialized())
             {
                 location1.InitializeControl();
             }
@@ -544,6 +554,10 @@ namespace QoD_DataCentre
         {
             controller.ReAssignInput(Controller.direction.YAW);
         }
-        
+
+        internal void updateControlPreview(JsonObjects.SetDesiredAngleCommand controller)
+        {
+            this.controlManager.updatePreview(controller);
+        }
     }
 }

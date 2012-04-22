@@ -193,6 +193,26 @@ namespace QoD_DataCentre.Domain.Controller
 
     class Controller
     {
+
+
+        public class ControlelrEventArgs : EventArgs
+        {
+            private JsonObjects.SetDesiredAngleCommand message;
+
+            public JsonObjects.SetDesiredAngleCommand Message { get { return message; } set { message = value; } }
+            public ControlelrEventArgs(JsonObjects.SetDesiredAngleCommand message)
+            {
+                this.Message = message;
+            }
+
+        }
+
+        //msg recieved
+        public delegate void ControllerEvent(object sender, ControlelrEventArgs data);
+
+        //called when message is recieved...
+        public event ControllerEvent controllerCallback;
+
         private bool noJoy = false;
 
         private bool userControlsEnabled = false;
@@ -245,6 +265,7 @@ namespace QoD_DataCentre.Domain.Controller
             jsonToSendEnvelope.Commands.HRPY = new JsonObjects.SetDesiredAngleCommand[1];
             jsonToSendEnvelope.Commands.HRPY[0] = new JsonObjects.SetDesiredAngleCommand(0,0,0,0);
 
+            controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.HRPY[0]));
             QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
         }
 
@@ -276,11 +297,14 @@ namespace QoD_DataCentre.Domain.Controller
                     jsonToSendEnvelope.Commands.HRPY = new JsonObjects.SetDesiredAngleCommand[1];
                     jsonToSendEnvelope.Commands.HRPY[0] = new JsonObjects.SetDesiredAngleCommand(
                         (int)(-MAX_HEIGHT_CHANGE*controllerValues[(int)direction.HEIGHT]),
-                        -MAX_PLANAR_CHANGE * controllerValues[(int)direction.ROLL],
+                        MAX_PLANAR_CHANGE * controllerValues[(int)direction.ROLL],
                         MAX_PLANAR_CHANGE * controllerValues[(int)direction.PITCH],
-                        MAX_YAW_CHANGE * controllerValues[(int)direction.YAW]);
+                        -MAX_YAW_CHANGE * controllerValues[(int)direction.YAW]);
 
+                    
                     QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
+
+                    controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.HRPY[0]));
 
                     inputTimer.Enabled = true;
                 }
