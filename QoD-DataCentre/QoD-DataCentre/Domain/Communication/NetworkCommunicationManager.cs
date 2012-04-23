@@ -164,7 +164,7 @@ namespace QoD_DataCentre.Src.Communication
         {
             connectionType = ConnectionType.XMPP;
             xmppClient = new XmppClient(this);
-            comClient = new qcfp(32);
+            comClient = new qcfp(32, this);
         }
 
         public void SendMessage(JsonObjects.Envelope message)
@@ -352,5 +352,10 @@ namespace QoD_DataCentre.Src.Communication
             return xmppClient.USER_DICTIONARY;
         }
 
+
+        internal void msgRecievedJSON(JsonObjects.Envelope newEnv)
+        {
+            this.msgRecieved(this, new MsgRecievedEventArgs(newEnv));
+        }
     }
 }

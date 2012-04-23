@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using QoD_DataCentre.Domain.JSON;
 using System.IO.Ports;
+using QoD_DataCentre.Src.Communication;
 
 namespace QoD_DataCentre.Domain.Communication
 {
@@ -11,35 +12,7 @@ namespace QoD_DataCentre.Domain.Communication
     public class qcfp
     {
 
-        public class SendQCFPEventArgs : EventArgs
-        {
-            private byte[] message;
-            public byte[] Message { get { return message; } set { message = value; } }
-            public SendQCFPEventArgs(byte[] message)
-            {
-                this.Message = message;
-            }
-        }
 
-        //msg recieved
-        public delegate void SendQCFPEvent(object sender, SendQCFPEventArgs data);
-
-        public class ReceiveQCFPEventArgs : EventArgs
-        {
-            private JSON.JsonObjects.Envelope message;
-            public JSON.JsonObjects.Envelope Message { get { return message; } set { message = value; } }
-            public ReceiveQCFPEventArgs(JSON.JsonObjects.Envelope message)
-            {
-                this.Message = message;
-            }
-        }
-
-        //msg recieved
-        public delegate void ReceiveQCFPEvent(object sender, ReceiveQCFPEventArgs data);
-
-        //called when message is recieved...
-        public event SendQCFPEvent msgToSend;
-        public event ReceiveQCFPEvent msgRecieved;
 
         public static class QcfpCommands
         {
@@ -49,8 +22,7 @@ namespace QoD_DataCentre.Domain.Communication
             public const byte QCFP_CALIBRATE_QUADROTOR_STOP = 0x00;
             public const byte QCFP_CALIBRATE_QUADROTOR_START = 0x01;
 
-            public const byte QCFP_SET_DESIRED_ANGLES = 0x25;
-            public const byte QCFP_SET_DESIRED_HEIGHT = 0x26;
+            
 
             public const byte QCFP_CALIBRATE_QUADROTOR_UNCALIBRATED = 0x00;
             public const byte QCFP_CALIBRATE_QUADROTOR_CALIBRATED = 0x01;
@@ -64,7 +36,11 @@ namespace QoD_DataCentre.Domain.Communication
 
             public const byte QCFP_CONTROL_METHOD_OVERRIDE = 0xF1;
             public const byte QCFP_CONTROL_MODE_PID  = 2;
+
             public const byte QCFP_SET_THROTTLE = 0x24;
+            public const byte QCFP_SET_DESIRED_ANGLES = 0x25;
+            public const byte QCFP_SET_DESIRED_HEIGHT = 0x26;
+            public const byte QCFP_ALTITUDE_HOLD_EN = 0x27;
 
             public const byte QCFP_RAW_MOTOR_CONTROL = (byte)0xF0; 	// Verify that this
             // cast doesn't
@@ -92,6 +68,8 @@ namespace QoD_DataCentre.Domain.Communication
             private int byteCount; // Counts number of encoded bytes
 
             SerialPort comPort;
+            NetworkCommunicationManager communicationManager;
+
             /**
              * Creates a parser object that will not allow a decoded packet greater than
              * size maxPacketSize.
@@ -101,7 +79,7 @@ namespace QoD_DataCentre.Domain.Communication
              * @param packetHandlers
              *            Object that will handle packets.
              */
-            public qcfp(int maxPacketSize)
+            public qcfp(int maxPacketSize, NetworkCommunicationManager parent)
             {
                 this.maxPacketSize = maxPacketSize;
                 this.byteCount = 0;
@@ -110,6 +88,7 @@ namespace QoD_DataCentre.Domain.Communication
                 this.incomingPacket = new byte[this.maxPacketSize + 2];
                 this.comPort = new SerialPort();
                 comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
+                communicationManager = parent;
             }
 
             void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -273,7 +252,7 @@ namespace QoD_DataCentre.Domain.Communication
         const byte GYRO_PAYLOAD_LENGTH = 18;
         const byte MAG_PAYLOAD_LENGTH = 18;
         const byte KIN_PAYLOAD_LENGTH = 18;
-        const byte HEIGHT_PAYLOAD_LENGTH = 8;
+        const byte HEIGHT_PAYLOAD_LENGTH = 9;
 
         const byte TIMESTAMP_START_INDEX = 2;
 
@@ -380,15 +359,17 @@ namespace QoD_DataCentre.Domain.Communication
                     if (length == HEIGHT_PAYLOAD_LENGTH)
                     {
                         int height = (packet[HEIGHT_INDEX_LSB] & 0x00FF) + ((packet[HEIGHT_INDEX_MSB] & 0x00FF) << 8);
-                        // TODO: Do something with the height. Height is in cm.
-                        // The value isn't reliable when the height is approximately less than 20cm.
+                        newRes = new JsonObjects.Responses();
+                        newRes.Height = new JsonObjects.HeightResponse[1];
+                        newRes.Height[0] = new JsonObjects.HeightResponse(height);
+                        newRes.Height[0].Timestamp = timestamp;
                     }
                     break;
                 default:
                     break;
             }
             JsonObjects.Envelope newEnv = new JsonObjects.Envelope(null, null, newRes);
-            this.msgRecieved(this, new ReceiveQCFPEventArgs(newEnv));
+            communicationManager.msgRecievedJSON(newEnv);
         }
     }
 
@@ -514,7 +495,7 @@ namespace QoD_DataCentre.Domain.Communication
              */
             private void sendCOMMessage(byte[] message)
             {
-                msgToSend(this,new SendQCFPEventArgs(message));
+                comPort.Write(message, 0, message.Length);
             }
 
             /**
@@ -583,6 +564,17 @@ namespace QoD_DataCentre.Domain.Communication
                 buffer[0] = QcfpCommands.QCFP_SET_THROTTLE;
                 buffer[1] = (byte)( 0x000000FF & speed);
                 buffer[2] = (byte)((0x0000FF00 & speed)>>8);
+                sendCOMMessage(encodeData(buffer, buffer.Length));
+            }
+
+            internal void setAltitudeHold(bool enable)
+            {
+                byte[] buffer = new byte[2];
+                buffer[0] = QcfpCommands.QCFP_ALTITUDE_HOLD_EN;
+                if(enable)
+                    buffer[1] = 1;
+                else
+                    buffer[1] = 0;
                 sendCOMMessage(encodeData(buffer, buffer.Length));
             }
 

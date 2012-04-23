@@ -230,7 +230,7 @@ namespace QoD_DataCentre.Domain.Controller
         private static double SDL_POLL_INTERVAL = 500; // in ms
         private static float INPUT_TIMEOUT = 750;
         
-        private static float MAX_HEIGHT_CHANGE = 20;
+        private static float MAX_HEIGHT_CHANGE = 1;
         private static float MAX_YAW_CHANGE = (float)(Math.PI / 12.0f);
         private static float MAX_PLANAR_CHANGE = ((float)Math.PI / 12.0f);
         
