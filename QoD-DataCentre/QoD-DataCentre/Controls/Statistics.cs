@@ -134,7 +134,7 @@ namespace QoD_DataCentre.Controls
             for (int i = heightVsTime.GraphPane.CurveList.Count - 1; i > -1; i--)
                 heightVsTime.GraphPane.CurveList.Remove(heightVsTime.GraphPane.CurveList[i]);
 
-            initializeGraph(heightVsTime, "Height Values vs Time", "Height Value", "Time", heightDataSet, labelArrayXYZ, 50);
+            initializeGraph(heightVsTime, "Height Values vs Time", "Height Value", "Time", heightDataSet, labelArrayXYZ, 100);
             SetSize(ref heightVsTime, 1250);
 
             initialized = true;

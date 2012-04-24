@@ -594,11 +594,12 @@ namespace QoD_DataCentre.Domain.Communication
                             sendCOMMessage(encodeData(buffer, buffer.Length));
                         }
                     }
-                    if (message.Commands.HRPY != null)
+                    if (message.Commands.THRPY != null)
                     {
-                        foreach (QoD_DataCentre.Domain.JSON.JsonObjects.SetDesiredAngleCommand hrpy in message.Commands.HRPY)
+                        foreach (QoD_DataCentre.Domain.JSON.JsonObjects.SetDesiredAngleCommand hrpy in message.Commands.THRPY)
                         {
                             sendDesiredHrpy(hrpy.Height, new float[] { hrpy.Roll, hrpy.Pitch, hrpy.Yaw });
+                            sendThrottle(hrpy.Throttle);
                         }
                     }
                     if (message.Commands.SystemState != null)
@@ -609,6 +610,14 @@ namespace QoD_DataCentre.Domain.Communication
                             sendFlightMode(true);
                         if (message.Commands.SystemState == JsonObjects.Commands.SystemStates.DISARMED.ToString())
                             sendFlightMode(false);
+                        if (message.Commands.SystemState == JsonObjects.Commands.SystemStates.ALTITUDE_HOLD_DISABLE.ToString())
+                        {
+                            setAltitudeHold(false);
+                        }
+                        if (message.Commands.SystemState == JsonObjects.Commands.SystemStates.ALTITUDE_HOLD_ENABLE.ToString())
+                        {
+                            setAltitudeHold(true);
+                        }
                     }
                 }
             }

@@ -21,7 +21,7 @@ namespace QoD_DataCentre.Domain.Controller
         static extern ushort GetAsyncKeyState(System.Windows.Forms.Keys vKey); 
 
         private static float AXIS_SCALE = 2;
-        private static float BUTTON_SCALE = 0.5f;
+        private static float BUTTON_SCALE = 1.0f;
         private static float KEY_SCALE = 0.5f; 
         private static float JOYSTICK_CENTER = 0.5f;
         private static float JOYSTICK_AXIS_THRESHOLD = 0.1f;
@@ -79,7 +79,7 @@ namespace QoD_DataCentre.Domain.Controller
 
         public ControllerInput( int a, int b)
         {
-            inputType = Type.AXIS;
+            inputType = Type.BUTTON;
             inputButtonA = a;
             inputButtonB = b;
         }
@@ -222,7 +222,8 @@ namespace QoD_DataCentre.Domain.Controller
         }
 
 
-        public enum direction {HEIGHT, ROLL, PITCH, YAW} 
+        public enum direction {HEIGHT, ROLL, PITCH, YAW}
+        public enum special { START_KILL = direction.YAW+1, FLIGHT, ALTITUDE_CONTROL } 
 
         private ControllerInput[] controllerMapping;
         private float[] controllerValues;
@@ -231,6 +232,7 @@ namespace QoD_DataCentre.Domain.Controller
         private static float INPUT_TIMEOUT = 750;
         
         private static float MAX_HEIGHT_CHANGE = 1;
+        private static float MAX_THROTTLE_CHANGE = 20;
         private static float MAX_YAW_CHANGE = (float)(Math.PI / 12.0f);
         private static float MAX_PLANAR_CHANGE = ((float)Math.PI / 12.0f);
         
@@ -248,13 +250,16 @@ namespace QoD_DataCentre.Domain.Controller
             sdlTimer.Enabled = false;
 
             //we have 4 direction indexes... Height, Roll, Pitch, and Yaw
-            controllerMapping = new ControllerInput[4];
-            controllerValues = new float[4];
+            controllerMapping = new ControllerInput[7];
+            controllerValues = new float[7];
 
             controllerMapping[(int)direction.HEIGHT] = new ControllerInput(JoystickAxis.Axis4);
             controllerMapping[(int)direction.ROLL] = new ControllerInput(JoystickAxis.Horizontal);
             controllerMapping[(int)direction.PITCH] = new ControllerInput(JoystickAxis.Vertical);
             controllerMapping[(int)direction.YAW] = new ControllerInput(JoystickAxis.Axis3);
+            controllerMapping[(int)special.ALTITUDE_CONTROL] = new ControllerInput(0,1);
+            controllerMapping[(int)special.FLIGHT] = new ControllerInput(2,3);
+            controllerMapping[(int)special.START_KILL] = new ControllerInput(6,7);
         }
 
         void keyTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -262,10 +267,10 @@ namespace QoD_DataCentre.Domain.Controller
             JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
 
             jsonToSendEnvelope.Commands = new JsonObjects.Commands();
-            jsonToSendEnvelope.Commands.HRPY = new JsonObjects.SetDesiredAngleCommand[1];
-            jsonToSendEnvelope.Commands.HRPY[0] = new JsonObjects.SetDesiredAngleCommand(0,0,0,0);
+            jsonToSendEnvelope.Commands.THRPY = new JsonObjects.SetDesiredAngleCommand[1];
+            jsonToSendEnvelope.Commands.THRPY[0] = new JsonObjects.SetDesiredAngleCommand(0,0,0,0,0);
 
-            controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.HRPY[0]));
+            controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.THRPY[0]));
             QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
         }
 
@@ -294,8 +299,9 @@ namespace QoD_DataCentre.Domain.Controller
                     JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
 
                     jsonToSendEnvelope.Commands = new JsonObjects.Commands();
-                    jsonToSendEnvelope.Commands.HRPY = new JsonObjects.SetDesiredAngleCommand[1];
-                    jsonToSendEnvelope.Commands.HRPY[0] = new JsonObjects.SetDesiredAngleCommand(
+                    jsonToSendEnvelope.Commands.THRPY = new JsonObjects.SetDesiredAngleCommand[1];
+                    jsonToSendEnvelope.Commands.THRPY[0] = new JsonObjects.SetDesiredAngleCommand(
+                        (int)(-MAX_THROTTLE_CHANGE*controllerValues[(int)direction.HEIGHT]),
                         (int)(-MAX_HEIGHT_CHANGE*controllerValues[(int)direction.HEIGHT]),
                         MAX_PLANAR_CHANGE * controllerValues[(int)direction.ROLL],
                         MAX_PLANAR_CHANGE * controllerValues[(int)direction.PITCH],
@@ -304,9 +310,46 @@ namespace QoD_DataCentre.Domain.Controller
                     
                     QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
 
-                    controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.HRPY[0]));
+                    controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.THRPY[0]));
 
                     inputTimer.Enabled = true;
+                }
+                else if (controllerValues[(int)special.START_KILL] != 0 )
+                {
+                    JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
+                    jsonToSendEnvelope.Commands = new JsonObjects.Commands();
+                    if (controllerValues[(int)special.START_KILL] == -1)
+                        jsonToSendEnvelope.Commands.SystemState = JsonObjects.Commands.SystemStates.CALIBRATING.ToString();
+                    else
+                        jsonToSendEnvelope.Commands.SystemState = JsonObjects.Commands.SystemStates.DISARMED.ToString();
+
+                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
+                }
+                else if (controllerValues[(int)special.FLIGHT] != 0)
+                {
+                    JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
+                    jsonToSendEnvelope.Commands = new JsonObjects.Commands();
+                    if (controllerValues[(int)special.FLIGHT] == -1)
+                        jsonToSendEnvelope.Commands.SystemState = JsonObjects.Commands.SystemStates.ARMED.ToString();
+                    else
+                    {
+                        //send pid command
+                        jsonToSendEnvelope.Commands.Debug = new string[1];
+                        jsonToSendEnvelope.Commands.Debug[0] = "f102";
+                    }
+
+                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
+                }
+                else if (controllerValues[(int)special.ALTITUDE_CONTROL] != 0)
+                {
+                    JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
+                    jsonToSendEnvelope.Commands = new JsonObjects.Commands();
+                    if (controllerValues[(int)special.ALTITUDE_CONTROL] == -1)
+                        jsonToSendEnvelope.Commands.SystemState = JsonObjects.Commands.SystemStates.ALTITUDE_HOLD_ENABLE.ToString();
+                    else
+                        jsonToSendEnvelope.Commands.SystemState = JsonObjects.Commands.SystemStates.ALTITUDE_HOLD_DISABLE.ToString();
+
+                    QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
                 }
             }
         }
@@ -375,8 +418,31 @@ namespace QoD_DataCentre.Domain.Controller
             controllerMapping[(int)index].AssignControllerInput(j);
         }
 
+        internal void ReAssignInput(special index)
+        {
+            if (j == null && !noJoy)
+            {
+                try
+                {
+                    j = Joysticks.OpenJoystick(0);
+                }
+                catch
+                {
+                    noJoy = true;
+                }
+                sdlTimer.Enabled = true;
+            }
+            SdlDotNet.Core.Events.Poll();
+            controllerMapping[(int)index].AssignControllerInput(j);
+        }
+
 
         internal ControllerInput FetchControl(direction index)
+        {
+            return controllerMapping[(int)index];
+        }
+
+        internal ControllerInput FetchControl(special index)
         {
             return controllerMapping[(int)index];
         }

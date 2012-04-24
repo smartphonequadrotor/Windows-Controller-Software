@@ -74,6 +74,7 @@ namespace QoD_DataCentre.Domain.JSON
 
         public class SetDesiredAngleCommand
         {
+            private int throttle;
             private int height;
             private float roll;
             private float pitch;
@@ -83,12 +84,19 @@ namespace QoD_DataCentre.Domain.JSON
             {
             }
 
-            public SetDesiredAngleCommand(int height, float roll, float pitch, float yaw)
+            public SetDesiredAngleCommand(int throttle, int height, float roll, float pitch, float yaw)
             {
+                this.throttle = throttle;
                 this.height = height;
                 this.roll = roll;
                 this.pitch = pitch;
                 this.yaw = yaw;
+            }
+
+            public int Throttle
+            {
+                get { return throttle; }
+                set { throttle = value; }
             }
 
             public int Height
@@ -117,7 +125,7 @@ namespace QoD_DataCentre.Domain.JSON
 
             override public string ToString()
             {
-                return "Height: " + height + "Roll: " + roll + ", Pitch: " + pitch + ", Yaw: " + yaw;
+                return "Throttle: " + throttle + "Height: " + height + " Roll: " + roll + ", Pitch: " + pitch + ", Yaw: " + yaw;
             }
 
             public string ToJSON()
@@ -130,10 +138,10 @@ namespace QoD_DataCentre.Domain.JSON
 
         public class Commands{
 
-            public enum SystemStates { ARMED, DISARMED, CALIBRATING, CALIBRATED}
+            public enum SystemStates { ARMED, DISARMED, CALIBRATING, CALIBRATED, ALTITUDE_HOLD_ENABLE, ALTITUDE_HOLD_DISABLE}
 
             private MovementCommand[] move;
-            private SetDesiredAngleCommand[] hrpy;
+            private SetDesiredAngleCommand[] thrpy;
 
             private string systemState;
 
@@ -157,10 +165,10 @@ namespace QoD_DataCentre.Domain.JSON
                 set { move = value; }
             }
 
-            public SetDesiredAngleCommand[] HRPY
+            public SetDesiredAngleCommand[] THRPY
             {
-                get { return hrpy; }
-                set { hrpy = value; }
+                get { return thrpy; }
+                set { thrpy = value; }
             }
 
             public Commands()
@@ -177,9 +185,9 @@ namespace QoD_DataCentre.Domain.JSON
                         returnString += "\r\nMove:\r\n\t" + m.ToString();
                     }
                 }
-                if (hrpy != null)
+                if (thrpy != null)
                 {
-                    foreach (SetDesiredAngleCommand c in hrpy)
+                    foreach (SetDesiredAngleCommand c in thrpy)
                     {
                         returnString += "\r\nHrpy:\r\n\t" + c.ToString();
                     }

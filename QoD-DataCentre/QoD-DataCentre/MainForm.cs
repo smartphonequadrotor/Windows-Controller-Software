@@ -535,6 +535,11 @@ namespace QoD_DataCentre
             return controller.FetchControl(index);
         }
 
+        internal ControllerInput getControl(Controller.special index)
+        {
+            return controller.FetchControl(index);
+        }
+
         internal void configureHeightControl()
         {
             controller.ReAssignInput(Controller.direction.HEIGHT);
@@ -558,6 +563,21 @@ namespace QoD_DataCentre
         internal void updateControlPreview(JsonObjects.SetDesiredAngleCommand controller)
         {
             this.controlManager.updatePreview(controller);
+        }
+
+        internal void configureStartKillControl()
+        {
+            controller.ReAssignInput(Controller.special.START_KILL);
+        }
+
+        internal void configureFlightPIDControl()
+        {
+            controller.ReAssignInput(Controller.special.FLIGHT);
+        }
+
+        internal void configureAltitude()
+        {
+            controller.ReAssignInput(Controller.special.ALTITUDE_CONTROL);
         }
     }
 }

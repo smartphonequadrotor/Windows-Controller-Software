@@ -22,6 +22,9 @@ namespace QoD_DataCentre.Controls
             updateText(rollSource, rollControl, Controller.direction.ROLL);
             updateText(pitchSource, pitchControl, Controller.direction.PITCH);
             updateText(yawSource, yawControl, Controller.direction.YAW);
+            updateText(startKillSource, startKillControl, Controller.special.START_KILL);
+            updateText(flightPIDSource, flightPIDControl, Controller.special.FLIGHT);
+            updateText(altitudeSource, altitudeControl, Controller.special.ALTITUDE_CONTROL);
             flightOrientation1.InitializeControl();
         }
 
@@ -47,6 +50,24 @@ namespace QoD_DataCentre.Controls
         {
             parent.configureYawControl();
             updateText(yawSource, yawControl, Controller.direction.YAW);
+        }
+
+        private void setStartKill_Click(object sender, EventArgs e)
+        {
+            parent.configureStartKillControl();
+            updateText(startKillSource, startKillControl, Controller.special.START_KILL);
+        }
+
+        private void setFlightPID_Click(object sender, EventArgs e)
+        {
+            parent.configureFlightPIDControl();
+            updateText(flightPIDSource, flightPIDControl, Controller.special.FLIGHT);
+        }
+
+        private void setAltitude_Click(object sender, EventArgs e)
+        {
+            parent.configureAltitude();
+            updateText(altitudeSource, altitudeControl, Controller.special.ALTITUDE_CONTROL);
         }
 
         private void ControlManager_KeyDown(object sender, KeyEventArgs e)
@@ -75,6 +96,26 @@ namespace QoD_DataCentre.Controls
             }
         }
 
+        private void updateText(Label source, Label control, Controller.special special)
+        {
+            ControllerInput.Type type = parent.getControl(special).InputType;
+            source.Text = type.ToString();
+            if (type == ControllerInput.Type.AXIS)
+                control.Text = parent.getControl(special).InputAXIS.ToString();
+            else if (type == ControllerInput.Type.BUTTON)
+            {
+                control.Text = parent.getControl(special).InputButtonA.ToString();
+                control.Text += ", ";
+                control.Text += parent.getControl(special).InputButtonB.ToString();
+            }
+            else if (type == ControllerInput.Type.KEYPRESS)
+            {
+                control.Text = parent.getControl(special).InputKeyA.ToString();
+                control.Text += ", ";
+                control.Text += parent.getControl(special).InputKeyB.ToString();
+            }
+        }
+
         public void updatePreview(JsonObjects.SetDesiredAngleCommand controller){
             JsonObjects.TriAxisResponse[] controllerInput = new JsonObjects.TriAxisResponse[1];
             controllerInput[0] = new JsonObjects.TriAxisResponse();
@@ -83,6 +124,8 @@ namespace QoD_DataCentre.Controls
             controllerInput[0].Z = controller.Yaw;
             flightOrientation1.UpdateOrientation(controllerInput);
         }
+
+        
 
     }
 }
