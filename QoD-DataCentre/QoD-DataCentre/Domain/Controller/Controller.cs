@@ -26,6 +26,10 @@ namespace QoD_DataCentre.Domain.Controller
         private static float JOYSTICK_CENTER = 0.5f;
         private static float JOYSTICK_AXIS_THRESHOLD = 0.1f;
 
+        private bool recenter = true;
+
+        
+
         public enum Type { AXIS, BUTTON, KEYPRESS}
         private Type inputType;
         private JoystickAxis inputAXIS;
@@ -71,6 +75,12 @@ namespace QoD_DataCentre.Domain.Controller
             set { inputType = value; }
         }
 
+        public bool Recenter
+        {
+            get { return recenter; }
+            set { recenter = value; }
+        }
+
         public ControllerInput( JoystickAxis input)
         {
             inputType = Type.AXIS;
@@ -100,7 +110,13 @@ namespace QoD_DataCentre.Domain.Controller
         {
             if (J != null && inputType == Type.AXIS)
             {
-                float axis = J.GetAxisPosition(inputAXIS) - JOYSTICK_CENTER;
+
+                float axis;
+                if (recenter)
+                    axis = J.GetAxisPosition(inputAXIS) - JOYSTICK_CENTER;
+                else
+                    axis = J.GetAxisPosition(inputAXIS);
+
                 if (Math.Abs(axis) > JOYSTICK_AXIS_THRESHOLD)
                     return AXIS_SCALE * axis;
                 else
@@ -136,7 +152,11 @@ namespace QoD_DataCentre.Domain.Controller
             {
                 for (int i = 0; i < J.NumberOfAxes; i++)
                 {
-                    float axis = J.GetAxisPosition((JoystickAxis)i) - JOYSTICK_CENTER;
+                    float axis;
+                    if (recenter)
+                        axis = J.GetAxisPosition(inputAXIS) - JOYSTICK_CENTER;
+                    else
+                        axis = J.GetAxisPosition(inputAXIS);
                     if (Math.Abs(axis) > JOYSTICK_AXIS_THRESHOLD)
                     {
                         this.inputAXIS = (JoystickAxis)i;
@@ -222,7 +242,7 @@ namespace QoD_DataCentre.Domain.Controller
         }
 
 
-        public enum direction {HEIGHT, ROLL, PITCH, YAW}
+        public enum direction {THROTTLE, HEIGHT, ROLL, PITCH, YAW}
         public enum special { START_KILL = direction.YAW+1, FLIGHT, ALTITUDE_CONTROL } 
 
         private ControllerInput[] controllerMapping;
@@ -232,13 +252,17 @@ namespace QoD_DataCentre.Domain.Controller
         private static float INPUT_TIMEOUT = 750;
         
         private static float MAX_HEIGHT_CHANGE = 1;
-        private static float MAX_THROTTLE_CHANGE = 20;
+        private static float MIN_THROTTLE = 1000;
+        private static float MAX_THROTTLE = 2000;
+        private static float MAX_THROTTLE_CHANGE = 700;
         private static float MAX_YAW_CHANGE = (float)(Math.PI / 12.0f);
         private static float MAX_PLANAR_CHANGE = ((float)Math.PI / 12.0f);
         
 
         private Joystick j = null;
         private System.Timers.Timer sdlTimer, inputTimer;
+
+        int throttle = 0;
 
         public Controller()
         {
@@ -250,16 +274,18 @@ namespace QoD_DataCentre.Domain.Controller
             sdlTimer.Enabled = false;
 
             //we have 4 direction indexes... Height, Roll, Pitch, and Yaw
-            controllerMapping = new ControllerInput[7];
-            controllerValues = new float[7];
+            controllerMapping = new ControllerInput[8];
+            controllerValues = new float[8];
 
-            controllerMapping[(int)direction.HEIGHT] = new ControllerInput(JoystickAxis.Axis4);
+            controllerMapping[(int)direction.THROTTLE] = new ControllerInput(JoystickAxis.Axis3);
+            controllerMapping[(int)direction.THROTTLE].Recenter = false;
+            controllerMapping[(int)direction.HEIGHT] = new ControllerInput(2,4);
             controllerMapping[(int)direction.ROLL] = new ControllerInput(JoystickAxis.Horizontal);
             controllerMapping[(int)direction.PITCH] = new ControllerInput(JoystickAxis.Vertical);
-            controllerMapping[(int)direction.YAW] = new ControllerInput(JoystickAxis.Axis3);
-            controllerMapping[(int)special.ALTITUDE_CONTROL] = new ControllerInput(0,1);
-            controllerMapping[(int)special.FLIGHT] = new ControllerInput(2,3);
-            controllerMapping[(int)special.START_KILL] = new ControllerInput(6,7);
+            controllerMapping[(int)direction.YAW] = new ControllerInput(JoystickAxis.Axis4);
+            controllerMapping[(int)special.ALTITUDE_CONTROL] = new ControllerInput(6,7);
+            controllerMapping[(int)special.FLIGHT] = new ControllerInput(3,5);
+            controllerMapping[(int)special.START_KILL] = new ControllerInput(1,0);
         }
 
         void keyTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -268,8 +294,8 @@ namespace QoD_DataCentre.Domain.Controller
 
             jsonToSendEnvelope.Commands = new JsonObjects.Commands();
             jsonToSendEnvelope.Commands.THRPY = new JsonObjects.SetDesiredAngleCommand[1];
-            jsonToSendEnvelope.Commands.THRPY[0] = new JsonObjects.SetDesiredAngleCommand(0,0,0,0,0);
-
+            jsonToSendEnvelope.Commands.THRPY[0] = new JsonObjects.SetDesiredAngleCommand(throttle,0,0,0,0);
+            inputTimer.Enabled = false;
             controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.THRPY[0]));
             QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
         }
@@ -290,32 +316,38 @@ namespace QoD_DataCentre.Domain.Controller
                     controllerValues[i] = controllerMapping[i].getControlState(j);
                 }
 
-                if (controllerValues[(int)direction.HEIGHT] != 0 ||
+                int newThrottle = (int)(MIN_THROTTLE + MIN_THROTTLE * (2 - controllerValues[(int)direction.THROTTLE])/2);
+
+                if (throttle != newThrottle ||
+                    MAX_PLANAR_CHANGE * controllerValues[(int)direction.HEIGHT] != 0 ||
                     MAX_PLANAR_CHANGE * controllerValues[(int)direction.ROLL] != 0 ||
                     MAX_PLANAR_CHANGE * controllerValues[(int)direction.PITCH] != 0 ||
                     MAX_YAW_CHANGE * controllerValues[(int)direction.YAW] != 0)
                 {
                     inputTimer.Enabled = false;
+                    throttle = newThrottle;
                     JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
 
                     jsonToSendEnvelope.Commands = new JsonObjects.Commands();
                     jsonToSendEnvelope.Commands.THRPY = new JsonObjects.SetDesiredAngleCommand[1];
                     jsonToSendEnvelope.Commands.THRPY[0] = new JsonObjects.SetDesiredAngleCommand(
-                        (int)(-MAX_THROTTLE_CHANGE*controllerValues[(int)direction.HEIGHT]),
-                        (int)(-MAX_HEIGHT_CHANGE*controllerValues[(int)direction.HEIGHT]),
+                        (int)(throttle),
+                        (int)(MAX_HEIGHT_CHANGE*controllerValues[(int)direction.HEIGHT]),
                         MAX_PLANAR_CHANGE * controllerValues[(int)direction.ROLL],
                         MAX_PLANAR_CHANGE * controllerValues[(int)direction.PITCH],
-                        -MAX_YAW_CHANGE * controllerValues[(int)direction.YAW]);
+                        MAX_YAW_CHANGE * controllerValues[(int)direction.YAW]);
 
                     
                     QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
 
                     controllerCallback(this, new ControlelrEventArgs(jsonToSendEnvelope.Commands.THRPY[0]));
-
-                    inputTimer.Enabled = true;
+                    inputTimer.Interval = INPUT_TIMEOUT;
+                    inputTimer.Start();
+                    //inputTimer.Enabled = true;
                 }
                 else if (controllerValues[(int)special.START_KILL] != 0 )
                 {
+                    inputTimer.Enabled = false;
                     JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
                     jsonToSendEnvelope.Commands = new JsonObjects.Commands();
                     if (controllerValues[(int)special.START_KILL] == -1)
@@ -324,9 +356,13 @@ namespace QoD_DataCentre.Domain.Controller
                         jsonToSendEnvelope.Commands.SystemState = JsonObjects.Commands.SystemStates.DISARMED.ToString();
 
                     QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
+                    inputTimer.Interval = INPUT_TIMEOUT;
+                    inputTimer.Start();
+                    //inputTimer.Enabled = true;
                 }
                 else if (controllerValues[(int)special.FLIGHT] != 0)
                 {
+                    inputTimer.Enabled = false;
                     JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
                     jsonToSendEnvelope.Commands = new JsonObjects.Commands();
                     if (controllerValues[(int)special.FLIGHT] == -1)
@@ -339,9 +375,13 @@ namespace QoD_DataCentre.Domain.Controller
                     }
 
                     QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
+                    inputTimer.Interval = INPUT_TIMEOUT;
+                    inputTimer.Start();
+                    //inputTimer.Enabled = true;
                 }
                 else if (controllerValues[(int)special.ALTITUDE_CONTROL] != 0)
                 {
+                    inputTimer.Enabled = false;
                     JsonObjects.Envelope jsonToSendEnvelope = new JsonObjects.Envelope();
                     jsonToSendEnvelope.Commands = new JsonObjects.Commands();
                     if (controllerValues[(int)special.ALTITUDE_CONTROL] == -1)
@@ -350,6 +390,9 @@ namespace QoD_DataCentre.Domain.Controller
                         jsonToSendEnvelope.Commands.SystemState = JsonObjects.Commands.SystemStates.ALTITUDE_HOLD_DISABLE.ToString();
 
                     QoDMain.networkCommunicationManager.SendMessage(jsonToSendEnvelope);
+                    inputTimer.Interval = INPUT_TIMEOUT;
+                    inputTimer.Start();
+                    //inputTimer.Enabled = true;
                 }
             }
         }
